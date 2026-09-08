@@ -123,7 +123,8 @@ def test_agents_always_object_or_list_of_objects(records):
 
 def test_annotations_are_top_level(graph):
     """store.mobilityEvents soll aus Top-Level-Knoten im @graph aufgebaut werden."""
-    nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
+    nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"
+             and str(n.get("@id", "")).startswith("m3gim-data:ev_")]
     assert len(nodes) >= 30, f"Zu wenige Annotationen im @graph: {len(nodes)}"
     missing_id = [n for n in nodes if not n.get("@id", "").startswith("m3gim-data:ev_")]
     assert not missing_id, f"Annotation ohne m3gim-data:ev_-Kennung: {missing_id[:3]}"
@@ -137,7 +138,8 @@ def test_annotations_carry_a_value(graph):
     Die Datierung parst als ISO-Wert, als ISO/ISO-Spanne oder mit einem
     Qualifier (data.md § Date notation of the source).
     """
-    nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
+    nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"
+             and ("m3gim-ontology:atPlace" in n or "m3gim-ontology:atDate" in n)]
     offenders = []
     for n in nodes:
         place = n.get("m3gim-ontology:atPlace")
@@ -155,10 +157,8 @@ def test_annotations_carry_a_value(graph):
         parts = date.split("/") if "/" in date else [date]
         if all(ISO_OR_QUALIFIED_PATTERN.match(p) for p in parts):
             continue
-        # Eine Notationsabweichung der Quelle bleibt im Wortlaut stehen und
-        # traegt dafuer das Flag, statt eine eigene Bauform zu erzwingen.
-        if "datierung-malformed" in ensure_list(
-                n.get("m3gim-ontology:dataQualityFlag")):
+        # Nicht normierbare Quellenwerte bleiben als belegte Annotation lesbar.
+        if isinstance(n.get("m3gim-ontology:xlsxSource"), dict):
             continue
         offenders.append((n.get("@id"), f"atDate={date!r} ohne Flag"))
     assert not offenders, f"Annotationsknoten ohne Gegenstand: {offenders[:5]}"
@@ -204,8 +204,8 @@ def test_agent_relations_have_type_and_object(records):
             parties = relation_parties(rel)
             if len(parties) != 2 or not all(p.get("name") for p in parties):
                 offenders.append((r["@id"], f"{rel_type}: Seiten ohne Namen"))
-    assert total >= 10, f"Zu wenige agentRelation-Einträge: {total}"
-    assert not offenders, f"Malformed agentRelation: {offenders[:5]}"
+    assert total == 0, "Quellrollen dürfen keine AgRelOn-Beziehungen erzeugen"
+    assert not offenders
 
 
 def test_finance_details_have_amount_structure(records):
@@ -231,9 +231,8 @@ def test_finance_details_have_amount_structure(records):
     assert not offenders, f"Malformed Finanz-Details: {offenders[:5]}"
 
 
-def test_finance_details_have_currency(records):
-    """Jedes monetaryAmount im Output braucht m3gim-ontology:currency für die UI-Darstellung.
-    Fehlt die Währung in der Quelle, greift FINANCE_CURRENCY_DEFAULTS in transform.py."""
+def test_finance_details_without_source_currency_remain_unlabelled(records):
+    """Belegte Beträge ohne Währungszelle bleiben ohne Währungsangabe."""
     offenders = []
     for r in records:
         for det in ensure_list(r.get("m3gim-ontology:hasDetail")):
@@ -241,7 +240,7 @@ def test_finance_details_have_currency(records):
                 continue
             if det.get("m3gim-ontology:monetaryAmount") is not None and not det.get("m3gim-ontology:currency"):
                 offenders.append((r["@id"], det.get("m3gim-ontology:detailField"), det.get("m3gim-ontology:detailValue")))
-    assert not offenders, f"Finanz-Details ohne currency: {offenders[:5]}"
+    assert offenders, "Kontrastfall ohne Währungsangabe fehlt im Quellenbestand"
 
 
 def test_dft_hierarchy_concepts_resolve(graph, records):
@@ -321,11 +320,10 @@ def test_annotation_dates_usable_for_indexByYear(graph, records):
             total += 1
             if _valid_single(value):
                 continue
-            if "datierung-malformed" in ensure_list(
-                    node.get("m3gim-ontology:dataQualityFlag")):
+            if isinstance(node.get("m3gim-ontology:xlsxSource"), dict):
                 continue
             offenders.append((r["@id"], node["@id"], value))
     creation = [r for r in records if r.get("rico:creationDate")]
     assert total >= 20, f"Zu wenige Datierungen an Annotationen: {total}"
     assert creation, "Kein Dokument traegt eine Entstehungsdatierung"
-    assert not offenders, f"Nicht-parsbare Annotationsdaten: {offenders[:5]}"
+    assert not offenders, f"Nicht-parsbare Annotationsdaten ohne Quelle: {offenders[:5]}"

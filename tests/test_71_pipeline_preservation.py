@@ -126,7 +126,7 @@ def test_force_reconciliation_keeps_previous_match_on_transient_failure(
     assert result["unmatched"] == []
 
 
-def test_wikidata_csv_export_requires_approval_for_fuzzy_low():
+def test_wikidata_csv_export_requires_manual_approval_for_every_candidate():
     exporter = load_script("wikidata_csv_under_test", "export-wikidata-csv.py")
     entries = [
         {"name": "unchecked", "match": "fuzzy_low"},
@@ -134,7 +134,7 @@ def test_wikidata_csv_export_requires_approval_for_fuzzy_low():
         {"name": "exact", "match": "exact"},
     ]
     assert [row["name"] for row in exporter.exportable_matches(entries)] == [
-        "approved", "exact",
+        "approved",
     ]
 
 

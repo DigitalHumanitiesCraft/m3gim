@@ -367,10 +367,9 @@ def test_werke_bieten_den_sprung_auf_die_karte(page):
         "Nach Tristan und Isolde filtern und Karte öffnen",
     ]
 
-    # The shipped graph carries located evidence for La Gioconda in Italy.
+    # La Gioconda has no source-backed place statement in the shipped graph.
     assert jumps("La Gioconda") == [
-        "Umgebung von La Gioconda im Netzwerk öffnen",
-        "Nach La Gioconda filtern und Karte öffnen"]
+        "Umgebung von La Gioconda im Netzwerk öffnen"]
 
     # Das Ortsregister bietet ihn nie, dort waere er der Ort auf sich selbst.
     _open(page, "#indizes/orte")

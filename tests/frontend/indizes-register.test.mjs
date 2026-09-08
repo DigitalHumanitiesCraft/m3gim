@@ -28,7 +28,7 @@ import assert from 'node:assert/strict';
 
 import {
   getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, sortEntries,
-  buildUmfeld, workStageRoles, ambiguousWorkStageRoles, REGISTER_FAMILY, REGISTER_LABELS, REGISTER_KEYS, cutCountOf,
+  buildUmfeld, REGISTER_FAMILY, REGISTER_LABELS, REGISTER_KEYS, cutCountOf,
   REGISTER_ENTITY_TYPE, bestandFilterFor, entryYearSpan, entryRoles,
 } from '../../docs/js/views/indizes-data.js';
 import { recordsFor, baseIds } from '../../docs/js/data/records-for.js';
@@ -188,51 +188,6 @@ describe('Umfeld', () => {
       .find(g => g.length < 4);
     assert.ok(groups, 'Im Datenstand gibt es Eintraege ohne alle vier Familien.');
     assert.ok(groups.every(g => g.items.length > 0));
-  });
-});
-
-describe('Buehnenrollen je Werk', () => {
-  test('ein eindeutig genanntes Werk bindet alle Rollen seines Belegs', () => {
-    const roles = workStageRoles(store);
-    assert.ok(roles.size > 0, 'Ohne Treffer prueft der Test nichts.');
-    const isolde = roles.get('Tristan und Isolde');
-    assert.ok(isolde, 'Das belegteste Werk fuehrt seine Rolle.');
-    assert.ok(isolde.some(r => r.name === 'Brangäne'),
-      'Die Partie Malaniuks in Tristan und Isolde ist Brangäne.');
-    for (const [work, list] of roles) {
-      assert.ok(list.length > 0, `${work} fuehrt eine leere Rollenliste.`);
-      for (const role of list) {
-        assert.ok(role.name && role.count >= 1);
-      }
-    }
-    assert.ok((roles.get('Aida') || []).length > 1,
-      'ein Besetzungsbeleg mit einem Werk darf mehrere Bühnenrollen tragen');
-  });
-
-  test('die Rollen eines Werks sind nach Belegzahl sortiert', () => {
-    for (const list of workStageRoles(store).values()) {
-      for (let i = 1; i < list.length; i++) {
-        assert.ok(list[i - 1].count >= list[i].count);
-      }
-    }
-  });
-
-  test('mehrdeutige Werk-Rollen-Belege bleiben ohne Zuordnung sichtbar', () => {
-    const ambiguous = ambiguousWorkStageRoles(store);
-    assert.ok([...ambiguous.values()].some((count) => count > 0));
-    assert.deepEqual(workStageRoles(store).get('Sinfonien, Nr. 9, op. 125 (d-Moll)'), [
-      { name: 'Alt Solo', count: 1 },
-      { name: 'Altsolo', count: 1 },
-    ], 'aufgezeichnete Schreibvarianten werden nicht still zusammengeführt');
-  });
-
-  test('die kuratierte Partie steht am Werk-Eintrag', () => {
-    const werke = getGridEntries(store, 'werke');
-    const mitPartie = werke.filter(e => e.partie);
-    assert.ok(mitPartie.length >= 20,
-      `Nur ${mitPartie.length} Werke mit kuratierter Partie; der Werk-Index scheint nicht anzukommen.`);
-    const carmen = werke.find(e => e.name === 'Carmen');
-    assert.equal(carmen && carmen.partie, 'Carmen');
   });
 });
 

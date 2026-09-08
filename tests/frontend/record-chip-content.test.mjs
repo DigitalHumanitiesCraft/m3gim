@@ -83,7 +83,6 @@ test('nodeTipLines: Quellfelder zuerst, Wikidata-Ergaenzung unter ihrer Marke', 
   const lines = nodeTipLines(WIELAND_WAGNER);
   assert.deepEqual(lines, [
     'Indexnotiz: Regisseur',
-    'ergänzt: aus Wikidata Q60465',
     'Beruf: Bühnenregisseur, Komponist',
     'Geburt: 1917-01-05, Bayreuth',
     'Tod: 1966-10-17, München',
@@ -106,7 +105,6 @@ test('nodeTipLines: Ort traegt Land und Koordinaten woertlich', () => {
     'm3gim-ontology:country': 'Deutschland',
   });
   assert.deepEqual(lines, [
-    'ergänzt: aus Wikidata Q3923',
     'Land: Deutschland',
     'Koordinaten: 49.948055555556, 11.578333333333',
   ]);
@@ -120,19 +118,20 @@ test('Datenstand: NIM_004 10 zeigt jedes modellierte Feld seiner Knoten', async 
     ...bucket.erwaehnt, ...bucket.weitere];
 
   const wieland = all.find(a => a.name === 'Wagner, Wieland');
-  assert.ok(nodeTipLines(wieland).includes('Geburt: 1917-01-05, Bayreuth'));
+  assert.ok(wieland, 'die Quellenbezeichnung bleibt sichtbar');
+  assert.ok(!nodeTipLines(wieland).some(line => line.startsWith('Geburt:')),
+    'nicht am Quellen-Subject belegte Biografiedaten werden nicht ergänzt');
 
   const festspiele = all.find(a => a.name === 'Bayreuther Festspiele');
-  assert.deepEqual(nodeTipLines(festspiele), [
-    'Sitz: Bayreuth',
-    'Kontakt: Wagner, Wolfgang; Klebe, Carl-Heinz',
-  ]);
+  const festspielLines = nodeTipLines(festspiele);
+  assert.ok(festspielLines.includes('Sitz: Bayreuth'));
+  assert.ok(festspielLines.includes('Kontakt: Wagner, Wolfgang; Klebe, Carl-Heinz'));
+  assert.ok(festspielLines.some(line => line.includes('Quelle: Organisationsindex Zeile')));
 
   // Der Erwaehnte traegt eine Indexnotiz neben seinem Qualitaetsflag; beides
   // war unsichtbar, obwohl der Flag als Symbol schon stand.
   const eberhardt = all.find(a => a.name === 'Eberhardt, Paul');
-  assert.deepEqual(nodeTipLines(eberhardt),
-    ["Indexnotiz: Beleuchtungsassistent, Unsicher: im Original: directeur de l'éclairage"]);
+  assert.deepEqual(nodeTipLines(eberhardt), ['Anmerkung: Beleuchtungsassistent (??)']);
 
   const tristan = works.find(w => w.name === 'Tristan und Isolde');
   const workLines = nodeTipLines(tristan);

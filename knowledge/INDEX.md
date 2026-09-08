@@ -83,7 +83,7 @@ Every knowledge document uses these English terms. The German column is the word
 | basket | Korb | The records a researcher collects by hand across views, for export. |
 | view | Ansicht, Tab | One page of the application: holdings, registers, chronicle, places, network, statistics, basket. |
 | holdings | Bestand | The view that lists the records in their archival order of convolutes and folios. |
-| register | Register, Index | The list of normalized entities of one family, with a page per family. |
+| register | Register, Index | The recorded names of one family, with a page per family. Name grouping alone establishes no identity. |
 | family | Familie | One of the four entity kinds person, institution, place, work, each with a fixed colour and symbol. |
 | entity | Entität | An entry of a register. |
 | record | Objekt, Datensatz | One archival unit of the object table, identified by its signature. |
@@ -96,7 +96,7 @@ Every knowledge document uses these English terms. The German column is the word
 | role | Rolle | The function in which something stands at a record. Three kinds are distinguished and never called role alone: place role (contract place, guest performance, dispatch), event role (performance, rehearsal, premiere), agent role (conductor, sender, patron). |
 | stage part | Partie, Bühnenrolle | The part a singer performs in an opera. Never called role. |
 | event | Ereignis | A dated or located statement at a record, carrying a role. In the dataset the node is called Annotation. |
-| performance | Aufführung | The mention of a work at a record, with stage part where recorded. |
+| performance | Aufführung | A recorded performance role. Legacy performance access paths in the dataset carry neutral source-composite annotations and establish no historical occurrence. |
 | occurrence | Auftritt | The planned bundle of place, work, stage part, date and institution that forms one appearance. Decided as target model, not yet in the dataset. |
 | institution | Institution, Organisation, Haus | An entry of the institution register, including opera houses, festivals, broadcasters and ensembles. |
 | perspective | Sicht, Mobilitätssicht | One of the five event categories performative, institutional, correspondence, biographical, discursive. Not a view. |

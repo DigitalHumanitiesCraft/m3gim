@@ -73,7 +73,7 @@ Three points mislead easily in a fresh clone.
 
 - `scripts/validate.py` exits 1 as soon as the validation report carries ERROR findings. At the current data state that is the expected outcome. The findings are source errors from the cataloguing and travel to the cataloguing team through [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md) and the generated cataloguing report. `audit-data.py` follows the same convention.
 - The authority files `wikidata-reconciliation.json` and `wikidata-enrichment.json` are versioned in `data/output/` and are read by the transformation from the output directory. If one of them is missing there, `transform.py` aborts with exit 1, because the dataset would silently lose coordinates, life dates and occupations. A deliberate run without authority data needs `M3GIM_ALLOW_NO_WIKIDATA=1`. The guard is described in [`knowledge/architecture.md`](knowledge/architecture.md).
-- `docs/data/m3gim.jsonld` is the single archival data source of the frontend and is written only by `build-views.py`. Separately, `docs/data/geo/` carries the map geometry and the Chronik has explicitly editorial biographical context as described under Data flow below.
+- `docs/data/m3gim.jsonld` is the single archival data source of the frontend and is written only by `build-views.py`. Separately, `docs/data/geo/` carries the map geometry.
 
 ### Tests
 
@@ -109,7 +109,7 @@ Other shells can set the same environment variable. Without it, the script uses 
 
 The recording tables under `data/google-spreadsheet/` go through the pipeline into `data/output/m3gim.jsonld`, from there as a copy into `docs/data/m3gim.jsonld`, and from there into the loader of the application, which reads the whole dataset once at startup. Views derive their groups from this archival dataset in the browser.
 
-The Chronik's selected editorial biographical phases derive from [`knowledge/research-framework.md`](knowledge/research-framework.md#biographical-stations) and are represented in [`docs/js/views/chronik-context.js`](docs/js/views/chronik-context.js). They carry an explicit editorial label and source link. This context layer contributes no archival records and does not participate in document filtering. Its maintenance contract is in [`knowledge/architecture.md`](knowledge/architecture.md#frontend).
+The application preserves original source statements and distinguishes separately sourced index and Wikidata information. It adds no inferred currencies, personal relationships, work–part bindings or biographical phases. The source fidelity contract is in [`knowledge/data.md`](knowledge/data.md#source-fidelity-contract-e-301).
 
 ## Documentation
 

@@ -50,7 +50,7 @@ export function renderChronik(storeRef, container) {
 }
 
 function renderLegend() {
-  const marks = [['document', 'Dokumentdatum'], ['statement', 'Datierte Aussage'], ['context', 'Lebensabschnitt · redaktionell']];
+  const marks = [['document', 'Dokumentdatum'], ['statement', 'Datierte Aussage']];
   return el('aside', { className: 'chronik-legend', 'aria-label': 'Legende' },
     ...marks.map(([kind, label]) => el('span', { className: 'chronik-legend__item' },
       el('i', { className: `chronik-legend__mark chronik-legend__mark--${kind}`, 'aria-hidden': 'true' }), label)));
@@ -66,14 +66,14 @@ function updateChronikView() {
   visibleRecords = records.length;
   sidebar.update();
   const { rows, undated } = buildChronikTimeline(store, records);
-  axis = createChronikAxis({ rows, undated, renderLanes: renderCalendarLanes, openRows, openRow, openContext,
+  axis = createChronikAxis({ rows, undated, renderLanes: renderCalendarLanes, openRows, openRow,
     beforeNavigate: () => closeEvidence(false) });
   viewContainer = axis.element;
   workspace.prepend(viewContainer);
   clear(topbar);
   topbar.append(axis.controls, renderLegend());
   if (Array.isArray(shared.zeitfenster)) axis.controls.dataset.tip =
-    'Der Zeitfilter wählt Dokumente nach ihrem Zeitanker. Die Achse zeigt alle Datierungen dieser Dokumente.';
+    'Der Zeitfilter wählt Dokumente nach ihrem Dokumentdatum. Die Achse zeigt alle Datierungen dieser Dokumente.';
   const years = [...new Set(rows.map(row => row.year).filter(year => year != null))];
   logStamp('chronik', [
     ['records', records.length], ['jahre-belegt', years.length], ['datumsgruppen', rows.length],
@@ -120,20 +120,6 @@ function renderCalendarSource(item) {
   el('span', { className: 'chronik-source__meta' },
     el('span', { className: 'chronik-source__signature' }, recordLabel(item.recordId))));
   return button;
-}
-
-function openContext(phases, trigger) {
-  const content = el('div', { className: 'chronik-context-details' },
-    el('p', { className: 'chronik-evidence__note' },
-      'Diese Lebensabschnitte sind redaktionelle Angaben aus dem Forschungsrahmen des Projekts. Ihre Jahresgrenzen wurden daraus übernommen.'),
-    ...phases.map(phase => el('section', { className: 'chronik-group-row' },
-      el('h4', {}, `${phase.label} · ${phase.from}–${phase.to}`), el('p', {}, phase.title),
-      el('p', {}, phase.description),
-      el('p', {}, el('a', { href: phase.sourceHref, target: '_blank', rel: 'noopener noreferrer' }, phase.sourceLabel)))));
-  content.appendChild(el('p', { className: 'chronik-evidence__caution' },
-    'Engagements zeigen berufliche Bindungen. Einzelne Auftritte und Ortsbelege stehen mit ihrem jeweiligen Quellenkontext in den Lanes. Verkürzte Zeitabschnitte sind auch in den Balken markiert. Pfeile an den Balken bezeichnen Lebensabschnitte, die über den Datenzeitraum dieser Auswahl hinausreichen.'));
-  openPanel(phases.length === 1 ? `${phases[0].label} · ${phases[0].from}–${phases[0].to}` : 'Lebensabschnitte',
-    'Ira Malaniuk · Redaktioneller Kontext', content, trigger);
 }
 
 function openRows(rows, trigger, title = 'Quellen und Datierungen', family = null) {
@@ -251,7 +237,7 @@ function renderEntity(entry, row) {
 
 function markSelection() {
   const { key, sourceKey, recordId, trigger } = activeEvidence || {};
-  viewContainer?.querySelectorAll('.chronik-entity, .chronik-source__link, .chronik-more, .chronik-calendar-anchor, .chronik-context-band').forEach(button => {
+  viewContainer?.querySelectorAll('.chronik-entity, .chronik-source__link, .chronik-more, .chronik-calendar-anchor').forEach(button => {
     const selected = button === trigger || (key && button.dataset.entityKey === key)
       || (recordId && button.dataset.recordIds && JSON.parse(button.dataset.recordIds).includes(recordId))
       || (recordId && button.dataset.recordId === recordId)

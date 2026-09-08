@@ -147,15 +147,11 @@ def test_view_scripts_read_only_terms_the_dataset_carries(jsonld):
 # ---------------------------------------------------------------------------
 
 
-def test_audit_counts_performance_links(capsys, xlsx_verknuepfungen, graph):
-    """Audit 2 counts the record-side performance references, not zero."""
+def test_audit_reports_neutral_preservation(capsys, xlsx_verknuepfungen, graph):
+    """Audit reports typeless rows as neutrally preserved."""
     audit_data.audit_verknuepfungen(xlsx_verknuepfungen, graph)
     out = capsys.readouterr().out
-    match = re.search(r"Performances[^:\n]*:\s*(\d+)", out)
-    assert match, f"Keine Performance-Zeile im Auditbericht:\n{out[-800:]}"
-    assert int(match.group(1)) >= 100, (
-        f"Audit meldet {match.group(1)} Auffuehrungsverweise — Zaehlung greift ins Leere."
-    )
+    assert "ohne Typ" in out and "neutral erhalten" in out
 
 
 def test_audit_link_check_follows_performance():

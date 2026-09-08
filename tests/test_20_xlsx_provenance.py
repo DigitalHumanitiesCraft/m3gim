@@ -40,7 +40,6 @@ ANCHOR_RECORDS = {
     # Music-institute Konvolut: AgRelOn HasIsMember
     "UAKUG/NIM_003 1_8": {
         "xlsx_row": 38,
-        "has_agent_relation_type": "agrelon:HasIsMember",
     },
 }
 
@@ -176,11 +175,9 @@ def test_anchors_cover_v2_feature_breadth():
     Ensures that swapping an anchor does not accidentally drop a dimension from
     the living documentation."""
     has_finance = any("min_finance_details" in v for v in ANCHOR_RECORDS.values())
-    has_agrelon = any("has_agent_relation_type" in v for v in ANCHOR_RECORDS.values())
     has_ste = any(v.get("has_spatiotemporal") for v in ANCHOR_RECORDS.values())
     has_dft = any("expected_doc_type" in v for v in ANCHOR_RECORDS.values())
     assert has_finance, "Kein Anker testet Finanz-DetailAnnotations"
-    assert has_agrelon, "Kein Anker testet AgRelOn-Relationen"
     assert has_ste, "Kein Anker testet SpatiotemporalEvents"
     assert has_dft, "Kein Anker testet Dokumenttyp-Mapping"
 

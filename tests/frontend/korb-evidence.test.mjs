@@ -133,19 +133,26 @@ describe('Belegte Korb-Ausfuhr', () => {
     );
   });
 
-  test('der Zeitanker nennt die Verknuepfungszeile, aus der das Jahr stammt', () => {
-    // Das Jahr folgt der Verknuepfungsdatierung vor rico:date (F3). Steht das
-    // Jahr ohne diese Zeile in der Datei, ist es eine Behauptung ohne Beleg.
+  test('das Dokumentjahr bleibt der Objektquelle zugeordnet', () => {
     const rows = buildCSVRows([ID], store);
-    assert.equal(rows[1][column(rows, 'Zeitanker')], 'absendung: 1958 [Box 2 Zeile 332]');
-    assert.notEqual(rows[1][column(rows, 'Quelle Zeile')], '332');
+    assert.equal(rows[1][column(rows, 'Dokumentjahr [Quelle]')], '1958');
+    assert.equal(rows[1][column(rows, 'Quelle Blatt')], 'Objekte');
+    assert.equal(rows[1][column(rows, 'Quelle Zeile')], '228');
   });
 
-  test('ein Record, dessen Jahr aus rico:date kommt, fuehrt im Zeitanker nur das Jahr', () => {
-    // NIM_PL_01 traegt keine ankernde Verknuepfungsdatierung; die Quellzelle
-    // des Jahres ist dann die Objektzeile und steht bereits in ihren Spalten.
+  test('eine reine Objektdatierung erreicht das Dokumentjahr', () => {
     const rows = buildCSVRows(['m3gim-data:NIM_PL_01'], store);
-    assert.equal(rows[1][column(rows, 'Zeitanker')], '1960');
+    assert.equal(rows[1][column(rows, 'Dokumentjahr [Quelle]')], '1960');
+  });
+
+  test('ein Inhaltsdatum füllt kein fehlendes Dokumentjahr', () => {
+    const id = 'm3gim-data:NIM_004_24';
+    const rows = buildCSVRows([id], store);
+    assert.equal(rows[1][column(rows, 'Datierung')], '');
+    assert.equal(rows[1][column(rows, 'Dokumentjahr [Quelle]')], '');
+    const exported = buildJSONLD([id], store);
+    assert.ok(exported['@graph'].some(node => node['m3gim-ontology:atDate'] === '1947/1952'),
+      'the source content dating must remain in the export');
   });
 
   test('die note des BibTeX-Eintrags traegt Objektzeile und die Zeilen der Verknuepfungen', () => {
@@ -153,7 +160,7 @@ describe('Belegte Korb-Ausfuhr', () => {
     const note = bib.split('\n').find(line => line.trimStart().startsWith('note'));
     assert.ok(note, bib);
     assert.ok(note.includes(`Quelle: ${RECORD_SHEET} Zeile ${RECORD_ROW}`), note);
-    assert.ok(note.includes('Zeitanker: absendung Box 2 Zeile 332'), note);
+    assert.ok(!note.includes('Zeitanker: absendung'), note);
     assert.ok(note.includes('Box 2 Zeilen 330, 331, 332, 333, 334, 335, 336'), note);
   });
 

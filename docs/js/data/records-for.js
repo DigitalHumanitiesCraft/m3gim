@@ -16,7 +16,7 @@
  * smoothing it away.
  */
 
-import { primaryYear } from './loader.js';
+import { documentDateBounds, primaryYear } from './loader.js';
 import { evidenceResult, createWitness } from './evidence.js';
 import {
   PREDICATE_TYPES, normalizePredicate, normalizePredicates, buildPredicateFacetPatch,
@@ -29,14 +29,6 @@ import {
   getDocTypeId, expandDftFilter, dftLabel, buildDftTree, ensureArray, cityOf,
   roleIdOf, roleToken,
 } from '../utils/format.js';
-
-/**
- * Ira Malaniuk's life span. It is the fallback of the year axis: a Bestand
- * without a single dated record still gets the span the project is about,
- * instead of a per-view invention.
- */
-export const YEAR_MIN = 1919;
-export const YEAR_MAX = 2009;
 
 /**
  * Entity facets whose index is a store map with a `records` set. Order sets the
@@ -63,17 +55,16 @@ export const FACET_KEYS = Object.freeze([
 
 /**
  * The link types of the Verknuepfungstabelle with their display form. The
- * source column `typ` does not survive the pipeline, but every type
- * left a shape of its own in the graph, so the axis is read off that shape
- * instead of being guessed: an agent by its class, a subject by its class, a
- * place by `rico:hasOrHadLocation`, a finance item by `hasDetail`, and an
- * annotation by whether it carries a place (the ort half of the composite) or
- * only a date.
+ * Structured values use their graph shape; neutral details retain the
+ * source column's recordedType verbatim.
  */
 const LINK_TYPES = Object.freeze([
   ['ort', 'Ort'], ['person', 'Person'], ['institution', 'Institution'],
   ['werk', 'Werk'], ['datum', 'Datum'], ['ereignis', 'Ereignis'],
   ['finanz', 'Finanzen'], ['ensemble', 'Ensemble'],
+  ['aktivität', 'Aktivität'], ['dokument', 'Dokumentangabe'],
+  ['datum, werk', 'Datum, Werk'], ['ort, datum', 'Ort, Datum'],
+  ['angabe', 'Angabe ohne Typ'],
 ]);
 
 /** Agent and subject classes to their link type. */
@@ -336,9 +327,12 @@ export function recordsFor(store, filter, opts = {}) {
     const hi = bis == null ? Infinity : bis;
     const kept = new Set();
     for (const id of ids) {
-      const year = yearOfId(store, id);
-      if (year == null) { undatiert += 1; kept.add(id); continue; }
-      if (year >= lo && year <= hi) kept.add(id);
+      const record = store.records?.get(id);
+      const bounds = documentDateBounds(record);
+      if (!bounds || (bounds.from == null && bounds.to == null)) { undatiert += 1; kept.add(id); continue; }
+      const startsBeforeEnd = bounds.from == null || bounds.from <= hi;
+      const endsAfterStart = bounds.to == null || bounds.to >= lo;
+      if (startsBeforeEnd && endsAfterStart) kept.add(id);
     }
     ids = kept;
   } else {
@@ -477,25 +471,25 @@ function linkedSearchValues(store, recordId) {
  * Year span of the Bestand, for every time slider. One definition, so the three
  * views do not slide over different axes.
  *
- * The span is Malaniuk's life span, widened by outliers that the base actually
- * carries. Widening instead of replacing keeps the axis at 1919–2009 for a cut
- * whose latest document is older, and it keeps records outside the base — an
- * uncatalogued 2010 clipping among them — from stretching the slider past the
- * years anything is shown for.
+ * The span follows finite bounds explicitly recorded on documents in the
+ * linked basis. Intervals and open qualified dates contribute their recorded
+ * finite endpoints without turning them into exact-year histogram entries.
  * @param {Object} store
  * @returns {{min: number, max: number}}
  */
 export function yearBounds(store) {
-  let min = YEAR_MIN, max = YEAR_MAX;
+  let min = Infinity, max = -Infinity;
   const base = baseIds(store);
-  if (store && store.byYear) {
-    for (const [year, records] of store.byYear) {
-      if (!records.some(r => base.has(r['@id']))) continue;
+  for (const record of store?.allRecords || []) {
+    if (!base.has(record['@id'])) continue;
+    const bounds = documentDateBounds(record);
+    for (const year of [bounds?.from, bounds?.to]) {
+      if (!Number.isFinite(year)) continue;
       if (year < min) min = year;
       if (year > max) max = year;
     }
   }
-  return { min, max };
+  return Number.isFinite(min) ? { min, max } : { min: null, max: null };
 }
 
 /**
@@ -561,11 +555,8 @@ function countIn(ids, base) {
 }
 
 /**
- * Year of a record via the single Zeitanker of the data layer (contract A4).
- * The highest-ranking anchoring Datierung of the Verknuepfungen first, and the
- * archival `rico:date` only as its fallback (primaryYear, F3); null when
- * undated. The one resolution, so a record does not count as dated in one view
- * and undated in the next.
+ * Exact year of a record's explicit document date; null for missing,
+ * qualified, open and interval values.
  * @param {Object} store
  * @param {Object} record
  * @returns {?number}
@@ -659,7 +650,11 @@ function linkIndex(store) {
       add('ort', loc.role, id);
     }
     for (const detail of ensureArray(record['m3gim-ontology:hasDetail'])) {
-      add('finanz', detail.role, id);
+      const monetary = detail['m3gim-ontology:monetaryAmount'];
+      const recorded = String(detail['m3gim-ontology:recordedType']
+        ?? detail['m3gim-ontology:detailField'] ?? '').trim().toLocaleLowerCase('de-AT');
+      add(monetary ? 'finanz' : recorded || 'angabe',
+        detail['m3gim-ontology:recordedRole'] || detail.role, id);
     }
     for (const annotation of annotationsOfRecord(store, record)) {
       // The located annotation is the place half of the ort,datum composite,
@@ -688,8 +683,7 @@ function placeRows(store) {
   return rows;
 }
 
-/** City → country. The most frequent assignment wins, so a single deviating
- *  mention does not move a city into another country. */
+/** City → country only when all country-bearing statements agree. */
 function countryTally(rows) {
   const tally = new Map();
   for (const [, name, land] of rows) {
@@ -701,15 +695,13 @@ function countryTally(rows) {
   }
   const out = new Map();
   for (const [key, counts] of tally) {
-    out.set(key, [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0]);
+    if (counts.size === 1) out.set(key, counts.keys().next().value);
   }
   return out;
 }
 
 /**
- * City in lower case → country, from the geocoded places of the whole Bestand.
- * The one resolution of that question: the Land facet counts over it, and the
- * Orte register names the country of an entry from it.
+ * City in lower case → country where all explicit statements agree.
  * @param {Object} store
  * @returns {Map<string, string>}
  */
@@ -718,18 +710,13 @@ export function countryByCity(store) {
 }
 
 /**
- * Country → records. The country sits on the geocoded place and reaches the
- * record over every place link, whatever its role: presence and mention count
- * alike, and the head of the facet says so. An address-precise place inherits
- * the country of its city, the roll-up the place index already performs.
+ * Country → records, only where that source statement carries the country.
  */
 function landIndex(store) {
   const out = new Map();
   const rows = placeRows(store);
-  const cityLand = countryTally(rows);
-  for (const [id, name, land] of rows) {
-    const value = land || (name ? cityLand.get(cityOf(name).toLowerCase()) : null);
-    if (value) put(out, value, id);
+  for (const [id, , land] of rows) {
+    if (land) put(out, land, id);
   }
   return out;
 }

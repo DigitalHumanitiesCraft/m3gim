@@ -39,7 +39,8 @@ def _expected_base(ste: dict) -> str:
 
 @pytest.fixture(scope="session")
 def stes(graph) -> list:
-    return [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
+    return [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"
+            and str(n.get("@id", "")).startswith("m3gim-data:ev_")]
 
 
 def test_ste_present(stes):

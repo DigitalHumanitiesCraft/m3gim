@@ -72,24 +72,14 @@ describe('Jahresangabe im BibTeX-Export', () => {
   // Ein Record ohne rico:date, dessen Jahr an einer Datierung haengt, verlor
   // damit die Jahresangabe, obwohl der Zeitanker sie fuehrt (Vertrag A4,
   // year-anchor.test.mjs).
-  test('ein Record mit abgeleitetem Jahr exportiert dieses Jahr', async () => {
+  test('ein Record ohne Dokumentdatum erhält kein exportiertes Inhaltsjahr', async () => {
     const store = await storeFromShipped();
     const abgeleitet = [...store.allRecords]
       .filter((r) => !r['rico:date'] && primaryYear(store, r).year != null);
-    assert.ok(abgeleitet.length > 0, (
-      'Kein Record mit abgeleitetem Jahr im Datenstand — der Test verliert '
-      + 'seinen Gegenstand und ist zu pruefen.'
-    ));
-    const fehlend = [];
-    for (const rec of abgeleitet) {
-      const jahr = primaryYear(store, rec).year;
-      const bib = buildBibTeX([rec['@id']], store);
-      if (!bib.includes(`year      = {${jahr}}`)) {
-        fehlend.push(`${rec['rico:identifier']} (erwartet ${jahr})`);
-      }
-    }
-    assert.deepEqual(fehlend, [],
-      'BibTeX-Eintraege ohne ihr Ankerjahr: ' + fehlend.join(', '));
+    assert.deepEqual(abgeleitet, []);
+    const rec = store.allRecords.find(value => !value['rico:date'] && !value['rico:creationDate']);
+    assert.ok(rec);
+    assert.doesNotMatch(buildBibTeX([rec['@id']], store), /year\s+=/);
   });
 
   test('ein Record mit eigenem rico:date behaelt sein Jahr', async () => {

@@ -107,7 +107,7 @@ describe('Symmetrische Relation', () => {
 });
 
 describe('Am erzeugten Datensatz', () => {
-  test('jede Korrespondenz im Bestand traegt einen benannten Partner', async () => {
+  test('der Store erfindet ohne typisierte Quellrelation keine Korrespondenz', async () => {
     const { readFileSync } = await import('node:fs');
     let raw = null;
     try {
@@ -124,7 +124,7 @@ describe('Am erzeugten Datensatz', () => {
         if (!rel.objectName || rel.objectName === FONDS.name) nameless.push(rid);
       }
     }
-    assert.ok(seen > 0, 'Keine Korrespondenz im Datenstand');
+    assert.equal(seen, 0);
     assert.deepEqual(nameless.slice(0, 6), [], (
       `${nameless.length} von ${seen} Korrespondenzen ohne benannten Partner`
     ));

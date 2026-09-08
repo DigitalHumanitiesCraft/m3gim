@@ -28,7 +28,7 @@ def test_presets_update_both_panels_and_preserve_shared_state(frontend_server, b
       const {getFilter} = await import('./js/ui/filter-state.js');
       const {recordsFor} = await import('./js/data/records-for.js');
       return recordsFor(window.m3gim.store, getFilter()).ids.size;
-    }""") < 188
+    }""") < 194
     panel(page, 'a').locator('.dashboard-mark').first.click()
     detail_title = page.locator('.selection-detail__title').inner_text()
 

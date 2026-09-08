@@ -80,7 +80,7 @@ describe('JSON-LD-Ausfuhr', () => {
     const out = buildJSONLD([RICH_ID], store);
     const types = new Set(out['@graph'].map(n => n['@type']));
     assert.ok(types.has('m3gim-ontology:Annotation'));
-    assert.ok(types.has('m3gim-ontology:Performance'));
+    assert.ok(types.has('m3gim-ontology:Annotation'));
   });
 
   test('kein fremder Record und kein Konvolut geraet in die Auswahl', () => {

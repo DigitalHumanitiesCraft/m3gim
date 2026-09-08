@@ -9,6 +9,7 @@ Centralised XLSX workaround constants, see knowledge/data.md § Compensations in
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import re
 import tempfile
@@ -192,45 +193,24 @@ INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     ],
 }
 
-# Finance currency defaults per Konvolut signature. NIM_007 "Aufstellung 1966"
-# folio 5_1 has five numbers without a currency; neighbouring folios 5_2..5_8
-# are consistently stated in Schilling, hence "S" as the default.
-# NIM_011 folio 5 (Brussels Tristan guest performance, Theatre Royal de la
-# Monnaie): two fee lines "1200" without a currency; the folio 9 counterpart of
-# the same contract block is stated in "Belgische Francs" and the contract place
-# is Brussels. Hence "Belgische Francs" as the default (same folio-neighbourhood
-# heuristic as NIM_007). To be confirmed with the Erschliessungsteam (meeting
-# 2026-06-23); Barcelona is a secondary guest venue in the same block, not a
-# second currency.
-FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
-    "UAKUG/NIM_007": "S",
-    "UAKUG/NIM_011": "Belgische Francs",
-}
-
-
 def resolve_objekte_source(sheets_dir: Path) -> Path:
     """Source selection for the object table, CSV preferred (data.md § Source format).
 
-    The CSV export preserves the captured text; the XLSX carries the
-    spreadsheet's autoconversion in the date column and stays admissible only as
-    a fallback. If both are missing, FileNotFoundError.
+    The CSV export preserves the captured text. Missing CSV is an error because
+    the XLSX autoconverts date cells and can fabricate precision.
     """
     csv_path = sheets_dir / "M3GIM-Objekte.csv"
     if csv_path.exists():
         return csv_path
-    xlsx_path = sheets_dir / "M3GIM-Objekte.xlsx"
-    if xlsx_path.exists():
-        return xlsx_path
     raise FileNotFoundError(
-        f"Objekttabelle nicht gefunden: weder {csv_path} noch {xlsx_path}")
+        f"Objekttabelle nicht gefunden: erforderlich ist {csv_path}")
 
 
 def load_objekte(sheets_dir: Path):
     """Load the object table as a DataFrame with normalised column names.
 
     CSV is read with dtype=str so date values arrive as captured text instead of
-    a calendar value. The XLSX fallback stays unchanged, including its known date
-    artefacts (data.md § Date notation of the source).
+    a calendar value.
     """
     import pandas as pd  # lazy so _common stays importable without pandas
 
@@ -313,17 +293,10 @@ def load_index(sheets_dir: Path, name: str):
                   "positionell auf 'm3gim_id' zurueckbenannt")
             df = df.rename(columns={col0: "m3gim_id"})
 
+    df.attrs["index_name"] = name
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    df.attrs["index_source"] = f"urn:sha256:{digest}"
     return df
-
-
-def default_currency_for(signatur: str | None) -> str | None:
-    """Default currency when the archive signature has a known prefix."""
-    if not signatur:
-        return None
-    for prefix, curr in FINANCE_CURRENCY_DEFAULTS.items():
-        if signatur.startswith(prefix):
-            return curr
-    return None
 
 
 # Controlled Bearbeitungsstand vocabulary: "abgeschlossen", "begonnen",
@@ -381,9 +354,6 @@ def is_approved_match(match_entry: dict) -> bool:
 
     Idempotent, no side effects.
     """
-    level = match_entry.get("match")
-    if level != "fuzzy_low":
-        return True
     return match_entry.get("manual_review") == "approved"
 
 

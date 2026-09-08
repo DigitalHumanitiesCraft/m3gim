@@ -185,7 +185,7 @@ describe('Datierte und undatierte Belege', () => {
 // ---------------------------------------------------------------------------
 
 describe('Zeitanker des Ortsbelegs am ausgelieferten Datensatz', () => {
-  test('das Verknuepfungsdatum geht der Quellendatierung vor', async () => {
+  test('das Dokumentdatum bleibt vom Verknuepfungsdatum getrennt', async () => {
     const store = await storeFromShipped();
     const occ = buildOccurrences(store);
     // UAKUG/NIM_007 11 traegt die Quellendatierung 1968-11-18 und den Anker
@@ -199,8 +199,8 @@ describe('Zeitanker des Ortsbelegs am ausgelieferten Datensatz', () => {
     assert.ok(belege.length > 0, 'der Pruefrecord traegt keinen Ortsbeleg');
     for (const o of belege) {
       assert.equal(o.date, null);
-      assert.equal(String(o.recordDate).slice(0, 4), '1959',
-        `${o.place} datiert auf ${o.date} statt auf den Anker 1959`);
+      assert.equal(String(o.recordDate).slice(0, 4), '1968',
+        `${o.place} trägt nicht das Dokumentjahr 1968`);
     }
   });
 });

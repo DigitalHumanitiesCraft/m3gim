@@ -109,19 +109,19 @@ test('same named raw and identified agents merge without losing evidence', () =>
   assert.equal(people[0].key, 'person:wd:Q94208');
 });
 
-test('real performance and document agents with one authority id form one entry', () => {
+test('source-local person mentions remain individually keyed', () => {
   const result = buildChronikTimeline(store, baseRecords(store));
   let checked = 0;
   for (const row of result.rows) {
     const byAuthority = new Map();
     for (const entry of row.lanes.person) {
-      if (!entry.key.startsWith('person:wd:')) continue;
+      if (!entry.key.startsWith('person:')) continue;
       assert.ok(!byAuthority.has(entry.key), `${row.key}: doppelte Personenidentität ${entry.key}`);
       byAuthority.set(entry.key, entry);
       checked++;
     }
   }
-  assert.ok(checked > 100, `nur ${checked} reale Personenidentitäten geprüft`);
+  assert.ok(checked > 100, `nur ${checked} Personenangaben geprüft`);
 });
 
 test('real stage roles are typed as parts and never enter the work lane', () => {

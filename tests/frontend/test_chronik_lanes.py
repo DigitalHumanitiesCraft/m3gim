@@ -83,10 +83,10 @@ def test_dense_day_shows_lane_previews_and_complete_detail_lists(
     panel.get_by_role("button", name="Schließen").click()
 
     parts = group.locator("button.chronik-parts")
-    expect(parts).to_have_text("Partien · 26")
+    expect(parts).to_have_text("Partien · 53")
     parts.click()
     part_entries = panel.locator(".chronik-list .chronik-entity")
-    expect(part_entries).to_have_count(26)
+    expect(part_entries).to_have_count(53)
     assert all(
         key.startswith("part:")
         for key in part_entries.evaluate_all("els => els.map(el => el.dataset.entityKey)")
@@ -203,15 +203,10 @@ def test_selected_source_marks_its_entities_in_the_calendar_lanes(
     expect(group.locator(".chronik-entity.chronik-selected")).to_have_count(0)
 
 
-def test_context_bands_are_explicit_editorial_context(frontend_server, browser_context):
+def test_chronik_contains_no_editorial_context_bands(frontend_server, browser_context):
     page = open_chronik(frontend_server, browser_context)
     bands = page.locator('.chronik-context-band[data-editorial="true"]')
-    expect(bands.first).to_be_visible()
-    assert all(bands.evaluate_all("els => els.map(el => Boolean(el.dataset.contextId))"))
-    bands.first.click()
-    panel = visible_detail(page)
-    expect(panel).to_contain_text("Redaktioneller Kontext")
-    expect(panel.locator("a")).to_have_count(1)
+    expect(bands).to_have_count(0)
 
 
 @pytest.mark.parametrize("width", [390, 800, 1366])

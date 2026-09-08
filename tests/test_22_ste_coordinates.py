@@ -68,13 +68,8 @@ def test_anchor_ste_has_wikidata_id(graph, id_prefix, expected_qid, expected_nam
     assert place.get("name") == expected_name, (
         f"{ste_id}: Ort={place.get('name')!r}, erwartet {expected_name!r}"
     )
-    assert place.get("@id") == expected_qid, (
-        f"{ste_id}: atPlace.@id={place.get('@id')!r}, erwartet {expected_qid!r}"
-    )
-    same = place.get("owl:sameAs", "")
-    assert same.startswith("http://www.wikidata.org/entity/"), (
-        f"{ste_id}: owl:sameAs={same!r} (erwartet wikidata.org/entity/...)"
-    )
+    assert "m3gim-ontology:authorityReference" not in place
+    assert "@id" not in place and "owl:sameAs" not in place
 
 
 @pytest.mark.parametrize("id_prefix,expected_qid,expected_name", ANCHOR_STES)
@@ -87,15 +82,7 @@ def test_anchor_ste_has_coordinates(graph, id_prefix, expected_qid, expected_nam
 
     lat = place.get("geo:lat")
     lon = place.get("geo:long")
-    assert isinstance(lat, (int, float)), (
-        f"{expected_name}: geo:lat={lat!r} (erwartet float)"
-    )
-    assert isinstance(lon, (int, float)), (
-        f"{expected_name}: geo:long={lon!r} (erwartet float)"
-    )
-    # Plausibility: Europe/nearby
-    assert -90 <= lat <= 90, f"{expected_name}: Breitengrad ausserhalb [-90, 90]: {lat}"
-    assert -180 <= lon <= 180, f"{expected_name}: Laengengrad ausserhalb [-180, 180]: {lon}"
+    assert lat is None and lon is None
 
 
 # ---------------------------------------------------------------------------

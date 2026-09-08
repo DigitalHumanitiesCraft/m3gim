@@ -8,7 +8,7 @@ transform.py mapping (add_relations_to_records):
   ort          -> rico:hasOrHadLocation (@type rico:Place)
   werk         -> rico:hasOrHadSubject (@type m3gim-ontology:MusicalWork)
   ereignis     -> rico:hasOrHadSubject (@type m3gim-ontology:FramingEvent)
-  rolle        -> m3gim-ontology:hasPerformance (m3gim-ontology:Performance + m3gim-ontology:StageRole, E-96)
+  rolle        -> m3gim-ontology:hasPerformance (source Annotation + StageRole)
   datum        -> m3gim-ontology:hasAnnotation (Annotation with atDate)
 """
 
@@ -197,9 +197,10 @@ def test_locations_have_name(records):
 
 
 def test_performance_references_resolvable(records, graph):
-    """Every record-referenced m3gim-ontology:Performance resolves in the graph and
-    carries a hasStageRole reference to a m3gim-ontology:StageRole (E-96/E-98)."""
-    perfs = {n["@id"]: n for n in graph if n.get("@type") == "m3gim-ontology:Performance"}
+    """Every legacy hasPerformance reference resolves to a source Annotation."""
+    perfs = {n["@id"]: n for n in graph
+             if n.get("@type") == "m3gim-ontology:Annotation"
+             and str(n.get("@id", "")).startswith("m3gim-data:perf_")}
     stage_roles = {n["@id"] for n in graph if n.get("@type") == "m3gim-ontology:StageRole"}
     for r in records:
         for ref in ensure_list(r.get("m3gim-ontology:hasPerformance")):

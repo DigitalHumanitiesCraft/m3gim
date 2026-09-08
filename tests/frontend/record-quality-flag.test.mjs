@@ -38,7 +38,7 @@ describe('Vorkommen im ausgelieferten Datensatz', () => {
     assert.deepEqual(carriers, []);
   });
 
-  test('das Flag kommt im Datensatz ueberhaupt vor, der Aufhaenger ist also kein toter Pfad', () => {
+  test('der Datenstand enthält keine algorithmisch erzeugten Flags', () => {
     const seen = new Set();
     const walk = (node) => {
       if (Array.isArray(node)) { node.forEach(walk); return; }
@@ -51,8 +51,7 @@ describe('Vorkommen im ausgelieferten Datensatz', () => {
       }
     };
     graph.forEach(walk);
-    assert.ok(seen.size > 0, 'kein einziges dataQualityFlag im Datensatz');
-    assert.ok(seen.has('datierung-malformed'), [...seen].join(', '));
+    assert.deepEqual([...seen], []);
   });
 });
 

@@ -450,11 +450,11 @@ def build_report(records: list) -> str:
     lines.append("## Verknüpfungstypen ohne Modellabbildung")
     lines.append("")
     lines.append(
-        "Diese Typwerte sind erfasst, die Pipeline bildet sie nicht ab. Ihre "
-        f"Zeilen fallen aus dem Datensatz. Betroffen: {total} Zeilen in "
-        f"{len(unmapped)} Typen. Der Weg heraus führt entweder über das "
-        "Modell, das den Typ aufnimmt, oder über die Erfassung, die ihn auf "
-        "einen bestehenden Typ auflöst."
+        "Diese Typwerte haben keine spezielle Modellabbildung. Bei einer "
+        "auflösbaren Objektzuordnung bleiben sie als neutrale Quellangaben "
+        f"mit ihrem Originalwert erhalten. Betroffen: {total} Zeilen in "
+        f"{len(unmapped)} Typen. Eine fachlich spezifischere Zuordnung "
+        "erfordert eine ausdrückliche Angabe in der Erfassung."
     )
     lines.append("")
     if unmapped:

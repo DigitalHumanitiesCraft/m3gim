@@ -272,30 +272,24 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
 });
 
 describe('yearBounds / yearOf', () => {
-  test('die Spanne weitet die Lebensspanne um Ausreisser der Basis', () => {
+  test('die Spanne folgt den expliziten Dokumentdaten der Basis', () => {
     const store = makeStore();
-    store.byYear = new Map([
-      [1912, [store.records.get('r1')]],
-      [1952, [store.records.get('r2')]],
-    ]);
-    assert.deepEqual(yearBounds(store), { min: 1912, max: 2009 });
+    store.records.get('r1')['rico:date'] = '1947/1952';
+    store.records.get('r3')['rico:date'] = 'ab 1968';
+    assert.deepEqual(yearBounds(store), { min: 1947, max: 1968 });
   });
 
-  test('ein Jahr ausserhalb der Dokumentbasis weitet die Spanne nicht', () => {
-    // Sonst reichte der Regler bis zu einem Jahr, fuer das nichts zu sehen ist.
+  test('das Datum eines Records ausserhalb der Dokumentbasis weitet die Spanne nicht', () => {
     const store = makeStore();
-    const fremd = { '@id': 'rX' };
+    const fremd = { '@id': 'rX', 'rico:date': '1912' };
     store.allRecords = [...store.allRecords, fremd];
     store.unprocessedIds = new Set(['rX']);
-    store.byYear = new Map([[2010, [fremd]]]);
-    assert.deepEqual(yearBounds(store), { min: 1919, max: 2009 });
+    assert.deepEqual(yearBounds(store), { min: 1952, max: 1960 });
   });
 
-  test('ohne datierte Records faellt die Spanne auf Malaniuks Lebensspanne', () => {
-    // Der Fallback ist die Projektkonstante, damit die drei Zeitregler nicht
-    // ueber verschiedene Achsen laufen.
-    assert.deepEqual(yearBounds({ byYear: new Map() }), { min: 1919, max: 2009 });
-    assert.deepEqual(yearBounds(null), { min: 1919, max: 2009 });
+  test('ohne datierte Records bleibt die Spanne unbestimmt', () => {
+    assert.deepEqual(yearBounds({ byYear: new Map() }), { min: null, max: null });
+    assert.deepEqual(yearBounds(null), { min: null, max: null });
   });
 
   test('yearOf nimmt rico:date, null bei undatiert und ohne Record', () => {
@@ -368,7 +362,7 @@ describe('recordsFor am ausgelieferten Datensatz', () => {
     assert.ok(recordsFor(store, {}).ids.has(id),
       'Der reine Finanzbeleg fehlt in der gemeinsamen Treffermenge');
     assert.equal(baseRecords(store).length, 188,
-      'Frontendbasis und verlinkte Records des Qualitaetssnapshots driften auseinander');
+      'Frontendbasis umfasst alle inhaltlich belegten Quellenangaben');
   });
 
   test('Land und Verknuepfung schneiden am ausgelieferten Datensatz', async () => {

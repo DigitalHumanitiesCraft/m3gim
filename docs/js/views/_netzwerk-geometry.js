@@ -745,7 +745,7 @@ export function graphToGEXF(graph, isoDate) {
   lines.push('  <meta lastmodifieddate="' + xmlEscape(isoDate) + '">');
   lines.push('    <creator>M³GIM — Teilnachlass Ira Malaniuk, UAKUG/NIM, KUG Graz</creator>');
   lines.push('    <description>' + (graph.mode === 'twomode'
-    ? 'Netzwerk: Akteure und Dokumente des Schnitts, jede Nennung eine Kante'
+    ? 'Netzwerk: erwähnte Einträge und Dokumente des Schnitts, jede Nennung eine Kante'
     : 'Netzwerk: Personenprojektion des Schnitts, Kantengewicht gleich gemeinsame Dokumente')
     + '</description>');
   lines.push('  </meta>');

@@ -27,9 +27,8 @@ function personsWithRelations() {
 }
 
 describe('Beziehung und Beleg', () => {
-  test('es gibt annotierte Beziehungen an Personen', () => {
-    assert.ok(personsWithRelations().length >= 10,
-      'Ohne annotierte Beziehungen prueft diese Datei nichts.');
+  test('neutrale Angaben erzeugen keine Personenbeziehungen', () => {
+    assert.equal(personsWithRelations().length, 0);
   });
 
   test('jede Beziehung nennt einen vorhandenen Datensatz', () => {
@@ -73,11 +72,7 @@ describe('Annotiertes ist die Minderheit der Ko-Okkurrenz', () => {
     const key = [...store.persons.keys()].find(k => /wagner/i.test(k) && /wieland/i.test(k));
     assert.ok(key, 'Wagner, Wieland fehlt im Personenindex.');
     const entry = store.persons.get(key);
-    const annotated = new Set(entry.relations.map(r => r.recordId));
-    assert.ok(annotated.size > 0);
-    assert.ok(annotated.size < entry.records.size, (
-      'Waeren alle Belege annotiert, brauchte die Liste keine Marke; der Fall, '
-      + 'gegen den sie steht, ist genau dieser Unterschied.'
-    ));
+    assert.equal(entry.relations, undefined);
+    assert.ok(entry.records.size > 0);
   });
 });

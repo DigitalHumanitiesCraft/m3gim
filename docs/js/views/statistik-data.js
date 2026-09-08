@@ -16,9 +16,8 @@ import {
   getDocTypeId, dftLabel, expandDftFilter, ensureArray, entityName,
   roleIdOf, roleLabel, roleToken, cityOf,
 } from '../utils/format.js';
-import { normalizePerson } from '../utils/normalize.js';
 import { AGRELON_LABELS } from '../data/constants.js';
-import { primaryYear } from '../data/loader.js';
+import { documentDateBounds, primaryYear } from '../data/loader.js';
 import { baseIds, recordsFor } from '../data/records-for.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 
@@ -155,16 +154,15 @@ export function aggregateStageRoles(store, ids) {
  * Komponisten einmal zaehlt.
  */
 export function aggregateComposers(store, ids) {
-  const works = store && store.works;
-  if (!works) return [];
   const perComposer = new Map();
-  for (const entry of works.values()) {
-    const komponist = (entry && entry.komponist || '').trim();
-    if (!komponist) continue;
-    let set = perComposer.get(komponist);
-    if (!set) { set = new Set(); perComposer.set(komponist, set); }
-    for (const id of entry.records || []) {
-      if (!(ids instanceof Set) || ids.has(id)) set.add(id);
+  for (const record of cutRecords(store, ids)) {
+    for (const work of ensureArray(record['rico:hasOrHadSubject'])
+      .filter(value => value['@type'] === 'm3gim-ontology:MusicalWork')) {
+      const komponist = String(work.komponist || work.composer || '').trim();
+      if (komponist) {
+        if (!perComposer.has(komponist)) perComposer.set(komponist, new Set());
+        perComposer.get(komponist).add(record['@id']);
+      }
     }
   }
   return [...perComposer.entries()]
@@ -349,7 +347,10 @@ function dimensionIndex(store, records, dimension, placeStatements) {
     if (dimension === 'doctype') member(record, getDocTypeId(record) || '__missing__', getDocTypeId(record) ? dftLabel(store, getDocTypeId(record)) : 'Ohne Dokumenttyp');
     if (dimension === 'time') {
       const anchor = primaryYear(store, record);
-      member(record, anchor.year ?? '__undated__', anchor.year ?? 'Undatiert', primaryAnchorEvidence(store, record, anchor),
+      const bounds = documentDateBounds(record);
+      const key = anchor.year ?? (bounds ? `date:${bounds.raw}` : '__undated__');
+      const label = anchor.year ?? (bounds ? String(bounds.raw) : 'Undatiert');
+      member(record, key, label, primaryAnchorEvidence(store, record, anchor),
         { anchorSource: anchor.source || null, anchorDate: anchor.date || null });
     }
     if (['work', 'person', 'institution'].includes(dimension)) {
@@ -367,10 +368,10 @@ function dimensionIndex(store, records, dimension, placeStatements) {
       }
     }
     if (dimension === 'composer') {
-      for (const [work, entry] of store.works || []) if (entry.records?.has(id) && entry.komponist) {
-        const original = ensureArray(record['rico:hasOrHadSubject'])
-          .find(value => value['@type'] === 'm3gim-ontology:MusicalWork' && entityName(value) === work) || record;
-        member(record, entry.komponist, entry.komponist, original, { work });
+      for (const work of ensureArray(record['rico:hasOrHadSubject'])
+        .filter(value => value['@type'] === 'm3gim-ontology:MusicalWork')) {
+        const composer = String(work.komponist || work.composer || '').trim();
+        if (composer) member(record, composer, composer, work, { work: entityName(work) });
       }
     }
     if (dimension === 'stagepart') {
@@ -408,10 +409,10 @@ function agentEntriesForRecord(store, record, family = null) {
     const type = entry?.['@type'];
     const entryFamily = type === 'rico:Person' ? 'person'
       : ['rico:CorporateBody', 'rico:Group'].includes(type) ? 'institution'
-        : (!type && store.persons?.has(normalizePerson(entityName(entry)))) ? 'person' : null;
+        : (!type && store.persons?.has(entityName(entry).trim())) ? 'person' : null;
     if (!entryFamily || (family && entryFamily !== family)) continue;
     const rawName = entityName(entry);
-    const name = entryFamily === 'person' ? normalizePerson(rawName) : rawName;
+    const name = entryFamily === 'person' ? rawName.trim() : rawName;
     if (!name) continue;
     out.push({ entry, family: entryFamily, name,
       role: roleIdOf(entry.role) || roleToken(entry.role) || '__missing__' });
@@ -424,7 +425,7 @@ function relationMatrixRows(store, records) {
   const relationshipPairs = new Set();
   for (const relations of store.agentRelations?.values() || []) {
     for (const relation of relations) {
-      const counterpart = normalizePerson(relation.objectName || '');
+      const counterpart = String(relation.objectName || '').trim();
       if (!counterpart) continue;
       relationshipPairs.add(['Malaniuk, Ira', counterpart]
         .sort((a, b) => a.localeCompare(b, 'de')).join('\u0000'));
@@ -454,7 +455,7 @@ function relationMatrixRows(store, records) {
       }
     }
     for (const relation of store.agentRelations?.get(recordId) || []) {
-      const counterpart = normalizePerson(relation.objectName || '');
+      const counterpart = String(relation.objectName || '').trim();
       if (!counterpart) continue;
       const pair = ['Malaniuk, Ira', counterpart].sort((a, b) => a.localeCompare(b, 'de'));
       const relationLabel = AGRELON_LABELS[relation.type] || String(relation.type || 'Beziehung').replace(/^agrelon:/, '');
@@ -500,15 +501,13 @@ function boundMatrixRows(store, records, pair, placeStatements) {
   }
   if (pair.id === 'agent-relation') cells.push(...relationMatrixRows(store, records));
   if (pair.id === 'work-composer') {
-    for (const [work, entry] of store.works || []) if (entry.komponist) for (const recordId of entry.records || []) {
-      if (recordIds.has(recordId)) {
-        const record = store.records.get(recordId);
-        const original = ensureArray(record?.['rico:hasOrHadSubject'])
-          .find(value => value['@type'] === 'm3gim-ontology:MusicalWork' && entityName(value) === work) || record;
-        cells.push({ row: { key: work, label: work }, column: { key: entry.komponist, label: entry.komponist },
-        recordId, witnesses: [witness('work-composer', `${work}:${entry.komponist}`, work, recordId, original, { work, composer: entry.komponist })],
-        binding: 'recorded', source: null });
-      }
+    for (const record of records) for (const subject of ensureArray(record['rico:hasOrHadSubject'])
+      .filter(value => value['@type'] === 'm3gim-ontology:MusicalWork')) {
+      const work = entityName(subject);
+      const composer = String(subject.komponist || subject.composer || '').trim();
+      if (work && composer) cells.push({ row: { key: work, label: work }, column: { key: composer, label: composer },
+        recordId: record['@id'], witnesses: [witness('work-composer', `${work}:${composer}`, work, record['@id'], subject, { work, composer })],
+        binding: 'recorded', source: sourceOf(subject) });
     }
   }
   if (pair.id === 'work-stagepart') {
@@ -520,9 +519,8 @@ function boundMatrixRows(store, records, pair, placeStatements) {
           const partLabel = typeof part === 'string' ? part : entityName(part, part?.name || part?.['@id'] || '');
           if (!partLabel) continue;
           const recorded = performance.work?.name;
-          const derived = !recorded && recordWorks.length === 1 ? recordWorks[0] : null;
-          const work = recorded || derived || '__unassigned__';
-          const mode = recorded ? 'recorded' : derived ? 'derived-single-work' : 'unassigned';
+          const work = recorded || '__unassigned__';
+          const mode = recorded ? 'recorded' : 'unassigned';
           cells.push({ row: { key: work, label: work === '__unassigned__' ? 'Werk nicht zugeordnet' : work },
             column: { key: partLabel, label: partLabel }, recordId: record['@id'],
             witnesses: [witness('performance-part', `${performance.id}:${partLabel}`, partLabel, record['@id'], part,
@@ -584,30 +582,37 @@ export function aggregateTime(store, ids, grouping = 'year', { stack = null } = 
     let start = null;
     if (anchor.year != null) start = grouping === 'decade' ? Math.floor(anchor.year / 10) * 10
       : grouping === 'five' ? Math.floor(anchor.year / 5) * 5 : anchor.year;
-    const key = start == null ? '__undated__' : String(start);
-    const label = start == null ? 'Undatiert' : grouping === 'decade' ? `${start}–${start + 9}`
+    const bounds = documentDateBounds(record);
+    const key = start == null ? (bounds ? `date:${bounds.raw}` : '__undated__') : String(start);
+    const label = start == null ? (bounds ? String(bounds.raw) : 'Undatiert') : grouping === 'decade' ? `${start}–${start + 9}`
       : grouping === 'five' ? `${start}–${start + 4}` : String(start);
     if (!groups.has(key)) groups.set(key, { label, records: [], witnesses: [], stacks: new Map() });
     const group = groups.get(key);
     group.records.push(record['@id']);
-    group.witnesses.push(witness('primary-anchor', anchor.source || 'rico:date', label, record['@id'],
+    const dateWitness = witness('primary-anchor', anchor.source || 'rico:date', label, record['@id'],
       primaryAnchorEvidence(store, record, anchor),
-      { anchorSource: anchor.source || null, anchorDate: anchor.date || null }));
+      { anchorSource: anchor.source || null, anchorDate: anchor.date || null });
+    group.witnesses.push(dateWitness);
     if (stack === 'doctype') {
       const type = getDocTypeId(record) || '__missing__';
       const label = type === '__missing__' ? 'Ohne Dokumenttyp' : dftLabel(store, type);
-      if (!group.stacks.has(type)) group.stacks.set(type, { key: type, label, recordIds: [] });
-      group.stacks.get(type).recordIds.push(record['@id']);
+      if (!group.stacks.has(type)) group.stacks.set(type, {
+        key: type, label, recordIds: [], witnesses: [],
+      });
+      const part = group.stacks.get(type);
+      part.recordIds.push(record['@id']);
+      part.witnesses.push(dateWitness);
     }
   }
   return [...groups.entries()].map(([key, value]) => aggregate({ key, label: value.label,
     recordIds: value.records, witnesses: value.witnesses, denominator: records.length,
     stacks: [...value.stacks.values()].map(part => aggregate({ ...part,
       key: `${key}:${part.key}`, label: `${value.label} · ${part.label}`, denominator: records.length })),
-    descriptor: key === '__undated__' ? { type: 'records', ids: value.records }
+    descriptor: key === '__undated__' || key.startsWith('date:') ? { type: 'records', ids: value.records }
       : { facet: 'zeitfenster', value: grouping === 'year' ? [+key, +key]
         : grouping === 'five' ? [+key, +key + 4] : [+key, +key + 9] } }))
-    .sort((a, b) => a.key === '__undated__' ? 1 : b.key === '__undated__' ? -1 : +a.key - +b.key);
+    .sort((a, b) => a.key === '__undated__' ? 1 : b.key === '__undated__' ? -1
+      : a.key.startsWith('date:') ? 1 : b.key.startsWith('date:') ? -1 : +a.key - +b.key);
 }
 
 /** Source-conserving type → place-role → place Sankey model. */

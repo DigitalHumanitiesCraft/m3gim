@@ -6,8 +6,7 @@ Markdown report with:
 
   - Verknüpfung rate (records carrying at least one Verknüpfung)
   - Bearbeitungsstand distribution
-  - Wikidata coverage per index plus the list of low-confidence matches
-    for manual approval
+  - Recorded reconciliation methods, approved identities and review candidates
   - Provenance coverage (xlsxSource, agrelon:metadataProvenance)
   - Links to the maintained source and reconciliation finding registers
 
@@ -29,7 +28,7 @@ if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import OUTPUT_DIR, REPO_ROOT, REPORTS_DIR, rel_to_repo  # noqa: E402
+from _common import OUTPUT_DIR, REPO_ROOT, REPORTS_DIR, is_approved_match, rel_to_repo  # noqa: E402
 
 BASE = REPO_ROOT
 JSONLD = OUTPUT_DIR / "m3gim.jsonld"
@@ -72,7 +71,7 @@ def count_links_on_record(rec):
     for key in (
         "m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
         "rico:hasOrHadSubject", "m3gim-ontology:hasDetail",
-        "m3gim-ontology:hasAnnotation", "m3gim-ontology:hasAgentRelation",
+        "m3gim-ontology:hasAnnotation",
         "m3gim-ontology:hasPerformance",
     ):
         count += len(ensure_list(rec.get(key)))
@@ -133,19 +132,18 @@ def main():
         by_type.setdefault(t, {"high": 0, "low": 0, "exact": 0}).setdefault(m.get("match", "?"), 0)
         by_type[t][m.get("match", "?")] = by_type[t].get(m.get("match", "?"), 0) + 1
 
-    # Low-confidence manual-review list, only unchecked (neither approved nor rejected)
+    # All automatic matches remain candidates until explicit approval.
     low_conf = [m for m in matched
-                if m.get("match") == "fuzzy_low"
-                and m.get("manual_review") not in ("approved", "rejected")]
+                if not is_approved_match(m)
+                and m.get("manual_review") != "rejected"]
+    approved_count = sum(is_approved_match(m) for m in matched)
 
     prov_total = len(records_real)
     prov_with_xlsx = sum(1 for r in records_real if isinstance(r.get("m3gim-ontology:xlsxSource"), dict))
-    # E-103: agrelon:metadataProvenance migrated off the record onto its
-    # nested/related entities (Annotation, AgRelOn), each backref-ing the
-    # record. Probe the record-owned provenance-bearing entities instead of the
-    # now always-absent record-level property.
+    # Source annotations are attached through these record-owned paths.
     prov_bearing_keys = ("m3gim-ontology:hasAnnotation",
-                         "m3gim-ontology:hasAgentRelation")
+                         "m3gim-ontology:hasDetail",
+                         "m3gim-ontology:hasPerformance")
     prov_with_events = sum(
         1 for r in records_real
         if any(ensure_list(r.get(k)) for k in prov_bearing_keys)
@@ -159,12 +157,6 @@ def main():
                 nested_total += 1
                 if isinstance(d.get("m3gim-ontology:xlsxSource"), dict):
                     nested_with_xlsx += 1
-        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
-            if isinstance(rel, dict):
-                nested_total += 1
-                if isinstance(rel.get("m3gim-ontology:xlsxSource"), dict):
-                    nested_with_xlsx += 1
-
     lines = []
     lines.append("# M³GIM Quality-Snapshot")
     lines.append("")
@@ -237,28 +229,35 @@ def main():
         lines.append(f"| {stand} | {count} |")
     lines.append("")
 
-    lines.append("## Wikidata-Coverage")
+    lines.append("## Wikidata-Abgleich")
     lines.append("")
-    lines.append(f"- {len(matched)} gematcht, {len(unmatched)} kein Match, "
-                 f"{len(skipped)} übersprungen (bereits mit Q-ID oder zu kurz)")
+    lines.append(f"- {approved_count} Abgleiche ausdrücklich freigegeben; "
+                 f"{len(low_conf)} Kandidaten ohne Freigabe; {len(unmatched)} ohne Treffer.")
+    lines.append(f"- {len(skipped)} Einträge vom Abgleich ausgenommen "
+                 "(bereits mit Q-ID oder zu kurz).")
+    lines.append("Automatische Treffer werden erst nach ausdrücklicher Prüfung in den Datensatz übernommen. "
+                 "Bereits im Quellindex erfasste Kennungen bleiben eigene Quellenangaben.")
     lines.append("")
-    lines.append("### Nach Typ + Konfidenz")
+    lines.append("### Nach Typ und Abgleichsverfahren")
     lines.append("")
-    lines.append("| Typ | exact | fuzzy_high | fuzzy_low | gesamt |")
-    lines.append("|---|---:|---:|---:|---:|")
+    lines.append("| Typ | manual | exact | alias | fuzzy_high | fuzzy_low | gesamt |")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|")
     for t in ("person", "org", "location", "work"):
         stats = by_type.get(t, {})
         ex = stats.get("exact", 0)
         fh = stats.get("fuzzy_high", 0)
         fl = stats.get("fuzzy_low", 0)
-        lines.append(f"| {t} | {ex} | {fh} | {fl} | {ex + fh + fl} |")
+        manual = stats.get("manual", 0)
+        alias = stats.get("alias", 0)
+        lines.append(f"| {t} | {manual} | {ex} | {alias} | {fh} | {fl} | "
+                     f"{sum(stats.values())} |")
     lines.append("")
 
-    lines.append("### Low-Confidence-Matches (manuelle Freigabe erforderlich)")
+    lines.append("### Kandidaten zur manuellen Prüfung")
     lines.append("")
-    lines.append(f"**{len(low_conf)} Matches mit Score 80–89** — prüfen, ob sie "
-                 f"tatsächlich das korrekte Wikidata-Objekt treffen. Freigegebene "
-                 f"Einträge manuell als `manual_review: approved` markieren.")
+    lines.append(f"**{len(low_conf)} Kandidaten** benötigen eine belegte Identitätsprüfung. "
+                 "Ein Ähnlichkeitsscore ist kein Identitätsnachweis. Bestätigte "
+                 "Einträge erhalten `manual_review: approved`.")
     lines.append("")
     if low_conf:
         lines.append("| Typ | Name | → | Q-ID | Label | Score |")

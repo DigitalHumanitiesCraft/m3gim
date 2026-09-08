@@ -3,7 +3,7 @@
  */
 
 // Uncertainty qualifier the source prepends to a date value.
-const QUALIFIER = /^(circa|vor|nach):/;
+const QUALIFIER = /^(circa|vor|nach|ab|seit)(?::|\s+)/i;
 
 /**
  * Split the qualifier from the date value; the Datierung carries it as its own field.

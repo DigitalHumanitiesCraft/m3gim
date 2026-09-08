@@ -4,7 +4,7 @@ import { AGRELON_LABELS } from '../data/constants.js';
 import { familyIcon } from '../ui/family-icons.js';
 import { detailDisclosure } from '../ui/detail-disclosure.js';
 import {
-  buildUmfeld, entryRoles, workStageRoles, ambiguousWorkStageRoles,
+  buildUmfeld, entryRoles,
 } from './indizes-data.js';
 
 let sequence = 0;
@@ -43,23 +43,6 @@ function expandable(items, limit, render, label, moreClass) {
   }, `+${rest.length} weitere`);
   box.append(remainder, button);
   return box;
-}
-
-function stageRoles(store, entry, recordIds) {
-  const derived = (workStageRoles(store, recordIds).get(entry.name) || [])
-    .filter(role => role.name !== entry.partie);
-  const ambiguous = ambiguousWorkStageRoles(store, recordIds).get(entry.name) || 0;
-  if (!entry.partie && !derived.length && !ambiguous) return null;
-  const box = el('div', { className: 'idx-relations idx-partien' });
-  if (entry.partie) box.appendChild(chip('PARTIE', entry.partie));
-  if (derived.length) box.appendChild(el('div', { className: 'idx-partien__derived' },
-    el('p', { className: 'idx-detail__note' }, 'Abgeleitet aus Dokumenten, die genau ein Werk nennen:'),
-    expandable(derived, 3, role => chip('ROLLE', role.name,
-    `ergänzt: Rolle aus ${role.count} Beleg${role.count === 1 ? '' : 'en'}, die genau dieses Werk nennen`),
-  'Rollen', 'idx-roles__more')));
-  if (ambiguous) box.appendChild(el('p', { className: 'idx-detail__note' },
-    `${ambiguous} Beleg${ambiguous === 1 ? '' : 'e'} mit mehrdeutiger Werk-/Rollenzuordnung; Partie offen.`));
-  return section('Partien', box);
 }
 
 function relations(entry, recordIds, navigate) {
@@ -124,8 +107,6 @@ export function buildRegisterDetail({ store, register, entry, recordIds, propert
   'Dokumentrollen', 'idx-document-roles__more'))));
   const relationSection = relations(entry, recordIds, navigate);
   if (relationSection) content.appendChild(relationSection);
-  const parts = register === 'werke' ? stageRoles(store, entry, recordIds) : null;
-  if (parts) content.appendChild(parts);
   const coMentions = umfeld(store, register, entry, recordIds, navigate);
   if (coMentions) content.appendChild(coMentions);
   return content;

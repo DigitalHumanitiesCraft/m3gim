@@ -73,7 +73,7 @@ def test_wuppertal_keeps_document_and_place_dates_separate(frontend_server, brow
     page.locator(".places-source-document").first.locator("summary").click()
     detail = page.locator(".places-evidence")
     expect(detail).to_have_count(1)
-    assert [" ".join(value.split()) for value in detail.locator("dd").all_text_contents()] == ["nicht erfasst", "26. April 1953", "4. April 1953"]
+    assert [" ".join(value.split()) for value in detail.locator("dd").all_text_contents()] == ["nicht erfasst", "26. April 1953"]
     page.locator(".places-source-document__rows .places-source").click()
     expect(page.locator(".inline-detail__head-sig")).to_have_text("UAKUG/NIM_023 5")
     assert parse_qs(page.url.split('?', 1)[1])['suche'] == ['NIM_023 5']
@@ -86,16 +86,16 @@ def test_map_selection_is_local_and_chronik_action_filters_explicitly(frontend_s
     svg = page.locator(".mob-map__svg")
     svg.focus()
     for _ in range(page.locator('.mob-node').count()):
-        if 'Ort Wuppertal.' in svg.get_attribute('aria-label'):
+        if 'Ort München.' in svg.get_attribute('aria-label'):
             break
         svg.press('ArrowRight')
     svg.press("Enter")
     assert page.url == original
-    expect(page.locator(".selection-detail__title")).to_have_text("Wuppertal")
+    expect(page.locator(".selection-detail__title")).to_have_text("München")
     page.get_by_role("button", name="Ort in Chronik öffnen", exact=True).click()
     expect(page.locator("#tab-chronik")).to_be_visible()
     params = parse_qs(page.url.split('?', 1)[1])
-    assert params['ort'] == ['Wuppertal']
+    assert params['ort'] == ['München']
     assert params['suche'] == ['NIM_023 5']
     expect(page.locator("dialog[open]")).to_have_count(0)
 
@@ -140,13 +140,13 @@ def test_narrow_view_starts_with_collapsed_reachable_navigator(frontend_server, 
 
 
 @pytest.mark.parametrize('width', [390, 800, 1440, 2048])
-def test_zurich_uses_map_sized_regional_focus(frontend_server, browser_context, width):
+def test_vienna_uses_map_sized_regional_focus(frontend_server, browser_context, width):
     page = browser_context.new_page()
     page.set_viewport_size({"width": width, "height": 900})
     page.goto(frontend_server + "#karte", wait_until="networkidle")
     open_navigator(page)
-    page.get_by_role('button', name='Belege zu Zürich', exact=True).click()
-    expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
+    page.get_by_role('button', name='Belege zu Wien', exact=True).click()
+    expect(page.locator('.selection-detail__title')).to_have_text('Wien')
     page.wait_for_function("""() => {
       const map = document.querySelector('.mob-map');
       const svg = map?.querySelector('.mob-map__svg');
@@ -166,13 +166,13 @@ def test_zurich_uses_map_sized_regional_focus(frontend_server, browser_context, 
     }""") >= 10
 
 
-def test_zurich_selection_centres_after_detail_and_keeps_zoom(frontend_server, browser_context):
+def test_vienna_selection_centres_after_detail_and_keeps_zoom(frontend_server, browser_context):
     page = browser_context.new_page()
     page.set_viewport_size({"width": 1440, "height": 1000})
     page.goto(frontend_server + "#karte", wait_until="networkidle")
     open_navigator(page)
-    page.get_by_role('button', name='Belege zu Zürich', exact=True).click()
-    expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
+    page.get_by_role('button', name='Belege zu Wien', exact=True).click()
+    expect(page.locator('.selection-detail__title')).to_have_text('Wien')
 
     def map_state():
         return page.evaluate("""() => {
@@ -221,7 +221,7 @@ def test_place_detail_names_coverage_roles_and_document_co_mentions(frontend_ser
     open_navigator(page)
     page.get_by_role('button', name='Belege zu Zürich', exact=True).click()
     detail = page.locator('.places-detail')
-    expect(page.locator('.selection-detail__subtitle')).to_have_text('42 Dokumente · 66 Ortsbelege')
+    expect(page.locator('.selection-detail__subtitle')).to_have_text('42 Dokumente · 63 Ortsbelege')
     expect(detail.locator('.places-overview__coverage')).to_have_text('6 Ortsbelege mit eigenem Datum')
     expect(detail.locator('.places-role-button')).to_have_count(10)
     expect(detail.locator('.places-role-button').nth(0)).to_be_visible()
@@ -236,7 +236,7 @@ def test_place_detail_names_coverage_roles_and_document_co_mentions(frontend_ser
     detail = page.locator('.places-detail')
     first = detail.locator('.places-evidence').first
     expect(first.locator('dt')).to_have_text([
-        'Datum der Ortsaussage', 'Dokumentdatum', 'Primärer Zeitanker'
+        'Datum der Ortsaussage', 'Dokumentdatum'
     ])
     page.get_by_role('button', name='Zurück zu Zürich', exact=True).click()
     expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
@@ -256,7 +256,8 @@ def test_common_search_opens_typed_place_without_changing_cut(frontend_server, b
     page.get_by_role('button', name='Ort auf der Karte öffnen', exact=True).click()
     expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
     assert page.url == before
-    expect(page.locator('.mob-node--selected')).to_have_count(1)
+    expect(page.locator('.mob-node--selected')).to_have_count(0)
+    expect(page.get_by_role('button', name='Quellen ansehen', exact=True)).to_be_visible()
     page.get_by_role('button', name='Schließen', exact=True).click()
     expect(search).to_be_focused()
 

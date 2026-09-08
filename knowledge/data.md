@@ -32,6 +32,35 @@ This document is the spec-first anchor of the data model. It describes what the 
 
 The formal side, meaning classes, properties, controlled vocabularies and serialization, is in [data-model.md](data-model.md). The German recording convention of the archive team is in [recording-guide.md](recording-guide.md). The pipeline implementation is in [architecture.md](architecture.md), the research frame in [research-framework.md](research-framework.md), the requirements in [specification.md](specification.md). Running figures live in the quality snapshot under `data/reports/`, this document carries none.
 
+## Source fidelity contract (E-301)
+
+The project lead requires source statements and extracted values to reach the frontend without additional historical interpretation. This contract supersedes earlier permissions for inferred currencies, fonds-centred agent relations, inferred relationship periods, name-based identity repairs, single-work stage-part associations and editorial timeline phases. Implementation and verification status are recorded in [plan.md](plan.md).
+
+Rows containing only a signature or folio reference and no type, value, role or note remain in the original export but produce no source statement. Preserving an empty row must not create an apparent annotation or enlarge the linked document basis.
+
+- Keep the source exports unchanged. Preserve each contributing source row, its recorded type, value, role and note, and its sheet and row. A duplicate-looking row remains a separate witness. An absent record identifier or an unmatched link is a reported source defect; it does not authorise inventing an archival record or assigning the row to a plausible neighbour.
+- Preserve missing values. Do not supply a currency, event role, participant, work association, relationship or relationship date from context. A recorded `Aktivität` remains an activity statement without an invented subtype. `dokument` remains a recorded document mention and creates no archival containment. Other unsupported link values remain neutral statements with their recorded type and value, without a guessed entity family. If a composite type supplies no separable components, retain the complete value as a neutral statement. For example, `ort, datum` with the single value `06-09` cannot establish both a place and a date; `Wien, ab 1956` explicitly supplies both components.
+- Existing composite cells may be split into their explicitly recorded components. Their carriers are `Annotation` nodes. The legacy `hasPerformance`, `hasPerformer`, `performanceOf` and `hasStageRole` access paths describe those recorded components and imply no real event, participation, fulfilment or co-presence. Preserve existing statement identifiers. Vocabulary domain, range and subproperty declarations must not reintroduce such implications.
+- Name folding serves text search only. It must not replace source names or merge person identities. An explicit shared source identifier permits grouping; name equality alone permits grouping of equally written mentions only, without asserting common historical identity. Identifier-less index rows must not inherit an identifier from a namesake. Conflicting index values remain unresolved and retain their source evidence.
+- Authority identities already recorded in an index or explicitly approved by a human remain usable as separately sourced authority information. Algorithmic exact, alias or fuzzy matches remain review candidates until explicitly approved. Unknown approval states fail closed. Retain the existing authority caches unchanged; do not turn a candidate into an assertion merely to retain previous coverage.
+- Every value added from an index or authority source carries a property-level source descriptor. The descriptor names the emitted property, source kind, source location and original value. A source row on a surrounding archival mention does not establish the origin of an enriched property. The UI and exports distinguish recorded archive statements, index information and Wikidata information.
+- Entity mentions keep document-local nodes. `authorityReference` links a mention to a source-recorded or approved authority identifier. Neither a global Wikidata `@id` nor `owl:sameAs` stands on the node carrying local roles and source rows. Stage-part identifiers are scoped to their source statement; shared labels do not establish historical identity. These limits must also hold after RDF expansion.
+- Dates preserve value, precision, qualification and dating evidence. `ab` and `seit` are not rewritten as `nach`; publication and premiere remain distinct properties. The shared document-time filter uses the recorded document date, preserving intervals and open or qualified boundaries. Content dates remain independently explorable and must not silently become a document's date. Uncertain values receive no invented tolerance or exact-year assignment. A year filter respects exclusive `vor`/`nach` boundaries at calendar edges; `ab`/`seit` remain inclusive. Inner-year limits retain the year when it still contains admissible dates. The original `datierungsevidenz` category is retained.
+- Counts, intersections and presentation groups are permitted when their unit and basis are explicit and every contributing source witness remains retrievable. A shared document establishes a shared document occurrence of the recorded terms. It does not establish a personal relationship, appearance, presence or journey. Maps identify their coordinate source and spatial granularity.
+- The research interface contains no hardcoded biographical phases or categories guessed from personal names. Source-grounded research context remains in the research documentation.
+
+### Serialization of source fidelity
+
+Index provenance uses a content-addressed `urn:sha256:` reference to the original XLSX bytes, together with its sheet and row. This identifies the exact input independently of the checkout directory and avoids publishing local filesystem paths. The four versioned index files resolve these hashes. Wikidata provenance retains the authority entity URI and the property-specific value from the unchanged local cache.
+
+`m3gim-ontology:recordedType`, `recordedValue` and `recordedRole` preserve the original link cells; `rico:generalDescription` preserves the recorded note. These literal fields describe the source statement, not a classification inferred by the application. Existing `xlsxSource` supplies sheet, row and the recorded data-point identifier. Neutral unsupported statements use `hasDetail` with `detailField` holding the recorded type and `detailValue` holding the recorded value, alongside these original fields.
+
+`m3gim-ontology:datingEvidence` retains the object table's categorical evidence value without a numeric confidence score. `m3gim-ontology:wdPublicationDate` preserves an authority publication date independently of `wdPremiereDate`.
+
+`m3gim-ontology:authorityReference` is an object reference such as `{"@id": "wd:Q94208"}` on a local mention. The reference carries no document role or source-row properties; those belong to the surrounding local node. This is a link to authority information and declares no `owl:sameAs` equivalence between the source statement and the authority entity.
+
+`m3gim-ontology:propertySource` is a list of source descriptors for added properties. Each descriptor carries `m3gim-ontology:sourceProperty` (the emitted property name), `m3gim-ontology:sourceKind` (`index` or `wikidata`), `m3gim-ontology:sourceValue` (the original source value), and `dcterms:source` (the index file or authority entity URI). Index descriptors additionally carry `xlsxSource` identifying the index row. The descriptors survive dataset and basket exports and are used for value-specific UI attribution. Record- and link-derived fields use their own original fields and source row; no second descriptor is needed for every directly transcribed cell.
+
 ## Sources and holdings groups
 
 The material is the UAKUG/NIM holdings at the archive of the University of Music and Performing Arts Graz, the partial estate of the mezzo-soprano the fonds stems from. It falls into three holdings groups, and the group is readable from the signature.
@@ -42,7 +71,7 @@ The material is the UAKUG/NIM holdings at the archive of the University of Music
 | posters | `UAKUG/NIM/PL_nn` | individual items, note the slash before `PL` |
 | sound carriers | `UAKUG/NIM_TT_nn` | individual items, shellac discs and recordings |
 
-The source period runs from 1919 to 2010. The earliest dating sits on a poster, the latest on an exhibition after the death of the creator of the fonds. A value outside that span is a source error and belongs on the handover list under `data/reports/`.
+Earlier corpus inspection found datings from 1919 to 2010, including a poster and a later exhibition. This observed span is not a validation rule. A date outside it must retain its source wording and may be referred for source review; the span alone cannot establish an error.
 
 Cataloguing is selective and unfinished. Title and document type are the best covered fields, creation date is middling, extent and language are thin, and only a growing selection of convolutes is opened down to the folio. Any analysis of this material carries that coverage with it. Which convolutes carry folios, and how far each field reaches, is in the quality snapshot.
 
@@ -50,9 +79,9 @@ Cataloguing is selective and unfinished. Title and document type are the best co
 
 The authoritative source format is the CSV export of the spreadsheet. The reason is that the XLSX export converts date, folio and bundling columns into cell types and thereby invents precision the recording does not carry, a bare month becoming the first of that month and a year-less entry becoming a calendar date of the export year (E-152). The CSV export passes the recorded text through unchanged.
 
-The link table lives as one CSV per sheet under `data/google-spreadsheet/verknuepfungen/`, one file per box plus the value list `Typ-Rolle.csv`. File names carry the sheet label with an underscore, `Box_1.csv` and so on, while the sheet name in the provenance keeps the spelling of the source, `Box 1`. The box numbers are not contiguous, because a sheet without a usable data row is not carried along. The object table is a CSV as well, `M3GIM-Objekte.csv`, beside the workbook. The loader prefers the CSV and falls back to the XLSX without it, whose date column then carries the autoconversion. The four index tables stay XLSX, because they hold no endangered column.
+The link table lives as one CSV per sheet under `data/google-spreadsheet/verknuepfungen/`, one file per box plus the value list `Typ-Rolle.csv`. File names carry the sheet label with an underscore, `Box_1.csv` and so on, while the sheet name in the provenance keeps the spelling of the source, `Box 1`. The box numbers are not contiguous, because a sheet without a usable data row is not carried along. The object table is a CSV as well, `M3GIM-Objekte.csv`, beside the workbook. Ordinary production requires these CSV exports. The four index tables stay XLSX, because they hold no endangered column.
 
-`resolve_verknuepfungen_source` takes every `Box_*.csv` in that directory. Without the directory it falls back to the first file matching `M3GIM-Verkn*pfungen*.xlsx`, which covers both the `ü` and the `ue` spelling, and without either it raises `FileNotFoundError`.
+`resolve_verknuepfungen_source` takes every `Box_*.csv` in that directory. A missing required source stops production with an explicit error. Any legacy XLSX reader is a compatibility path, not an equivalent production input.
 
 ## Tables and columns
 
@@ -75,11 +104,11 @@ The folio column of the object table is called `folio nr` today and was called `
 
 ### Identity and precedence in the index tables
 
-An index may carry the same name more than once, partly as an accidental double entry and partly as genuine homonymy. Three deterministic rules govern the merge, and none of them resolves a case silently.
+An index may carry the same name more than once. The source fidelity contract governs whether values can be associated with the same identity.
 
-Identity comes from `m3gim_id` where a row carries one. Rows sharing an `m3gim_id` denote the same entity and are condensed. Without the identifier the trimmed name decides. Two rows with the same name and different identifiers are a name collision and not a duplicate.
+Identity comes from `m3gim_id` where a row carries one. Rows sharing that explicit identifier may be grouped while preserving their witnesses. An identifier-less row keeps its own identity evidence and does not inherit an identifier from a namesake. Equal written names support a group of mentions only. Two rows with the same name and different identifiers remain a name collision.
 
-Within one identity the first non-empty value in source order wins per field, and a filled field is never overwritten by an empty one. The associated person of the organization index is multi-valued and collects every value of the group. Where two rows of one identity carry different non-empty values in the same field, the first wins and the case enters the validation report with both values.
+Within an explicitly recorded identity, consistent values can be consolidated with all their source witnesses. Conflicting scalar values remain unresolved instead of choosing the first row. The associated-person field of the organization index is multi-valued and retains each recorded value with its provenance.
 
 In the work index the title alone is not an identity, because different works share it. The key is the pair of title and composer. A link row naming only a title and matching more than one index entry is not resolved. The work then appears with its title, without a composer, and with the quality flag for an ambiguous name, and the ambiguity enters the validation report.
 
@@ -106,15 +135,15 @@ The season form with a hyphen is the spelling of the source, and `clean_date()` 
 
 A value of the form `YYYY-MM-DD 00:00:00`, including the `T` separator variant, is outside the admissible source notation. Validation reports W010 at the source row in both object and link tables before date cleanup. The apparent day precision requires source review. The legacy transformer still removes the space-separated midnight suffix and can emit the remaining calendar date; it retains the `T` variant as a malformed annotation. Validation exposes this compatibility limit and does not infer the intended precision. The current source export contains neither timestamp form. Month and day places without padding, as in `1956-5-13`, are a source error and enter the report as well. The pipeline does not pad them, because padding produces exactly the claim the move to the CSV source removed.
 
-The notation decides the representation. A complete or partial ISO date becomes a typed date property, a range becomes a time span value, a bracket or question-mark uncertainty such as `1957-[05-27?]` becomes an annotation node carrying a quality flag, and a free-text beginning such as `ab …` or `seit …` becomes the qualifier `nach:`.
+The notation decides the representation. A complete or partial ISO date becomes a date property, and a range keeps both boundaries and their precision. A bracket or question-mark uncertainty such as `1957-[05-27?]` remains an annotation value. A free-text beginning such as `ab …` or `seit …` retains its wording and inclusive beginning. No qualifier is replaced by one with a different meaning.
 
 Complete dates must also be possible calendar dates, and month values must be in range. Regular validation reports violations at the source cell; it does not infer a corrected date. The three current impossible complete link dates remain editorial findings and retain their strict source-fix test.
 
-The object table carries a separate column for dating evidence with the values `aus_dokument`, `erschlossen`, `extern` and `unbekannt`. It is deliberately not serialized ([data-model.md](data-model.md) § Meta-statements and provenance).
+The object table carries a separate column for dating evidence with the values `aus_dokument`, `erschlossen`, `extern` and `unbekannt`. Its recorded category is serialized as `datingEvidence`; a missing category remains missing ([data-model.md](data-model.md) § Meta-statements and provenance).
 
 ## The link mechanism
 
-One row of the link table carries one statement about one record. The `typ` column steers the target context, and the `name` column is matched against the index entries by string comparison after normalization. A row carrying a name and a role but no type is not modelled, because the type steers the target context and a type is not guessed, and the row enters the validation report with its source cell. A type proposal is produced separately after the pattern of `scripts/propose-links.py` (E-147).
+One row of the link table carries one statement about one record. The `typ` column steers the target context, and the `name` column provides the recorded name. An absent or unsupported type is preserved as a neutral detail statement with its original cells and enters the validation report. It receives no guessed entity family. A type proposal is produced separately after the pattern of `scripts/propose-links.py` (E-147).
 
 | `typ` | Target |
 |---|---|
@@ -123,16 +152,16 @@ One row of the link table carries one statement about one record. The `typ` colu
 | `ensemble` | `rico:Group` |
 | `ort` | place index, `rico:Place` |
 | `werk` | work index, `m3gim-ontology:MusicalWork` |
-| `rolle` | `m3gim-ontology:StageRole` on a `m3gim-ontology:Performance` |
+| `rolle` | stage-part component on a neutral `Annotation` |
 | `datum` | annotation node with a date |
-| `ereignis` | `m3gim-ontology:FramingEvent` |
+| `ereignis`, `Aktivität`, `dokument` | neutral `Annotation` retaining the recorded type and value |
 | `ort, datum` | annotation node with place and date (E-96) |
-| `datum, werk` | performance with work and date (E-98) |
-| `rolle, person` | performance with stage part and performer (E-96) |
+| `datum, werk` | annotation with the work and date recorded together |
+| `rolle, person` | annotation with the stage part and person recorded together |
 | `ort` in a mobility place role | place reference plus a dateless annotation node (E-97) |
 | `ausgaben, währung`, `einnahmen, währung`, `summe, währung` | annotation node carrying a financial item |
 
-Two type values have no target branch, `Aktivität` and `dokument`. Their omitted rows are counted by transformation and reported by the cataloguing report (E-246). Both occur in the source, both need a modelling round of their own, and both are carried on the handover list and in the [reconciliation register](../data/reports/reconciliation-register.md) until then. The handler for a type `detail` exists in the pipeline as the path for the third cataloguing layer, but no row of the source carries that type, so the path is unused.
+The formerly omitted `Aktivität` and `dokument` rows are retained as neutral statements under E-301. This adds no subtype, occurrence grouping or archival record. The handler for a source type `detail` remains available, although no current source row carries that type.
 
 Dependent dropdowns enforce the value lists for `typ` and `rolle` at the source. Since a Google Sheets dropdown value carries no comma, a composite type may appear with an underscore in the export, attested for `einnahmen_währung`, `ausgaben_währung`, `summe_währung` and `ort_datum`. The pipeline accepts the underscore as an equivalent composite separator.
 
@@ -143,9 +172,9 @@ Every composite type resolves into a target entity with typed properties by the 
 | Composite | Target | Special rule |
 |---|---|---|
 | `ort, datum` | annotation node with place and date | the mobility core of the model ([data-model.md](data-model.md) § Mobility perspectives) |
-| `datum, werk` | performance with work and date | the work is resolved through the index only, never as a raw string or a literal Q-identifier, and a row whose value half carries no leading year holds a composer rather than a work and is filtered out |
-| `rolle, person` | performance with stage part and performer | both source spellings of the type are treated alike |
-| `rolle` alone | performance with a stage part only | every stage part carries the same entity structure (E-96) |
+| `datum, werk` | annotation with work and date | an unparseable or ambiguous composite retains its complete original value as a neutral detail; no component is guessed |
+| `rolle, person` | annotation with stage part and person | both source spellings of the type are treated alike |
+| `rolle` alone | annotation with a stage-part component only | it establishes a recorded part name without claiming an appearance |
 | `ort` in a mobility place role | place reference plus a dateless annotation node | the missing date is itself the statement, because the source gives none and none is guessed |
 | the three currency composites | annotation node carrying amount, currency and financial role | amount parsing and double amounts in [data-model.md](data-model.md) § Financial layer |
 
@@ -161,11 +190,11 @@ The five mobility place roles are the one group the pipeline treats specially, a
 
 ### Dating scope and rank
 
-Two properties on the role concept say what a dating dates and which one counts when a document carries several. Both live on the concept in the vocabulary rather than in the interface, so dataset and application make the same statement (E-150).
+Role metadata describes the recorded aspect of a content dating. It is distinct from the document date and cannot select a replacement for it (E-301).
 
-`m3gim-ontology:datingScope` names the level a dating refers to and draws from the scheme `m3gim-vocab:datingScopes`. Only a dating of the object itself and a dating of an event the object attests may date a document. A mentioned dating, a framing period and a dating of a negated claim stay readable without setting the time anchor.
+`m3gim-ontology:datingScope` names the aspect a dating refers to and draws from the scheme `m3gim-vocab:datingScopes`. Each statement keeps its own role and date. The shared document-time filter reads the explicit object dating; content dates remain separately explorable.
 
-`m3gim-ontology:datingRank` is an integer deciding the order where a document carries several anchoring datings, the smaller value taking precedence. A role concept without a rank sorts behind every concept with one, in source order. A newly admitted role concept receives a rank at the end of the existing series, because resorting changes established anchors. The frontend uses the highest-ranked anchoring link date first, with `rico:date` as fallback (E-264). All other source datings remain available as evidence.
+The legacy `m3gim-ontology:datingRank` remains available as vocabulary metadata. It supplies no authority to infer one primary historical date from several source statements. Intervals retain both bounds; qualification and absence stay visible.
 
 ## Naming conventions and place duplicates
 
@@ -183,9 +212,9 @@ The recording is the authoritative source. The following categories distinguish 
 
 The compensations fall into three categories. A specification compensation is a structurally unavoidable format transformation that hides no data error, meaning the underscore variant of a composite type, the removal of gender-inclusive role notation, the restriction of Wikidata raw values to the pattern of a Q-identifier, and the skipping of hidden dropdown helper sheets on the XLSX path.
 
-A workaround compensates for a property that is fixable at the source and is therefore an editorial note to the archive team. The structural cases are the lost header rows of the index sheets, the shifting column name and the non-textual header of the folio column, the literal `Folio` as a folio cell value, the link table spread over several box sheets, the sparsely filled signature column with a blank header, the shared signature of a collective row and its folio rows, the two spellings of the bundling column, the multiply recorded name in one index, the shared work title across composers, the mixed monetary notation including double amounts, the date placeholders and malformed datings in the creation date, the inconsistent spellings of the processing status, the date role inherited onto the place half of a composite, the contract status in the role column, the free-text datings that are passed through rather than blocked, the link row without a type, and the stage part recorded twice as a bare role row and as a composite, which `_dedupe_stage_role_performances()` falls onto the entry carrying the performer (E-205).
+A workaround compensates for a property that can be corrected at the source. The retained structural cases include lost index headers, the shifting folio column name, a literal `Folio` placeholder, recording spread across box sheets, sparsely filled signature columns, collective and folio rows sharing a signature, and the two bundling-column spellings. Raw monetary notation, malformed dates, recorded contract notes and typeless statements remain accessible. Index conflicts stay unresolved. A bare stage-part row and a part/person composite both retain their source witnesses; the former deduplication is prohibited by E-301.
 
-A policy compensation is an editorial decision that holds as long as its assumption holds. Three exist, a template row whose signature reads `beispiel` is skipped, and two locations without a currency suffix receive a default currency bound to the signature prefix, one in schillings and one in Belgian francs, the latter still to be confirmed with the cataloguing team.
+A template row whose signature reads `beispiel` is excluded as recording scaffolding. Currency defaults based on signature prefixes are prohibited by E-301; a missing currency stays missing. Earlier approvals of such assumptions remain historical decision evidence only.
 
 ## Target model, decided and not built
 

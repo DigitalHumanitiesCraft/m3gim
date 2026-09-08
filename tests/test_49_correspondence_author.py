@@ -64,8 +64,8 @@ def _correspondent_names(record):
     return out
 
 
-def test_author_of_a_letter_becomes_a_correspondent(records):
-    """Ein fremder Verfasser auf einem Brief steht als Korrespondenzpartner."""
+def test_author_role_remains_without_inferred_correspondence(records):
+    """Die Quellenrolle bleibt erhalten, ohne eine Korrespondenz abzuleiten."""
     expected = []
     missing = []
     for rec in records:
@@ -76,16 +76,13 @@ def test_author_of_a_letter_becomes_a_correspondent(records):
             if _is_fonds(a):
                 continue
             expected.append((rec.get("rico:identifier"), a.get("name")))
-            if a.get("name") not in partners:
-                missing.append((rec.get("rico:identifier"), a.get("name")))
+            if partners:
+                missing.append((rec.get("rico:identifier"), sorted(partners)))
     assert expected, (
         "Kein fremder Verfasser auf einem Korrespondenzstueck im Datenstand — "
         "der Test verliert seinen Gegenstand und ist zu pruefen."
     )
-    assert not missing, (
-        f"{len(missing)} von {len(expected)} Absenderseiten erreichen das "
-        f"Beziehungsnetz nicht: {missing[:6]}"
-    )
+    assert not missing, f"Aus Quellenrollen abgeleitete Korrespondenzen: {missing[:6]}"
 
 
 def test_author_outside_correspondence_stays_out(records):

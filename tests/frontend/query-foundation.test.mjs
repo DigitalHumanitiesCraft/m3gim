@@ -140,10 +140,10 @@ describe('reale Quellmengen', () => {
     assert.equal(facetCounts(store, combined, 'ort', ['Zürich']).get('Zürich'), expected);
   });
 
-  test('Ortsquelle bewahrt 652 Statements, 102 Registeridentitäten und 91 Gruppen', async () => {
+  test('Ortsquelle bewahrt alle aktuell serialisierten Statements', async () => {
     const store = await storeFromShipped();
     const statements = buildOccurrences(store);
-    assert.equal(statements.length, 652);
+    assert.equal(statements.length, 628);
     assert.equal(store.locations.size, 102);
     assert.equal(groupPlaces(statements).length, 91);
   });
@@ -152,7 +152,8 @@ describe('reale Quellmengen', () => {
     const store = await storeFromShipped();
     const inventory = linkRoleInventory(store);
     assert.deepEqual([...new Set(inventory.map(group => group.type))], [
-      'datum', 'ensemble', 'ereignis', 'finanz', 'institution', 'ort', 'person', 'werk',
+      'aktivität', 'angabe', 'datum', 'datum, werk', 'dokument', 'ensemble',
+      'ereignis', 'finanz', 'institution', 'ort', 'ort, datum', 'person', 'werk',
     ]);
     assert.ok(inventory.some(group => group.value.endsWith(`:${MISSING_ROLE}`)));
     assert.ok(inventory.every(group => group.label && group.recordIds.size === group.count));

@@ -1,15 +1,12 @@
 /** Calendar lanes share a continuous rail with explicitly compressed gaps. */
 import { el, clear } from '../utils/dom.js';
 import { buildCalendarLayout } from './chronik-time-layout.js';
-import { CHRONIK_CONTEXT } from './chronik-context.js';
 
 const SCALES = { overview: 'Jahrzehnte', years: 'Jahre', year: 'Monate', month: 'Tage' };
-const CONTEXT_TYPES = { ausbildung: 'Ausbildung', engagement: 'Engagement', gastspiel: 'Gastspiele', lehre: 'Lehre' };
 const HEADER = 62;
 const calendarYear = time => new Date(time).getUTCFullYear();
-const contextId = phase => `${phase.category}-${phase.label}-${phase.from}`;
 
-export function createChronikAxis({ rows, undated, renderLanes, openRows, openRow, openContext, beforeNavigate }) {
+export function createChronikAxis({ rows, undated, renderLanes, openRows, openRow, beforeNavigate }) {
   let scale = 'years';
   let layout;
   let disposed = false;
@@ -20,7 +17,7 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
   const surface = el('div', { className: 'chronik-timeline' });
   const currentYear = el('span', { className: 'chronik-current-year', 'aria-label': 'Aktueller Zeitabschnitt' });
   const head = el('div', { className: 'chronik-lane-head chronik-calendar-grid' },
-    el('span', {}, 'Zeit ↓', currentYear), el('span', { className: 'chronik-context-heading' }, 'Lebensabschnitte', el('small', {}, 'Redaktioneller Kontext')),
+    el('span', {}, 'Zeit ↓', currentYear), el('span', { 'aria-hidden': 'true' }),
     el('span', {}, 'Quellen'), ...['Orte', 'Personen', 'Werke', 'Institutionen'].map(label => el('span', { className: 'chronik-entity-heading' }, label)));
   const scroller = el('div', { className: 'chronik-scroll', tabindex: '0', 'aria-label': 'Chronik mit Kalendergruppen' }, head, surface);
   const yearSelect = el('select', { className: 'ui-select', id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen',
@@ -45,9 +42,7 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
   const controls = el('div', { className: 'chronik-navigation' },
     el('label', {}, 'Jahr', yearSelect), el('label', {}, 'Maßstab', scaleSelect),
     el('div', { className: 'chronik-step', role: 'group', 'aria-label': 'Kalendergruppen durchgehen' }, previous, next),
-    el('button', { type: 'button', className: 'chronik-more chronik-context-control',
-      onClick: event => openContext(CHRONIK_CONTEXT, event.currentTarget),
-    }, 'Lebensabschnitte'), coarseButton,
+    coarseButton,
     undated ? el('button', { type: 'button', className: 'chronik-more chronik-undated',
       onClick: event => openRow(undated, event.currentTarget),
     }, `Ohne Datum · ${undated.sources.length}`) : null, invalidButton);
@@ -107,7 +102,6 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
       });
     }
     surface.style.height = `${layout.height + HEADER}px`;
-    drawContext();
     for (const gap of layout.segments.filter(segment => segment.kind === 'gap')) {
       const isExpanded = expandedGaps.has(gap.key);
       const label = scale === 'year' || scale === 'month'
@@ -137,34 +131,6 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
     for (const year of years) yearSelect.appendChild(el('option', { value: String(year) }, String(year)));
     if (anchor != null) scroller.scrollTop = layout.position(anchor);
     updateNavigation();
-  }
-
-  function drawContext() {
-    if (!layout.segments.length) return;
-    const domainStart = layout.segments[0].start;
-    const domainEnd = layout.segments.at(-1).end;
-    const trackEnds = [];
-    const phases = [...CHRONIK_CONTEXT].sort((a, b) => Number(a.from) - Number(b.from));
-    for (const phase of phases) {
-      const start = Date.UTC(Number(phase.from), 0);
-      const end = Date.UTC(Number(phase.to) + 1, 0);
-      if (end <= domainStart || start >= domainEnd) continue;
-      let track = trackEnds.findIndex(stop => stop <= start);
-      if (track < 0) track = trackEnds.length;
-      trackEnds[track] = end;
-      const label = `${phase.label} · ${CONTEXT_TYPES[phase.category]} · ${phase.from}–${phase.to}`;
-      const clipped = start < domainStart || end > domainEnd;
-      const band = el('button', { type: 'button', className: 'chronik-context-band',
-        dataset: { contextId: contextId(phase), editorial: 'true', tip: `${label}. Redaktioneller Kontext aus dem Forschungsrahmen.${clipped ? ' Der Balken ist auf den sichtbaren Datenzeitraum begrenzt.' : ''}` },
-        'aria-label': `${label}, redaktionellen Kontext öffnen`,
-        onClick: event => openContext([phase], event.currentTarget),
-      }, el('span', { className: 'chronik-context-band__label' }, `${start < domainStart ? '↑ ' : ''}${label}${end > domainEnd ? ' ↓' : ''}`));
-      band.style.top = `${layout.position(start)}px`;
-      band.style.height = `${Math.max(4, layout.position(end) - layout.position(start))}px`;
-      band.style.setProperty('--track', String(track));
-      surface.appendChild(band);
-    }
-    surface.style.setProperty('--tracks', String(Math.max(1, trackEnds.length)));
   }
 
   function updateNavigation() {

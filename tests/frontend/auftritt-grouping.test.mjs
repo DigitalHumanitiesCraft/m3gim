@@ -188,7 +188,7 @@ test('Datenstand: NIM_022 1_1 traegt eine Spielzeit mit vierzehn Auffuehrungen',
   assert.deepEqual(looseRoles.map(r => r.name), ['Magdalena']);
 });
 
-test('Datenstand: NIM_139 104 haengt die ganze Besetzung an Tristan und Isolde', async () => {
+test('Datenstand: NIM_139 104 erhält jede aufgezeichnete Rollenangabe', async () => {
   const store = await realStore();
   const record = store.bySignatur.get('UAKUG/NIM_139 104');
   assert.ok(record, 'Anker-Record UAKUG/NIM_139 104 nicht im Store');
@@ -196,11 +196,11 @@ test('Datenstand: NIM_139 104 haengt die ganze Besetzung an Tristan und Isolde',
   const { groups, looseRoles } = groupRolesByWork(works, performanceRoles);
   assert.equal(groups.length, 1);
   assert.equal(groups[0].work.name, 'Tristan und Isolde');
-  assert.equal(groups[0].roles.length, 9);
+  assert.equal(groups[0].roles.length, 18);
   assert.equal(looseRoles.length, 0);
   // Jede Rolle traegt ihre Quellzeile und ihre Besetzung aus der Performance.
   assert.ok(groups[0].roles.every(r => r.xlsxSource && r.xlsxSource.row),
     'Rolle ohne Quellzeile — die Provenance-Pille fiele aus');
   const isolde = groups[0].roles.find(r => r.name === 'Isolde');
-  assert.deepEqual(isolde.performers, ['Birgit Nilsson']);
+  assert.ok(isolde.xlsxSource, 'die Rollenangabe behält ihren eigenen Quellenzeugen');
 });

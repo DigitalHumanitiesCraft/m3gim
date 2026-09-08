@@ -10,6 +10,8 @@ pytest.importorskip("playwright")
 
 TASK4_IDS = {
     "m3gim-data:NIM_004_18",
+    "m3gim-data:NIM_004_24",
+    "m3gim-data:NIM_004_29",
     "m3gim-data:NIM_005_17",
     "m3gim-data:NIM_011_3",
     "m3gim-data:NIM_011_5",
@@ -41,6 +43,13 @@ def test_task4_canary_preserves_literal_basis_and_rendered_evidence(
         sorted(TASK4_IDS),
     )
     assert {row[0] for row in shipped if row[1] and row[2]} == TASK4_IDS
+    undated = page.evaluate(
+        """() => ['m3gim-data:NIM_004_24', 'm3gim-data:NIM_004_29'].map(id => {
+            const record = window.m3gim.store.records.get(id);
+            return [record['rico:date'] || null, record['rico:creationDate'] || null];
+        })"""
+    )
+    assert undated == [[None, None], [None, None]]
     rendered = set(
         page.locator("#bestand-tbody tr[data-record-row]").evaluate_all(
             "rows => rows.map(row => row.dataset.recordRow)"
@@ -49,7 +58,7 @@ def test_task4_canary_preserves_literal_basis_and_rendered_evidence(
     assert rendered == (TASK4_IDS - {"m3gim-data:NIM_142_22_4"}) | {
         "m3gim-data:NIM_142_22"
     }
-    assert "7 von" in page.locator("#tab-bestand .vs-status__count").inner_text()
+    assert "9 von" in page.locator("#tab-bestand .vs-status__count").inner_text()
     filter_text = page.locator("#tab-bestand .filter-strip").inner_text()
     assert all(
         value in filter_text for value in ("Bayreuth", "Tristan und Isolde", "1954")
@@ -60,7 +69,7 @@ def test_task4_canary_preserves_literal_basis_and_rendered_evidence(
     assert "ort=Bayreuth" in page.url
     assert "werk=Tristan%20und%20Isolde" in page.url
     assert "jahr=1954-1954" in page.url
-    assert "7 von" in page.locator("#tab-chronik .vs-status__count").inner_text()
+    assert "9 von" in page.locator("#tab-chronik .vs-status__count").inner_text()
     chronik_filter_text = page.locator("#tab-chronik .filter-strip").inner_text()
     assert all(
         value in chronik_filter_text

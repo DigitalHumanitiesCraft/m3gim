@@ -169,11 +169,11 @@ let _coverage = null;
  */
 const LEGEND = [
   { mark: 'dot', kind: 'person', label: 'Person',
-    tip: 'Ein Akteur des Schnitts; die Größe ist die Zahl seiner Dokumente. Ira Malaniuk ist als Nachlassbildnerin ausgeblendet, weil ihre fast durchgehende Präsenz das Netz verbinden würde.' },
+    tip: 'Ein erwähnter Eintrag des Schnitts; die Größe ist die Zahl seiner Dokumente. Ira Malaniuk ist als Nachlassbildnerin ausgeblendet, weil ihre fast durchgehende Nennung das Netz verbinden würde.' },
   { mark: 'dot', kind: 'institution', label: 'Institution',
     tip: 'Haus, Festival, Sender oder Ensemble, in derselben Lesart wie eine Person.' },
   { mark: 'dot', kind: 'record', label: 'Dokument',
-    tip: 'Ein Datensatz des Schnitts; die Größe ist die Zahl seiner Beteiligten.' },
+    tip: 'Ein Datensatz des Schnitts; die Größe ist die Zahl seiner erwähnten Einträge.' },
   { mark: 'dot', kind: 'relation', label: 'Beziehung',
     tip: 'Ring am Knoten: eine erfasste Beziehung zur Nachlassbildnerin, belegt in der Detailspalte.' },
   { mark: 'line', kind: 'mention', label: 'Erwähnt',
@@ -234,7 +234,7 @@ function knotenSection() {
     tip: () => {
       const s = stats();
       if (!s) return '';
-      return `${s.actors} Akteure, ${s.recordNodes} Dokumentknoten, ${s.edges} Kanten.`;
+      return `${s.actors} erwähnte Einträge, ${s.recordNodes} Dokumentknoten, ${s.edges} Nennungen.`;
     },
     controls: [
       { kind: 'toggle',
@@ -245,8 +245,8 @@ function knotenSection() {
             : 'Dokumente als Knoten';
         },
         tip: () => 'Ein Dokument steht als Quadrat im Netz, seine Größe ist die Zahl'
-          + ' seiner Beteiligten. Ohne Dokumentknoten steht die Personenprojektion,'
-          + ' in der zwei Akteure eine Kante teilen, sobald ein Dokument beide nennt.',
+          + ' seiner erwähnten Einträge. Ohne Dokumentknoten steht die Personenprojektion,'
+          + ' in der zwei Einträge eine Kante teilen, sobald ein Dokument beide nennt.',
         value: () => local.showRecords,
         onChange: v => { local.showRecords = v; local.selection = null; _redraw(); } },
       { kind: 'toggle',
@@ -254,7 +254,7 @@ function knotenSection() {
           const s = stats();
           return s ? `Einzelbelege blass · ${s.single}` : 'Einzelbelege blass';
         },
-        tip: () => 'Akteure mit genau einem Dokument treten zurück; entfernt wird keiner.',
+        tip: () => 'Einträge mit genau einem Dokument treten zurück; entfernt wird keiner.',
         value: () => local.fadeSingle,
         onChange: v => { local.fadeSingle = v; _redraw(); } },
     ],
@@ -370,7 +370,7 @@ function draw() {
     if (slot) {
       clear(slot);
       slot.appendChild(el('div', { className: 'empty-state empty-state--italic' },
-        'Kein Datensatz im Schnitt nennt einen Akteur.'));
+        'Kein Datensatz im Schnitt nennt einen Eintrag.'));
     }
     drawDetail();
     stamp(graph, result, f, { start: tStart, layout: 0, paint: 0 });
@@ -542,7 +542,7 @@ function drawRecordDetail(panel, node) {
       prefix: roles, value: actor.name, onClick: () => actions.selectNode(actor),
     }));
   }
-  panel.appendChild(section(`Beteiligte · ${actorIds.length}`, chips));
+  panel.appendChild(section(`Im selben Dokument genannte Einträge · ${actorIds.length}`, chips));
 
   panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: node.recordId })));
 }

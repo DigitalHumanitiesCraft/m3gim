@@ -664,7 +664,7 @@ function nodeTip(d) {
   if (d.kind === 'record') {
     return `${d.label} · ${d.name}`
       + (d.title ? `\n${d.title}` : '')
-      + `\n${d.weight} Beteiligte`
+      + `\n${d.weight} erwähnte Einträge`
       + (d.year == null ? '\nundatiert' : '');
   }
   return `${d.name}\n${NODE_TYPE_META[d.type].label}\n`

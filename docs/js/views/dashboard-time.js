@@ -44,12 +44,15 @@ export function renderTime(host, context) {
   const stack = context.config.stack || null;
   const colorFor = stableColorScale(context.store);
   const all = aggregateTime(context.store, context.cutIds, grouping, { stack });
-  const dated = all.filter(bin => bin.key !== '__undated__');
+  const dated = all.filter(bin => bin.key !== '__undated__' && !bin.key.startsWith('date:'));
+  const qualified = all.filter(bin => bin.key.startsWith('date:'));
   const undated = all.find(bin => bin.key === '__undated__');
+  const selectableAggregates = stack === 'doctype'
+    ? all.flatMap(bin => bin.stacks?.length ? bin.stacks : [bin]) : all;
   if (!dated.length) {
-    emptyState(host, `Der aktuelle Schnitt enthält keine datierten Primäranker${undated ? `; ${undated.count} Dokumente sind undatiert` : ''}.`);
-    if (undated) appendAccessibleList(host, [undated], context);
-    return { aggregates: all, destroy() { clear(host); } };
+    emptyState(host, `Der aktuelle Schnitt enthält keine exakten Dokumentjahre${qualified.length ? `; ${qualified.reduce((sum, bin) => sum + bin.count, 0)} Dokumente tragen qualifizierte oder intervallförmige Datierungen` : ''}${undated ? `; ${undated.count} Dokumente sind undatiert` : ''}.`);
+    appendAccessibleList(host, selectableAggregates, context);
+    return { aggregates: selectableAggregates, destroy() { clear(host); } };
   }
   const step = spanOf(grouping);
   const fullRange = [+dated[0].key, +dated.at(-1).key + step - 1];
@@ -61,7 +64,7 @@ export function renderTime(host, context) {
   const shown = dated.filter(bin => +bin.key + step > domain[0] && +bin.key < domain[1]);
   const width = 720, height = 330, margin = { top: 16, right: 16, bottom: 62, left: 42 };
   const svg = svgEl('svg', { class: 'dashboard-svg', viewBox: `0 0 ${width} ${height}`,
-    role: 'group', 'aria-label': `Zeitverteilung nach Primäranker. ${dated.length} Zeitgruppen über einer kontinuierlichen Jahresachse.` });
+    role: 'group', 'aria-label': `Zeitverteilung nach Dokumentdatum. ${dated.length} Zeitgruppen über einer kontinuierlichen Jahresachse.` });
   const x = d3.scaleLinear().domain(domain).range([margin.left, width - margin.right]);
   const y = d3.scaleLinear().domain([0, d3.max(shown, bin => bin.count) || 1]).nice().range([height - margin.bottom, margin.top]);
   d3.select(svg).append('g').attr('transform', `translate(0,${height - margin.bottom})`)
@@ -140,9 +143,9 @@ export function renderTime(host, context) {
   }
   host.append(rangeControls, el('p', { className: 'dashboard-note' },
     staleRange ? 'Das gespeicherte lokale Zeitfenster liegt außerhalb des aktuellen Schnitts; die gesamte verfügbare Zeitachse wird gezeigt. ' : '',
-    `${dated.reduce((sum, bin) => sum + bin.count, 0)} datierte und ${undated?.count || 0} undatierte Dokumente. `
+    `${dated.reduce((sum, bin) => sum + bin.count, 0)} Dokumente mit exaktem Jahr, ${qualified.reduce((sum, bin) => sum + bin.count, 0)} mit qualifizierter oder intervallförmiger Datierung und ${undated?.count || 0} undatierte Dokumente. `
       + 'Die Achse bewahrt zeitliche Lücken. Ein angewandtes Zeitfenster lässt undatierte Dokumente gemäß dem gemeinsamen Filtervertrag im Schnitt und benennt sie weiterhin separat.'));
-  appendAccessibleList(host, stack === 'doctype' ? all.flatMap(bin => bin.stacks?.length ? bin.stacks : [bin]) : all, context);
-  return { aggregates: stack === 'doctype' ? all.flatMap(bin => bin.stacks?.length ? bin.stacks : [bin]) : all,
+  appendAccessibleList(host, selectableAggregates, context);
+  return { aggregates: selectableAggregates,
     destroy() { clear(host); } };
 }

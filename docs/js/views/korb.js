@@ -11,7 +11,7 @@ import {
   formatSignatur, formatDocType, getDocTypeId, ensureArray, dftLabel, roleLabel, roleToken,
 } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { extractXlsxSource } from '../utils/provenance.js';
+import { extractXlsxSource, propertySources, compactPropertySource } from '../utils/provenance.js';
 import { primaryYear } from '../data/loader.js';
 import { AGRELON_LABELS, formatLanguage, korbIcon } from '../data/constants.js';
 import { buildRecordBlocks } from './record-detail.js';
@@ -391,9 +391,10 @@ export function buildCSVRows(ids, storeRef) {
   const store = storeRef;
   const records = ids.map(id => store.records.get(id)).filter(Boolean);
   const header = [
-    'Signatur', 'Titel', 'Typ', 'Datierung', 'Zeitanker (Rolle: Jahr [Quelle])',
+    'Signatur', 'Titel', 'Typ', 'Datierung', 'Dokumentjahr [Quelle]',
     'Konvolut', 'Quelle Blatt', 'Quelle Zeile',
     ...CSV_LINK_COLUMNS.map(([label]) => label + CSV_LINK_FORMAT),
+    'Anmerkungen', 'Eigenschaftsquellen',
   ];
   const rows = [header];
 
@@ -411,11 +412,24 @@ export function buildCSVRows(ids, storeRef) {
       .filter(link => link.family === family)
       .map(linkText)
       .join('; '));
+    const carriers = [
+      ...ensureArray(r['m3gim-ontology:hasAssociatedAgent']),
+      ...ensureArray(r['rico:hasOrHadSubject']),
+      ...ensureArray(r['rico:hasOrHadLocation']),
+      ...ensureArray(r['m3gim-ontology:hasDetail']),
+    ];
+    const notes = carriers.map(value => value?.['rico:generalDescription']).filter(Boolean).join('; ');
+    const propertyEvidence = carriers.flatMap(propertySources).map(compactPropertySource)
+      .filter(Boolean).map(item => {
+        const witness = item.xlsxSource
+          ? `${item.xlsxSource.sheet} Zeile ${item.xlsxSource.row}` : item.source || item.sourceKind;
+        return `${item.sourceProperty}: ${item.sourceValue ?? '?'} [${witness || '?'}]`;
+      }).join('; ');
 
     rows.push([
       sig, title, docType, date, anchorText(anchor), konvolut,
       source ? source.sheet || '' : '', source ? String(source.row) : '',
-      ...cells,
+      ...cells, notes, propertyEvidence,
     ]);
   }
 

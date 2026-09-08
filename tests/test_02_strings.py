@@ -25,10 +25,24 @@ def test_no_nat_artifacts(records, helpers):
 
 
 def test_no_leading_trailing_whitespace(records, helpers):
-    """All string values are stripped. Newlines in multi-line fields are fine."""
+    """Working values are stripped; explicitly recorded source literals are exact."""
+    raw_keys = {"m3gim-ontology:recordedType", "m3gim-ontology:recordedValue",
+                "m3gim-ontology:recordedRole", "rico:generalDescription",
+                "m3gim-ontology:sourceValue", "m3gim-ontology:detailField",
+                "m3gim-ontology:detailValue"}
+    def working_strings(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key not in raw_keys:
+                    yield from working_strings(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from working_strings(child)
+        elif isinstance(value, str):
+            yield value
     offenders = []
     for rec in records:
-        for s in helpers.iter_strings(rec):
+        for s in working_strings(rec):
             # Leading/trailing newlines are real (multi-line titles), only
             # flag genuine edge spaces.
             if s != s.strip() and not s.startswith("\n") and not s.endswith("\n"):

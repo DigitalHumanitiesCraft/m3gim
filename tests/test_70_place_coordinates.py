@@ -35,14 +35,6 @@ from transform import build_index_lookup, load_index  # noqa: E402
 # the same lookup in transform.py.
 PLACE_KEYS = ("rico:hasOrHadLocation", "m3gim-ontology:atPlace")
 
-# Lower bound at the data state of 2026-09-05 (measured: 23 place names that
-# only the Verknuepfungstabelle carries and the reconciliation resolved). It
-# keeps the test from passing on the place index alone.
-MIN_LINK_ONLY_PLACES = 20
-
-# Lower bound for the whole-dataset contract, well below the measured coverage.
-MIN_ENRICHED_PLACE_NODES = 200
-
 # The anchor of the objective: the performance place of a link row whose record
 # has no place column of its own.
 ANCHOR_RECORD = "UAKUG/NIM_023 5"
@@ -132,16 +124,12 @@ def test_resolved_places_carry_their_identifier(resolved_names, link_only_names,
     Two ways lost it: a name with no index row, and the place half of an
     "ort, datum" composite, whose lookup ran on the raw cell.
     """
-    assert len(link_only_names) >= MIN_LINK_ONLY_PLACES, (
-        f"Only {len(link_only_names)} resolved place names outside the place "
-        f"index, expected at least {MIN_LINK_ONLY_PLACES}. Reconciliation "
-        "shrunk or the source moved the names into the index?"
-    )
+    assert link_only_names, "Kein manuell freigegebener Ort außerhalb des Index"
     missing = sorted({
         f"{name} ({qid})"
         for name, qid in resolved_names.items()
         for node in places_by_name[name]
-        if node.get("@id") != f"wd:{qid}"
+        if node.get("m3gim-ontology:authorityReference") != {"@id": f"wd:{qid}"}
     })
     assert not missing, (
         f"Place nodes without the attested identifier: {missing[:10]}"
@@ -156,12 +144,7 @@ def test_resolved_places_carry_their_coordinates(resolved_names, link_only_names
 
     with_coordinates = {name: qid for name, qid in resolved_names.items()
                         if has_coordinates(qid)}
-    link_only_with_coordinates = [name for name, qid in link_only_names.items()
-                                  if has_coordinates(qid)]
-    assert len(link_only_with_coordinates) >= MIN_LINK_ONLY_PLACES, (
-        f"Only {len(link_only_with_coordinates)} of {len(link_only_names)} "
-        "place names outside the index carry coordinates in the enrichment"
-    )
+    assert with_coordinates, "Keine freigegebene Ortskennung mit Koordinaten im Cache"
     missing = sorted({
         name for name in with_coordinates
         for node in places_by_name[name]
@@ -177,13 +160,10 @@ def test_every_enriched_place_carries_its_coordinates(graph, enrichment):
     enriched = [
         node for node in nodes
         if "coordinates" in enrichment.get(
-            str(node.get("@id", "")).removeprefix("wd:"), {}
+            str((node.get("m3gim-ontology:authorityReference") or {}).get("@id", "")).removeprefix("wd:"), {}
         ).get("properties", {})
     ]
-    assert len(enriched) >= MIN_ENRICHED_PLACE_NODES, (
-        f"Only {len(enriched)} place nodes with an enriched identifier, "
-        f"expected at least {MIN_ENRICHED_PLACE_NODES}"
-    )
+    assert enriched, "Keine Ortsnennung mit freigegebener Koordinate im Cache"
     missing = sorted({
         node.get("name") for node in enriched
         if not isinstance(node.get("geo:lat"), (int, float))
@@ -194,8 +174,8 @@ def test_every_enriched_place_carries_its_coordinates(graph, enrichment):
     )
 
 
-def test_anchor_record_place_carries_coordinates(records):
-    """The case of the assignment, a link-table place on a folio record."""
+def test_unapproved_anchor_place_carries_no_authority_claim(records, approved_locations):
+    """A formerly automatic place candidate remains a literal source mention."""
     record = next(
         (r for r in records if r.get("rico:identifier") == ANCHOR_RECORD), None)
     assert record is not None, f"Anchor record {ANCHOR_RECORD} missing"
@@ -207,9 +187,6 @@ def test_anchor_record_place_carries_coordinates(records):
     assert place is not None, (
         f"{ANCHOR_RECORD}: place {ANCHOR_PLACE} missing"
     )
-    assert isinstance(place.get("geo:lat"), (int, float)), (
-        f"{ANCHOR_RECORD}/{ANCHOR_PLACE}: geo:lat={place.get('geo:lat')!r}"
-    )
-    assert isinstance(place.get("geo:long"), (int, float)), (
-        f"{ANCHOR_RECORD}/{ANCHOR_PLACE}: geo:long={place.get('geo:long')!r}"
-    )
+    assert ANCHOR_PLACE.lower() not in approved_locations
+    assert "m3gim-ontology:authorityReference" not in place
+    assert "geo:lat" not in place and "geo:long" not in place

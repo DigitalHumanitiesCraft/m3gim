@@ -13,14 +13,14 @@ function calendarGroup(rows, key = 'day-1953-07-26', label = '26. Juli 1953') {
   return { kind: 'group', key, label, start: 0, end: 1, y: 10, height: 250, year: 1953, rows };
 }
 
-test('shipped dense day preserves 6 sources, 46 people and 26 parts', () => {
+test('shipped dense day preserves every scoped role statement', () => {
   const timeline = buildChronikTimeline(store, baseRecords(store));
   const row = timeline.rows.find(item => item.key === '1953-07-26');
   const result = aggregateCalendarGroup(calendarGroup([row]));
   assert.equal(result.sources.length, 6);
   assert.equal(result.lanes.person.length, 46);
   assert.equal(result.lanes.werk.length, 10);
-  assert.equal(result.lanes.part.length, 26);
+  assert.equal(result.lanes.part.length, 53);
   assert.equal(result.dateLabel, '26. Juli 1953');
 });
 

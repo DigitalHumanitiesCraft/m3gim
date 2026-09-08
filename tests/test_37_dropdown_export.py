@@ -16,12 +16,14 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from transform import (  # noqa: E402
+    add_relations_to_records,
     decompose_komposit_typ,
     load_verknuepfungen,
     process_verknuepfungen,
@@ -57,6 +59,73 @@ def test_datum_ort_underscore_emits_spatiotemporal():
     assert len(ste) == 1, f"Kein SpatiotemporalEvent emittiert: {rels}"
     assert ste[0]["ort"] == "München"
     assert ste[0]["datum"] == "1952-12-17"
+
+
+def test_qualified_ort_datum_keeps_place_and_literal_boundary():
+    """A source boundary remains attached to its explicitly named place."""
+    df = pd.DataFrame([{
+        "archivsignatur": "NIM_004",
+        "typ": "ort, datum",
+        "name": "Wien, ab 1956",
+        "rolle": "Spielzeit",
+        "anmerkung": "Staatsoper Wien",
+    }])
+    indices = {"person": {}, "organisation": {}, "ort": {}, "werk": {}}
+
+    relations = process_verknuepfungen(df, indices)
+    rels = relations["NIM_004"]
+    ste = [rel for rel in rels if rel.get("typ") == "spatiotemporal"]
+
+    assert len(ste) == 1
+    assert ste[0]["ort"] == "Wien"
+    assert ste[0]["datum"] == "ab 1956"
+    assert not any(rel.get("typ") == "datum" for rel in rels)
+
+
+@pytest.mark.parametrize("raw", ["1956-11-21", "06-09"])
+def test_undivided_ort_datum_stays_one_neutral_source_statement(raw):
+    """One cell without two components does not assert two dimensions."""
+    df = pd.DataFrame([{
+        "archivsignatur": "NIM_004",
+        "typ": "ort, datum",
+        "name": raw,
+        "rolle": "Spielzeit",
+        "anmerkung": "Quellnotiz",
+        "_xlsx_sheet": "Box 1",
+        "_xlsx_row": 408,
+    }])
+    indices = {"person": {}, "organisation": {}, "ort": {}, "werk": {}}
+
+    relations = process_verknuepfungen(df, indices)
+    rels = relations["NIM_004"]
+
+    assert len(rels) == 1
+    assert rels[0]["typ"] == "unmodelled_composite"
+    assert rels[0]["recordedType"] == "ort, datum"
+    assert rels[0]["recordedValue"] == raw
+    assert rels[0]["recordedRole"] == "Spielzeit"
+    assert rels[0]["anmerkung"] == "Quellnotiz"
+    assert rels[0]["_source"] == {
+        "m3gim-ontology:xlsxSheet": "Box 1",
+        "m3gim-ontology:xlsxRow": 408,
+    }
+
+    record = {"@id": "m3gim-data:NIM_004", "@type": "rico:Record",
+              "rico:identifier": "NIM_004"}
+    annotations, performances = add_relations_to_records([record], relations)
+    details = record.get("m3gim-ontology:hasDetail", [])
+    details = details if isinstance(details, list) else [details]
+
+    assert annotations == [] and performances == []
+    assert len(details) == 1
+    assert details[0]["@type"] == "m3gim-ontology:Annotation"
+    assert details[0]["m3gim-ontology:detailField"] == "ort, datum"
+    assert details[0]["m3gim-ontology:detailValue"] == raw
+    assert details[0]["rico:generalDescription"] == "Quellnotiz"
+    assert "m3gim-ontology:atPlace" not in details[0]
+    assert "m3gim-ontology:atDate" not in details[0]
+    assert "rico:hasOrHadLocation" not in record
+    assert "m3gim-ontology:hasAnnotation" not in record
 
 
 def test_bare_waehrung_typ_emits_no_relation():

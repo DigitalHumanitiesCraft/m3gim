@@ -6,8 +6,8 @@
  * record-detail.js assembles the panel.
  */
 
-import { ensureArray, roleToken } from '../utils/format.js';
-import { extractXlsxSource } from '../utils/provenance.js';
+import { ensureArray, roleToken, asWikidataId } from '../utils/format.js';
+import { extractXlsxSource, propertySources, compactPropertySource } from '../utils/provenance.js';
 import { sectionForRole, DATING_SCOPE } from '../data/constants.js';
 import { datingsOf, datingsByScope } from '../data/loader.js';
 
@@ -76,7 +76,7 @@ export function partitionRecord(record, store) {
       performances.push({
         date,
         work: wof ? (wof.name || wof['skos:prefLabel'] || null) : null,
-        workWikidata: wof && String(wof['@id'] || '').startsWith('wd:') ? wof['@id'] : null,
+        workWikidata: asWikidataId(wof),
         roles: roleNames,
         // voiceType may sit on the stage role or the performance once modelled.
         voiceType: perf['m3gim-ontology:voiceType']
@@ -112,6 +112,7 @@ export function partitionRecord(record, store) {
   const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
   const agentRelations = store.agentRelations?.get(recordId) || [];
   const finances = store.finances?.get(recordId) || [];
+  const details = store.details?.get(recordId) || [];
   // Placeless datings only; placed ones already stand in the Ort & Ereignis
   // block, so no chip appears twice. mentionedDatings are dates NAMED in the
   // document, not biographical events, which is why they hang on the record and
@@ -154,7 +155,7 @@ export function partitionRecord(record, store) {
 
   return {
     bucket, works, performanceRoles, performances, events, locations,
-    agentRelations, finances, mentionedDatings, eventDatings,
+    agentRelations, finances, details, mentionedDatings, eventDatings,
   };
 }
 
@@ -331,6 +332,7 @@ function coordinateLine(node) {
 export function nodeTipLines(node) {
   if (!node || typeof node !== 'object') return [];
   const lines = [
+    fieldLine(node, 'rico:generalDescription', 'Anmerkung'),
     fieldLine(node, 'm3gim-ontology:indexNote', 'Indexnotiz'),
     fieldLine(node, 'm3gim-ontology:sungPart', 'Partie'),
     fieldLine(node, 'm3gim-ontology:lifespan', 'Lebensdaten'),
@@ -345,17 +347,22 @@ export function nodeTipLines(node) {
     fieldLine(node, 'm3gim-ontology:wdComposer', 'Komponist'),
     fieldLine(node, 'm3gim-ontology:wdGenre', 'Gattung'),
     fieldLine(node, 'm3gim-ontology:wdPremiereDate', 'Uraufführung'),
+    fieldLine(node, 'm3gim-ontology:wdPublicationDate', 'Publikationsdatum'),
     fieldLine(node, 'm3gim-ontology:wdInception', 'Gegründet'),
     fieldLine(node, 'm3gim-ontology:wdLocation', 'Sitz'),
     fieldLine(node, 'm3gim-ontology:country', 'Land'),
     coordinateLine(node),
   ].filter(Boolean);
   if (derived.length) {
-    const id = String(node['@id'] || '');
-    lines.push(id.startsWith('wd:')
-      ? `ergänzt: aus Wikidata ${id.slice(3)}`
-      : 'ergänzt: aus Wikidata');
     lines.push(...derived);
+  }
+  for (const raw of propertySources(node)) {
+    const source = compactPropertySource(raw);
+    const property = String(source.sourceProperty || '').replace(/^.*:/, '') || 'Wert';
+    const witness = source.sourceKind === 'index' && source.xlsxSource
+      ? `${source.xlsxSource.sheet} Zeile ${source.xlsxSource.row}`
+      : source.source;
+    lines.push(`${property}: ${source.sourceValue ?? '?'} · Quelle: ${witness || source.sourceKind || '?'}`);
   }
   return lines;
 }

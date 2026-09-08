@@ -1,5 +1,5 @@
 /** Source-backed place statements, independent of map rendering. */
-import { ensureArray, cityOf, roleIdOf, roleToken, roleLabel } from '../utils/format.js';
+import { ensureArray, cityOf, roleIdOf, roleToken, roleLabel, asWikidataId } from '../utils/format.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import { extractYear } from '../utils/date-parser.js';
 import { primaryYear } from './loader.js';
@@ -41,15 +41,13 @@ export function buildEntities(store) {
   return out;
 }
 
-const looksDateLike = value => /^\d/.test(String(value).trim());
-
 /** Stable identity of a place statement before geographic presentation. */
 export function placeStatementKey(statement) {
   const source = statement.xlsxSource;
   if (source?.sheet && source?.row) {
     return JSON.stringify([
       statement.recordId, source.sheet, source.row, source.datenpunkt ?? null,
-      statement.place, statement.roleId || statement.role || null,
+      statement.place,
     ]);
   }
   return JSON.stringify([
@@ -58,33 +56,20 @@ export function placeStatementKey(statement) {
   ]);
 }
 
-/** Add coordinates inherited from another statement of the same city. */
+/** Mark only coordinates attested on the statement itself. */
 export function assignPlacePlacement(statements) {
-  const cityCoordinates = new Map();
-  for (const statement of statements) {
-    if (!hasGeo(statement)) continue;
-    const key = cityOf(statement.place).toLowerCase();
-    if (!cityCoordinates.has(key)) {
-      cityCoordinates.set(key, [statement.placeLat, statement.placeLon]);
-    }
-  }
   for (const statement of statements) {
     if (hasGeo(statement)) statement.placement = 'direct';
-    else {
-      const coordinates = cityCoordinates.get(cityOf(statement.place).toLowerCase());
-      if (coordinates) {
-        [statement.placeLat, statement.placeLon] = coordinates;
-        statement.placement = 'city';
-      } else statement.placement = 'unlocatable';
-    }
+    else statement.placement = 'unlocatable';
   }
   return statements;
 }
 
 /**
  * Project every source-row place statement exactly once. Mirrored location and
- * annotation paths collapse only when their record, source row, place and role
- * identity agree; independent duplicate wording remains independent evidence.
+ * annotation paths collapse when their record, source row and exact place
+ * agree. The annotation path retains the recorded role and date; the mirrored
+ * location path can add only properties carried by that same source row.
  */
 export function buildOccurrences(store) {
   const locations = [];
@@ -98,13 +83,13 @@ export function buildOccurrences(store) {
   for (const record of store.allRecords) {
     for (const [index, location] of ensureArray(record['rico:hasOrHadLocation']).entries()) {
       const name = location.name || location['skos:prefLabel'];
-      if (!name || looksDateLike(name)) continue;
+      if (!name) continue;
       locations.push(withDocumentContext({
         id: `${record['@id']}:place:${index}`,
         place: name,
         placeLat: typeof location['geo:lat'] === 'number' ? location['geo:lat'] : null,
         placeLon: typeof location['geo:long'] === 'number' ? location['geo:long'] : null,
-        placeWikidata: String(location['@id'] || '').startsWith('wd:') ? location['@id'] : null,
+        placeWikidata: asWikidataId(location),
         date: null,
         role: roleToken(location.role),
         roleId: roleIdOf(location.role),
@@ -119,7 +104,7 @@ export function buildOccurrences(store) {
     }
   }
   for (const event of store.mobilityEvents.values()) {
-    if (!event.place || looksDateLike(event.place)) continue;
+    if (!event.place) continue;
     annotations.push(withDocumentContext({
       ...event,
       date: event.rawDate || event.date || null,

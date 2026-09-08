@@ -61,18 +61,3 @@ def test_record_has_no_dating_self_provenance(records):
         f"{len(offenders)} Records mit direkter Datierungs-Self-Provenance/"
         f"-Konfidenz (sollte mit E-106 entfallen sein): {offenders[:5]}"
     )
-
-
-def test_agrelon_relation_provenance_intact(graph):
-    """Positive control: the legitimate agrelon:metadataProvenance on the AgRelOn
-    relations (m3gim-ontology:hasAgentRelation, back-reference to the record) still
-    exists, the confidence removal did not take it along by accident."""
-    seen = 0
-    for n in graph:
-        for rel in ensure_list(n.get("m3gim-ontology:hasAgentRelation")):
-            if isinstance(rel, dict) and "agrelon:metadataProvenance" in rel:
-                seen += 1
-    assert seen >= 1, (
-        "Keine AgRelOn-Relation mehr mit metadataProvenance — die "
-        "Konfidenz-Entfernung hat zu viel abgeraeumt."
-    )

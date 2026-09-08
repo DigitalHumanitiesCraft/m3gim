@@ -211,11 +211,11 @@ describe('Welche Facetten die Spalte fuehrt', () => {
 });
 
 describe('Der Baum der Verknuepfungen', () => {
-  test('acht Typen mit ihren Rollen darunter, absteigend gezaehlt', () => {
+  test('Quellentypen einschließlich neutraler Angaben bleiben filterbar', () => {
     const groups = linkGroups(store);
     assert.deepEqual(groups.map(g => g.value),
-      ['person', 'institution', 'ort', 'datum', 'werk', 'finanz', 'ereignis', 'ensemble'],
-      'Die acht Typen der Verknuepfungstabelle, der ergiebigste zuerst.');
+      ['person', 'institution', 'ort', 'datum', 'werk', 'finanz', 'ereignis', 'angabe',
+        'ensemble', 'aktivität', 'datum, werk', 'dokument', 'ort, datum']);
     for (let i = 1; i < groups.length; i++) {
       assert.ok(groups[i - 1].count >= groups[i].count);
     }

@@ -89,7 +89,7 @@ def build_mobility_events(graph):
         if node_type(node) != "m3gim-ontology:Annotation":
             continue
         place = node.get("m3gim-ontology:atPlace") or {}
-        qid = place.get("@id")
+        qid = (place.get("m3gim-ontology:authorityReference") or {}).get("@id")
         events[node["@id"]] = {
             "place": place.get("name") or place.get("skos:prefLabel"),
             "wikidata": qid if str(qid or "").startswith("wd:") else None,
@@ -134,10 +134,10 @@ def collect_focus_records(records, focus):
     return ids
 
 
-def measure_axes(focus_ids, records, performances, stage_roles):
-    """Network, role, work, and relation axes over the focus Records."""
+def measure_axes(focus_ids, records, source_annotations, stage_roles):
+    """Network, source-role, and work axes over the focus Records."""
     actors, subjects, orgs = Counter(), Counter(), Counter()
-    works, roles, relations = Counter(), Counter(), Counter()
+    works, roles = Counter(), Counter()
     for rid in focus_ids:
         rec = records[rid]
         for agent in ensure_list(rec.get("m3gim-ontology:hasAssociatedAgent")):
@@ -157,17 +157,15 @@ def measure_axes(focus_ids, records, performances, stage_roles):
             elif subj.get("@type") == "m3gim-ontology:MusicalWork":
                 works[name] += 1
         for perf_ref in ensure_list(rec.get("m3gim-ontology:hasPerformance")):
-            perf = performances.get(perf_ref.get("@id"))
-            if not perf:
+            annotation = source_annotations.get(perf_ref.get("@id"))
+            if not annotation:
                 continue
-            srid = (perf.get("m3gim-ontology:hasStageRole") or {}).get("@id")
+            srid = (annotation.get("m3gim-ontology:hasStageRole") or {}).get("@id")
             if srid:
                 roles[stage_roles.get(srid, srid)] += 1
-        for rel in ensure_list(rec.get("m3gim-ontology:hasAgentRelation")):
-            relations[rel.get("@type", "?")] += 1
     return {
         "actors": actors, "subjects": subjects, "orgs": orgs,
-        "works": works, "roles": roles, "relations": relations,
+        "works": works, "roles": roles,
     }
 
 
@@ -187,7 +185,10 @@ def main():
 
     graph, meta = load_graph(data_path)
     records = {n["@id"]: n for n in graph if node_type(n) == "rico:Record"}
-    performances = {n["@id"]: n for n in graph if node_type(n) == "m3gim-ontology:Performance"}
+    source_annotations = {
+        n["@id"]: n for n in graph
+        if node_type(n) == "m3gim-ontology:Annotation" and n.get("m3gim-ontology:hasStageRole")
+    }
     stage_roles = {
         n["@id"]: (n.get("rico:name") or n["@id"])
         for n in graph if node_type(n) == "m3gim-ontology:StageRole"
@@ -202,7 +203,7 @@ def main():
         if ev["place"] and city_of(ev["place"]).lower() == focus_lower
     }
     focus_locs = {n: v for n, v in locations.items() if city_of(n).lower() == focus_lower}
-    axes = measure_axes(focus_ids, records, performances, stage_roles)
+    axes = measure_axes(focus_ids, records, source_annotations, stage_roles)
 
     print(f"# M3GIM Coverage-Scout — Fokus '{focus}'")
     print(f"# Quelle: {data_path}")
@@ -232,11 +233,9 @@ def main():
     print(fmt_counter(axes["subjects"]))
     print(f"   Organisationen, {len(axes['orgs'])} distinct:")
     print(fmt_counter(axes["orgs"]))
-    print(f"   Explizite AgRelOn-Beziehungen, {sum(axes['relations'].values())} total:")
-    print(fmt_counter(axes["relations"]))
     print()
 
-    print(f"## Rollen-Achse: {len(axes['roles'])} Buehnenrollen ueber Performances")
+    print(f"## Rollen-Achse: {len(axes['roles'])} Rollen aus Quellenzeilen")
     print(fmt_counter(axes["roles"]))
     print(f"\n## Werk-Achse: {len(axes['works'])} Werke")
     print(fmt_counter(axes["works"]))

@@ -5,9 +5,8 @@
 
 import { extractYear, splitQualifier } from '../utils/date-parser.js';
 import {
-  ensureArray, getDocTypeId, countLinks, cityOf, roleIdOf, roleToken, roleLabel,
+  ensureArray, getDocTypeId, countLinks, cityOf, roleIdOf, roleToken, roleLabel, asWikidataId,
 } from '../utils/format.js';
-import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import {
   mobilityClusterFor, ANCHORING_SCOPES, LITERAL_ROLE_SCOPE,
@@ -23,7 +22,7 @@ export async function loadArchive(url = './data/m3gim.jsonld') {
   // state shows, and a load error without its file leaves nothing to check.
   let response;
   try {
-    response = await fetch(url);
+    response = await fetch(url, { cache: 'no-cache' });
   } catch (e) {
     throw new Error(`Nicht erreichbar: ${url}`);
   }
@@ -169,8 +168,10 @@ function buildStore(jsonld) {
     agentRelations: new Map(),
     /** @type {Map<string, FinanceEntry[]>} */
     finances: new Map(),
+    details: new Map(),
     /** @type {Map<string, string>} stageRoleId → name (E-96) */
     stageRoles: new Map(),
+    stageRoleNodes: new Map(),
     /** @type {Map<string, object>} performanceId → performance node (E-96/E-98) */
     performances: new Map(),
     /** @type {Map<string, Array>} recordId → resolved performances (M2):
@@ -222,8 +223,11 @@ function buildStore(jsonld) {
       // handled in Pass 0
     } else if (nodeType === 'm3gim-ontology:Annotation') {
       indexAnnotation(store, node);
+      if (node['m3gim-ontology:performanceOf'] || node['m3gim-ontology:hasPerformer']
+        || node['m3gim-ontology:hasStageRole']) store.performances.set(node['@id'], node);
     } else if (nodeType === 'm3gim-ontology:StageRole') {
       store.stageRoles.set(node['@id'], node['rico:name'] || node['@id']);
+      store.stageRoleNodes.set(node['@id'], node);
     } else if (nodeType === 'm3gim-ontology:Performance') {
       store.performances.set(node['@id'], node);
     }
@@ -259,7 +263,7 @@ function buildStore(jsonld) {
 
   // Pass 2.5: resolve AgRelOn relations backwards onto the person index. For
   // each relation the object is looked up in the person index (primarily by
-  // Q-id, secondarily by normalizePerson(name)) and appended there in
+  // Q-id, secondarily by the unchanged recorded name) and appended there in
   // personEntry.relations[]. Provides the data for relation badges in the
   // Indizes tab.
   resolveAgentRelationsToPersons(store);
@@ -406,16 +410,10 @@ export function datingsByScope(store, record, scope) {
 }
 
 /**
- * The year of a record and the source it comes from. The Zeitanker stays
- * single-valued and named (contract A4); its precedence is the content level:
- * the highest-ranked anchoring Datierung wins, and `rico:date` of the object
- * table is the fallback. The partners read the timeline as the chronology of
- * the attested events, so the date of the Verknuepfung dates the document
- * before the archival dating of the carrier does (F3). Erwaehnung,
- * Rahmenveranstaltung and the contract status `nicht eingehalten` never date
- * (ANCHORING_SCOPES). `rank` orders the anchoring roles by the priority of the
- * aspect, not by the precision of the date value; at equal rank the source
- * order of datingsOf decides.
+ * Exact year of an explicit document date. Content annotations remain
+ * independently readable through datingsOf and never date their carrier.
+ * Qualified and interval values have no exact year; documentDateBounds keeps
+ * their recorded limits for interval-aware filtering and display.
  * @param {Object} store
  * @param {Object} record
  * @returns {Anchor}
@@ -423,24 +421,39 @@ export function datingsByScope(store, record, scope) {
 export function primaryYear(store, record) {
   const none = { year: null, source: null, roleId: null, label: null, date: null };
   if (!record) return none;
-  let best = null;
-  for (const d of datingsOf(store, record)) {
-    if (d.year == null) continue;
-    if (!ANCHORING_SCOPES.has(d.scope)) continue;
-    if (best === null || d.rank < best.rank) best = d;
-  }
-  if (best) {
-    return {
-      year: best.year,
-      source: best.origin === 'creationDate' ? 'rico:creationDate' : best.roleId,
-      roleId: best.roleId,
-      label: best.roleLabel,
-      date: best.date,
-    };
-  }
-  const archival = extractYear(record['rico:date']);
-  if (!archival) return none;
-  return { year: archival, source: 'rico:date', roleId: null, label: null, date: record['rico:date'] };
+  const source = record['rico:date'] ? 'rico:date'
+    : record['rico:creationDate'] ? 'rico:creationDate' : null;
+  if (!source) return none;
+  const raw = record[source];
+  const { qualifier, value } = splitQualifier(raw);
+  const exact = !qualifier && /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/.test(String(value || ''));
+  return { year: exact ? extractYear(value) : null, source, roleId: null, label: null, date: raw };
+}
+
+/** Explicit document-date bounds used by the shared time filter. */
+export function documentDateBounds(record) {
+  if (!record) return null;
+  const source = record['rico:date'] ? 'rico:date'
+    : record['rico:creationDate'] ? 'rico:creationDate' : null;
+  if (!source) return null;
+  const raw = record[source];
+  const { qualifier, value } = splitQualifier(raw);
+  const parts = String(value || '').split('/');
+  const valid = parts.every(part => /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/.test(part));
+  const years = valid ? parts.map(extractYear).filter(Number.isFinite) : [];
+  if (!years.length) return { source, raw, qualifier, from: null, to: null, exact: false };
+  const boundary = parts[0];
+  const excludesWholeYearBefore = /^\d{4}(?:-01(?:-01)?)?$/.test(boundary);
+  const excludesWholeYearAfter = /^\d{4}(?:-12(?:-31)?)?$/.test(boundary);
+  if (qualifier === 'vor') return { source, raw, qualifier, from: null,
+    to: years[0] - (excludesWholeYearBefore ? 1 : 0), exact: false };
+  if (qualifier === 'nach') return { source, raw, qualifier,
+    from: years[0] + (excludesWholeYearAfter ? 1 : 0), to: null, exact: false };
+  if (['ab', 'seit'].includes(qualifier)) return {
+    source, raw, qualifier, from: years[0], to: null, exact: false,
+  };
+  if (qualifier) return { source, raw, qualifier, from: null, to: null, exact: false };
+  return { source, raw, qualifier: null, from: years[0], to: years.at(-1), exact: years.length === 1 };
 }
 
 function indexByYear(store, record) {
@@ -510,7 +523,7 @@ function indexAgents(store, record) {
     const rawName = agent.name || agent['skos:prefLabel'] || '';
     if (!rawName) continue;
     const type = agent['@type'] || '';
-    const wikidata = agent['@id'] || null;
+    const wikidata = asWikidataId(agent);
 
     if (type === 'rico:CorporateBody' || type === 'rico:Group') {
       if (!store.organizations.has(rawName)) {
@@ -530,10 +543,10 @@ function indexAgents(store, record) {
       if (agent['m3gim-ontology:keyContact'] && !entry.keyContact) entry.keyContact = agent['m3gim-ontology:keyContact'];
       if (agent['m3gim-ontology:indexNote'] && !entry.note) entry.note = agent['m3gim-ontology:indexNote'];
     } else {
-      const name = normalizePerson(rawName);
+      const name = rawName.trim();
       if (isJunkName(name)) continue;
       if (!store.persons.has(name)) {
-        store.persons.set(name, { records: new Set(), roles: new Set(), kategorie: getPersonKategorie(name), wikidata });
+        store.persons.set(name, { records: new Set(), roles: new Set(), wikidata });
       }
       const entry = store.persons.get(name);
       entry.records.add(record['@id']);
@@ -558,11 +571,11 @@ function indexAgents(store, record) {
     if (subj['@type'] !== 'rico:Person') continue;
     const rawName = subj.name || subj['skos:prefLabel'] || '';
     if (!rawName) continue;
-    const name = normalizePerson(rawName);
+    const name = rawName.trim();
     if (isJunkName(name)) continue;
-    const wikidata = subj['@id'] || null;
+    const wikidata = asWikidataId(subj);
     if (!store.persons.has(name)) {
-      store.persons.set(name, { records: new Set(), roles: new Set(), kategorie: getPersonKategorie(name), wikidata });
+      store.persons.set(name, { records: new Set(), roles: new Set(), wikidata });
     }
     const entry = store.persons.get(name);
     entry.records.add(record['@id']);
@@ -586,12 +599,13 @@ function indexLocations(store, record) {
     // at least one letter.
     if (!/\p{L}/u.test(name)) continue;
     if (/^\d{4}(-\d{2}){0,2}/.test(name)) continue;
-    const wikidata = loc['@id'] || null;
+    const wikidata = asWikidataId(loc);
     if (!store.locations.has(name)) {
-      store.locations.set(name, { records: new Set(), roles: new Set(), wikidata: wikidata });
+      store.locations.set(name, { records: new Set(), roles: new Set(), countries: new Set(), wikidata: wikidata });
     }
     const entry = store.locations.get(name);
     entry.records.add(record['@id']);
+    if (loc['m3gim-ontology:country']) entry.countries.add(loc['m3gim-ontology:country']);
     const locRole = registerRole(store, loc.role);
     addEntityRole(entry, locRole, record['@id']);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
@@ -624,15 +638,13 @@ function indexWorks(store, record) {
     const name = subj.name || subj['skos:prefLabel'] || '';
     if (!name) continue;
     if (!store.works.has(name)) {
-      store.works.set(name, { records: new Set(), komponist: subj.composer || null, wikidata: subj['@id'] || null });
+      store.works.set(name, { records: new Set(), komponist: subj.composer || null, wikidata: asWikidataId(subj) });
     }
     const wEntry = store.works.get(name);
     wEntry.records.add(record['@id']);
     // WD enrichment: premiere date
     if (subj['m3gim-ontology:wdPremiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim-ontology:wdPremiereDate'];
     if (subj['m3gim-ontology:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim-ontology:wdGenre'];
-    // M2: curated index fields — the Partie Malaniuk sang + note
-    if (subj['m3gim-ontology:sungPart'] && !wEntry.partie) wEntry.partie = subj['m3gim-ontology:sungPart'];
     if (subj['m3gim-ontology:indexNote'] && !wEntry.note) wEntry.note = subj['m3gim-ontology:indexNote'];
   }
 }
@@ -737,7 +749,7 @@ function indexAnnotation(store, node) {
   if (!id) return;
   const place = node['m3gim-ontology:atPlace'];
   const placeName = place && (place.name || place['skos:prefLabel']) || null;
-  const placeQid = place && place['@id'] && String(place['@id']).startsWith('wd:') ? place['@id'] : null;
+  const placeQid = asWikidataId(place);
   const placeLat = place && typeof place['geo:lat'] === 'number' ? place['geo:lat'] : null;
   const placeLon = place && typeof place['geo:long'] === 'number' ? place['geo:long'] : null;
   const placeCountry = place && place['m3gim-ontology:country'] || null;
@@ -876,7 +888,7 @@ function indexPerformances(store, record) {
     const wof = perf['m3gim-ontology:performanceOf'];
     const work = wof
       ? { name: wof.name || wof['skos:prefLabel'] || null,
-          wikidata: (wof['@id'] && String(wof['@id']).startsWith('wd:')) ? wof['@id'] : null }
+          wikidata: asWikidataId(wof) }
       : null;
     const stageRoles = ensureArray(perf['m3gim-ontology:hasStageRole'])
       .map(r => r && r['@id'] && store.stageRoles.get(r['@id']))
@@ -913,7 +925,7 @@ function counterpartOf(rel) {
   const both = ensureArray(rel['agrelon:hasSubjectObject']);
   if (both.length > 0) {
     const other = both.find(p => p && typeof p === 'object'
-      && p['@id'] !== FONDS_SUBJECT_ID && p.name !== FONDS_SUBJECT_NAME);
+      && asWikidataId(p) !== FONDS_SUBJECT_ID && p.name !== FONDS_SUBJECT_NAME);
     return other || both[0] || {};
   }
   return rel['agrelon:hasObject'] || {};
@@ -932,7 +944,7 @@ function indexAgentRelations(store, record) {
     entries.push({
       type: rel['@type'] || null,
       objectName: obj.name || null,
-      objectWikidata: obj['@id'] && String(obj['@id']).startsWith('wd:') ? obj['@id'] : null,
+      objectWikidata: asWikidataId(obj),
       objectRole: objRole ? (objRole['@id'] || null) : null,
       objectRoleLabel: objRole ? (objRole['skos:prefLabel'] || null) : null,
       validityBegin: validity && validity['agrelon:hasBeginDate'] || null,
@@ -949,11 +961,21 @@ function indexFinances(store, record) {
   const details = ensureArray(record['m3gim-ontology:hasDetail']);
   if (details.length === 0) return;
   const entries = [];
+  const neutral = [];
   for (const det of details) {
     if (!det || typeof det !== 'object') continue;
     if (det['@type'] !== 'm3gim-ontology:Annotation') continue;
     const amount = det['m3gim-ontology:monetaryAmount'];
-    if (!amount || typeof amount !== 'object') continue;
+    if (!amount || typeof amount !== 'object') {
+      neutral.push({
+        field: det['m3gim-ontology:detailField'] || det['m3gim-ontology:recordedType'] || null,
+        value: det['m3gim-ontology:detailValue'] ?? det['m3gim-ontology:recordedValue'] ?? null,
+        role: det['m3gim-ontology:recordedRole'] || null,
+        description: det['rico:generalDescription'] || null,
+        xlsxSource: extractXlsxSource(det),
+      });
+      continue;
+    }
     const raw = amount['@value'];
     const value = raw != null ? Number(raw) : null;
     entries.push({
@@ -966,6 +988,7 @@ function indexFinances(store, record) {
     });
   }
   if (entries.length > 0) store.finances.set(record['@id'], entries);
+  if (neutral.length > 0) store.details.set(record['@id'], neutral);
 }
 
 /**
@@ -995,7 +1018,7 @@ function resolveAgentRelationsToPersons(store) {
       let personEntry = null;
       if (rel.objectWikidata) personEntry = personsByQid.get(rel.objectWikidata) || null;
       if (!personEntry && rel.objectName) {
-        personEntry = store.persons.get(normalizePerson(rel.objectName)) || null;
+        personEntry = store.persons.get(String(rel.objectName || '').trim()) || null;
       }
       if (!personEntry) continue;
       if (!personEntry.relations) personEntry.relations = [];

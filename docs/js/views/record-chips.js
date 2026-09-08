@@ -35,7 +35,7 @@ export function agentChipEls(store, entities) {
     prefix: roleLabel(store, entity.role) || 'AGENT',
     gloss: glossOf(store, roleIdOf(entity.role)),
     value: entityName(entity, entity['@id'] || '?'),
-    wikidata: asWikidataId(entity['@id']),
+    wikidata: asWikidataId(entity),
     qualityFlag: entity['m3gim-ontology:dataQualityFlag'],
     details: nodeTipLines(entity),
     tip: entityFacet(entity) ? 'Als Filter setzen' : null,
@@ -78,7 +78,7 @@ function workChipEl(w, store) {
     gloss: glossOf(store, roleIdOf(w.role)),
     value: komponist ? `${name} (${komponist})` : name,
     cluster: framing ? 'ort' : 'rolle',
-    wikidata: asWikidataId(w['@id']),
+    wikidata: asWikidataId(w),
     qualityFlag: w['m3gim-ontology:dataQualityFlag'],
     details: nodeTipLines(w),
     tip: entityFacet(w) ? 'Als Filter setzen' : null,
@@ -118,9 +118,9 @@ export function performanceChipEls(performances) {
       parts.push(p.voiceType);
     }
     return buildRoleChip({
-      prefix: 'AUFFÜHRUNG',
+      prefix: 'ANGABE',
       value: parts.join(' · '),
-      cluster: 'ort',
+      cluster: 'datum',
       wikidata: p.workWikidata,
       qualityFlag: p.qualityFlag,
       note: p.description,
@@ -175,7 +175,7 @@ export function eventChipEls(store, events, locations, eventDatings) {
       gloss: glossOf(store, roleIdOf(loc.role)),
       value: name,
       cluster: 'ort',
-      wikidata: asWikidataId(loc['@id']),
+      wikidata: asWikidataId(loc),
       qualityFlag: loc['m3gim-ontology:dataQualityFlag'],
       details: nodeTipLines(loc),
       tip: 'Als Filter setzen',
@@ -267,6 +267,15 @@ export function financeChipEls(entries) {
       value: valueParts.join(' '),
     });
   });
+}
+
+export function detailChipEls(entries) {
+  return entries.map(entry => buildRoleChip({
+    prefix: entry.field || 'Angabe ohne Typ',
+    value: entry.value === '' || entry.value == null ? 'Kein Wert erfasst' : String(entry.value),
+    note: [entry.role, entry.description].filter(Boolean).join(' · ') || null,
+    details: entry.xlsxSource ? [`Quelle: ${entry.xlsxSource.sheet} Zeile ${entry.xlsxSource.row}`] : [],
+  }));
 }
 
 /**

@@ -5,7 +5,7 @@ import { ensureArray, roleIdOf, roleLabel } from '../utils/format.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 
 const FAMILIES = ['ort', 'person', 'werk', 'part', 'institution'];
-const QUALIFIER_LABEL = { circa: 'ca.', vor: 'vor', nach: 'nach' };
+const QUALIFIER_LABEL = { circa: 'ca.', vor: 'vor', nach: 'nach', ab: 'ab', seit: 'seit' };
 
 export function dateMeta(raw) {
   const text = raw == null ? null : String(raw).trim();

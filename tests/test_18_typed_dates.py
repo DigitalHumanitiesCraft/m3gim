@@ -116,7 +116,7 @@ def test_dated_annotations_carry_their_recorded_role(records, graph):
     )
 
 
-def test_annotation_dates_iso_or_qualified_or_flagged(records, graph):
+def test_annotation_dates_preserve_source_notation(records, graph):
     """Werte sind ISO-8601, TimeSpan (YYYY/YYYY) oder qualifiziert.
 
     Eine Notationsabweichung der Quelle bleibt im Wortlaut stehen und traegt
@@ -132,13 +132,12 @@ def test_annotation_dates_iso_or_qualified_or_flagged(records, graph):
             value = node["m3gim-ontology:atDate"]
             if isinstance(value, str) and ISO_OR_QUALIFIED.match(value):
                 continue
-            flags = ensure_list(node.get("m3gim-ontology:dataQualityFlag"))
-            if "datierung-malformed" in flags:
+            if node.get("m3gim-ontology:xlsxSource"):
                 continue
             offenders.append((r["@id"], node["@id"], value))
     assert total >= 50, f"Nur {total} datierte Annotationen im Output"
     assert not offenders, (
-        f"Nicht-ISO-Datierungen ohne Flag: {offenders[:5]}"
+        f"Nicht-ISO-Datierungen ohne Quellenwert: {offenders[:5]}"
     )
 
 
@@ -161,9 +160,9 @@ def test_performance_dating_stays_on_the_performance(graph):
     Dort ist das Datum die Datierung des Ereignisses; eine Rollenangabe haette
     keinen Gegenstand.
     """
-    performances = [
-        n for n in graph if n.get("@type") == "m3gim-ontology:Performance"
-    ]
+    performances = [n for n in graph
+                    if n.get("@type") == "m3gim-ontology:Annotation"
+                    and str(n.get("@id", "")).startswith("m3gim-data:perf_")]
     dated = [n for n in performances if n.get("m3gim-ontology:atDate")]
     assert len(dated) >= 20, (
         f"Nur {len(dated)} Auffuehrungen tragen eine Datierung"

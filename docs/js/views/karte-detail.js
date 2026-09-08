@@ -1,4 +1,4 @@
-/** Source interpretation and progressive navigation in the place evidence view. */
+/** Source evidence and progressive navigation in the place view. */
 import { el } from '../utils/dom.js';
 import { formatDate } from '../utils/date-parser.js';
 import { sortOcc, placeRoleLabel } from './karte-data.js';
@@ -31,11 +31,10 @@ function isMatchingWitness(occurrence, witnesses) {
 }
 
 function evidenceRow(occurrence, group, actions) {
-  const location = occurrence.placement === 'city'
-    ? 'Kartenpunkt der gleichnamigen Stadt; die Darstellung bleibt auf Stadtebene.'
-    : occurrence.placement === 'unlocatable'
-      ? 'Ohne Koordinaten im Datenstand; der Beleg bleibt über das Dokument zugänglich.'
-      : 'Kartenpunkt aus dem Ortsabgleich; Darstellung auf Ortsebene.';
+  const location = occurrence.placement === 'unlocatable'
+    ? 'Ohne Koordinaten im Datenstand; der Beleg bleibt über das Dokument zugänglich.'
+    : 'Kartenpunkt aus dem Ortsabgleich; Darstellung auf Ortsebene.';
+  const documentDate = occurrence.documentDate || occurrence.recordDate;
   return el('article', { className: 'places-evidence', dataset: {
     evidenceId: occurrence.id, recordId: occurrence.recordId,
   } },
@@ -49,9 +48,7 @@ function evidenceRow(occurrence, group, actions) {
     el('dt', {}, 'Datum der Ortsaussage'),
     el('dd', { className: occurrence.date ? '' : 'places-absent' }, dated(occurrence.date)),
     el('dt', {}, 'Dokumentdatum'),
-    el('dd', { className: occurrence.documentDate ? '' : 'places-absent' }, dated(occurrence.documentDate)),
-    el('dt', {}, 'Primärer Zeitanker'),
-    el('dd', { className: occurrence.recordDate ? '' : 'places-absent' }, dated(occurrence.recordDate))),
+    el('dd', { className: documentDate ? '' : 'places-absent' }, dated(documentDate))),
   occurrence.qualityFlag ? el('p', { className: 'places-source-note' },
     `Datenqualität: ${occurrence.qualityFlag}`) : null,
   occurrence.description ? el('p', { className: 'places-source-note' }, occurrence.description) : null,
@@ -102,10 +99,8 @@ function relatedSection(store, group, actions) {
 export function buildPlaceOverview(store, group, actions) {
   const datedEvidence = group.evidence.filter(item => item.date);
   const roles = sortedRoles(group);
-  const placements = new Set(group.evidence.map(item => item.placement));
   const coordinateNote = !group.located ? 'Ohne Koordinaten im Datenstand.'
-    : placements.has('city') ? 'Kartenpunkt der gleichnamigen Stadt; Darstellung auf Stadtebene.'
-      : 'Kartenpunkt aus dem Ortsabgleich; Darstellung auf Ortsebene.';
+    : 'Kartenpunkt aus dem Ortsabgleich; Darstellung auf Ortsebene.';
   const roleButtons = roles.map(role => el('button', {
     type: 'button', className: 'places-role-button',
     onClick: event => actions.openSources(role.label, event.currentTarget),

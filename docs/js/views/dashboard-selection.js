@@ -13,7 +13,7 @@ const WITNESS_KINDS = Object.freeze({
   work: 'Werkangabe', composer: 'Komponistenangabe', 'work-composer': 'Werk und Komponist',
   person: 'Personenangabe', institution: 'Institutionsangabe', agent: 'Akteursangabe',
   'agent-role': 'Akteur und Rolle', 'place-statement': 'Ortsaussage', place: 'Ortsangabe',
-  placerole: 'Ortsrolle', 'primary-anchor': 'Primärer Zeitanker', time: 'Zeitangabe',
+  placerole: 'Ortsrolle', 'primary-anchor': 'Dokumentdatum', time: 'Zeitangabe',
   stagepart: 'Bühnenrolle', 'performance-part': 'Werk und Bühnenrolle',
   'set-membership': 'Mengenzugehörigkeit', annotation: 'Datierte Aussage',
 });

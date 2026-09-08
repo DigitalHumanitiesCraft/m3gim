@@ -9,7 +9,8 @@ from playwright.sync_api import expect
 
 
 TASK4_IDS = {
-    "m3gim-data:NIM_004_18", "m3gim-data:NIM_005_17",
+    "m3gim-data:NIM_004_18", "m3gim-data:NIM_004_24",
+    "m3gim-data:NIM_004_29", "m3gim-data:NIM_005_17",
     "m3gim-data:NIM_011_3", "m3gim-data:NIM_011_5",
     "m3gim-data:NIM_011_6", "m3gim-data:NIM_142_22_4",
     "m3gim-data:NIM_142_27",
@@ -36,7 +37,7 @@ def test_dashboard_defaults_and_two_independent_equal_panels(frontend_server, br
 
 
 @pytest.mark.frontend
-def test_matrix_composer_cell_opens_complete_task4_sources(frontend_server, browser_context):
+def test_matrix_composer_axis_opens_all_source_attested_documents(frontend_server, browser_context):
     page = browser_context.new_page()
     page.goto(
         frontend_server
@@ -45,7 +46,7 @@ def test_matrix_composer_cell_opens_complete_task4_sources(frontend_server, brow
     )
     panel = page.locator('.dashboard-panel[data-panel-id="b"]')
     panel.get_by_label("Dimensionspaar").select_option("doctype-composer")
-    wagner = panel.get_by_role("button", name=re.compile(r"^Wagner, Richard: 7 Dokumente$"))
+    wagner = panel.get_by_role("button", name=re.compile(r"^Wagner, Richard: 9 Dokumente$"))
     wagner.click()
     detail = page.locator(".selection-detail__panel")
     expect(detail).to_be_visible()
@@ -130,6 +131,38 @@ def test_time_brush_focus_and_explicit_filter(frontend_server, browser_context):
     )
     assert all(legend_colors[key] == color for key, color in filtered_colors.items())
     expect(panel.locator(".dashboard-note:not(.dashboard-time__brush-note)")).to_contain_text("undatierte Dokumente")
+    page.close()
+
+
+@pytest.mark.frontend
+def test_stacked_interval_dates_remain_selectable_with_document_sources(frontend_server, browser_context):
+    page = browser_context.new_page()
+    page.goto(frontend_server + "#statistik", wait_until="networkidle")
+    page.evaluate("""() => import('./js/ui/filter-state.js').then(({setFilter}) => setFilter({
+      predicates: [{type: 'records', ids: [
+        'm3gim-data:NIM_003_1_1', 'm3gim-data:NIM_003_1_2', 'm3gim-data:NIM_003_1_8'
+      ]}]
+    }))""")
+    panel = page.locator('.dashboard-panel[data-panel-id="a"]')
+    panel.get_by_label("Diagramm in Panel A").select_option("time")
+    panel.get_by_label("Zeitaufteilung").select_option("doctype")
+    panel.locator(".dashboard-values summary").click()
+    panel.locator(".dashboard-values__select").filter(
+        has_text="1944-01-01/1944-12-31 · Programm · 3 Dokumente"
+    ).click()
+    detail = page.locator(".selection-detail__panel")
+    expect(detail.locator(".dashboard-selection__records button")).to_have_count(3)
+    expect(detail.locator(".dashboard-selection__evidence")).to_have_text(
+        "3 Belege · 3 Quellenstellen"
+    )
+    detail.locator('.detail-disclosure > summary', has_text='Belege für diese Auswahl').click()
+    expect(detail.locator(".detail-disclosure[open] .dashboard-selection__witnesses li")).to_have_count(3)
+    with page.expect_download() as source_download:
+        detail.get_by_role("button", name="Quellen JSON").click()
+    payload = json.loads(source_download.value.path().read_text(encoding="utf-8"))
+    assert {(source["sheet"], source["row"]) for source in payload["marks"][0]["sourceRefs"]} == {
+        ("Objekte", 31), ("Objekte", 32), ("Objekte", 38),
+    }
     page.close()
 
 

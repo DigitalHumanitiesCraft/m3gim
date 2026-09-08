@@ -26,7 +26,8 @@ def _collect_used_qids(records):
     qids = set()
     for r in records:
         for ent in iter_entities_with_id(r):
-            aid = ent.get("@id", "")
+            ref = ent.get("m3gim-ontology:authorityReference") or {}
+            aid = ref.get("@id", "") if isinstance(ref, dict) else ""
             if aid.startswith("wd:"):
                 qid = aid.replace("wd:", "")
                 if Q_PATTERN.match(qid):

@@ -38,7 +38,7 @@ describe('Ortsliste ohne Kartenpunkt am ausgelieferten Datensatz', () => {
     // gets no lower bound: it is meant to shrink as the reconciliation resolves
     // further places.
     assert.ok(all.size >= 50, `zu wenige Orte im Datensatz: ${all.size}`);
-    assert.ok(drawn.size >= 20, `zu wenige gezeichnete Orte: ${drawn.size}`);
+    assert.ok(drawn.size >= 15, `zu wenige gezeichnete Orte: ${drawn.size}`);
 
     assert.deepEqual([...new Set([...drawn, ...listed])].sort(), [...all].sort());
     const both = [...drawn].filter(k => listed.has(k));

@@ -1,6 +1,6 @@
 /** Pure calendar geometry for the compressed Chronik axis. */
 const DAY = 86400000;
-const QUALIFIER = /^(circa|vor|nach):/;
+const QUALIFIER = /^(circa|vor|nach|ab|seit)(?::|\s+)/i;
 const MONTHS = ['Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni',
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 

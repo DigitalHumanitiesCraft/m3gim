@@ -14,6 +14,7 @@ function specialKind(row) {
   if (raw.startsWith('circa:')) return 'circa';
   if (raw.startsWith('vor:')) return 'before';
   if (raw.startsWith('nach:')) return 'after';
+  if (/^(ab|seit)(?::|\s+)/i.test(raw)) return 'openStart';
   if (row?.precision?.includes('range') || raw.includes('/')) return 'range';
   if (row?.precision === 'year') return 'year';
   return 'unclear';
@@ -41,6 +42,8 @@ function specialLabels(counts) {
   if (counts.circa) labels.push(plural(counts.circa, 'ca.-Angabe', 'ca.-Angaben'));
   if (counts.before) labels.push(plural(counts.before, 'Vorher-Angabe', 'Vorher-Angaben'));
   if (counts.after) labels.push(plural(counts.after, 'Nachher-Angabe', 'Nachher-Angaben'));
+  if (counts.openStart) labels.push(plural(counts.openStart,
+    'offene Beginnangabe', 'offene Beginnangaben'));
   if (counts.year) labels.push(plural(counts.year, 'reine Jahresangabe', 'reine Jahresangaben'));
   if (counts.unclear) labels.push(plural(counts.unclear, 'unklare Datierung', 'unklare Datierungen'));
   return labels;
@@ -60,7 +63,8 @@ export function summarizeSourceDates(contexts) {
   if (values.length <= 2) return values.map(({ row }) => row.dateLabel ?? String(row.key ?? '')).join(' · ');
 
   const precise = [];
-  const counts = { range: 0, circa: 0, before: 0, after: 0, year: 0, unclear: 0 };
+  const counts = { range: 0, circa: 0, before: 0, after: 0, openStart: 0,
+    year: 0, unclear: 0 };
   for (const context of values) {
     const precision = context.row.precision;
     if (precision === 'day' || precision === 'month') precise.push(context);

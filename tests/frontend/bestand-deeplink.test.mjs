@@ -17,6 +17,7 @@ import assert from 'node:assert/strict';
 
 import { widenFilterForRecord } from '../../docs/js/views/_bestand-filter.js';
 import { baseIds, recordsFor } from '../../docs/js/data/records-for.js';
+import { primaryYear } from '../../docs/js/data/loader.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 const store = await storeFromShipped();
@@ -102,12 +103,12 @@ describe('Die uebrigen Facetten', () => {
     assert.deepEqual(blocked, ['person']);
   });
 
-  test('das Zeitfenster wird auf das Jahr des Datensatzes ausgedehnt', () => {
+  test('das Zeitfenster wird nur bei einem exakten Dokumentjahr ausgedehnt', () => {
     const id = recordInCut(false);
     const { patch } = widenFilterForRecord(
       store, id, { ...DEFAULT_CUT, zeitfenster: [1919, 1920] });
-    assert.ok(Array.isArray(patch.zeitfenster), 'das Fenster wird geweitet');
-    assert.equal(patch.zeitfenster[0], 1919);
-    assert.ok(patch.zeitfenster[1] > 1920);
+    const year = primaryYear(store, store.records.get(id)).year;
+    if (year == null) assert.equal(patch.zeitfenster, undefined);
+    else assert.deepEqual(patch.zeitfenster, [Math.min(1919, year), Math.max(1920, year)]);
   });
 });

@@ -81,12 +81,11 @@ describe('getGridEntries', () => {
 });
 
 describe('Freitextsuche', () => {
-  test('Personen werden ueber Name und Kategorie gefunden', () => {
+  test('Personen werden ausschließlich über ihre Quellenbezeichnung gefunden', () => {
     clearEntriesCache();
     const all = getGridEntries(STORE, 'personen');
     assert.deepEqual(namesOf(filterEntries(all, 'personen', { q: 'malaniuk' })), ['Malaniuk, Ira']);
-    assert.deepEqual(namesOf(filterEntries(all, 'personen', { q: 'dirigent' })),
-      ['Karajan, Herbert von'], 'die Kategorie gehoert zu den Suchfeldern');
+    assert.deepEqual(namesOf(filterEntries(all, 'personen', { q: 'dirigent' })), []);
   });
 
   test('Werke werden auch ueber den Komponisten gefunden', () => {
@@ -145,15 +144,14 @@ describe('AgRelOn-Beziehungen', () => {
     assert.equal(malaniuk.relations, null);
   });
 
-  test('im ausgelieferten Datenstand tragen Personen Beziehungen', async () => {
+  test('im ausgelieferten Datenstand werden keine Beziehungen aus Namen erzeugt', async () => {
     const store = await storeFromShipped();
     clearEntriesCache();
     const entries = getGridEntries(store, 'personen');
     const mitRelation = entries.filter(e => e.relations && e.relations.length > 0);
     // Der Datenstand fuehrt 35 solche Personen mit 61 Belegen; die Schwelle
     // faengt den Totalausfall, nicht die normale Drift des Bestands.
-    assert.ok(mitRelation.length >= 20,
-      `Nur ${mitRelation.length} Personen mit Beziehungen im Datenstand.`);
+    assert.equal(mitRelation.length, 0);
     assert.ok(mitRelation.every(e => e.relations.every(r => r.type && r.recordId)),
       'Jede Relation braucht Typ und Beleg-Record fuer den Badge und seinen Sprung.');
     clearEntriesCache();

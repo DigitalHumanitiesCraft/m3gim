@@ -194,24 +194,24 @@ describe('Zeilenmodell des Bestands', () => {
     // UAKUG/NIM_139 109 keine einzige mit rico:date, aber Seiten mit ankernder
     // Datierung. Keines der drei Blaetter ist undatiert.
     for (const [sig, span] of [['UAKUG/NIM_007 5', '1957 – 1958'],
-      ['UAKUG/NIM_137 12', '1953'], ['UAKUG/NIM_139 109', '1956']]) {
+      ['UAKUG/NIM_137 12', '1953'], ['UAKUG/NIM_139 109', null]]) {
       const item = folioRows.find(i => i.record['rico:identifier'] === sig);
       const facts = folioRowFacts(store, item);
       assert.equal(facts.date, null, `${sig}: die Seiten nennen kein gemeinsames Datum`);
       assert.equal(facts.dateSpan, span);
-      assert.equal(isUndatedItem(item, store), false);
+      assert.equal(isUndatedItem(item, store), span == null);
     }
   });
 
-  test('die Spanne nimmt das Jahr des Ankers, nicht das Feld', () => {
+  test('die Spanne nimmt ausschließlich das Dokumentdatum', () => {
     // UAKUG/NIM_023 1_1 traegt rico:date 1952, seine Auffuehrung datiert es auf
     // 1953; die Spanne des Blattes reicht deshalb ueber zwei Jahre, obwohl alle
     // drei Seiten dasselbe rico:date fuehren. Ohne den Anker sagte die Zeile
     // ein anderes Jahr als die Chronik.
     const item = folioRows.find(i => i.record['rico:identifier'] === 'UAKUG/NIM_023 1');
     assert.equal(new Set(item.pages.map(p => p['rico:date'])).size, 1);
-    assert.equal(primaryYear(store, item.pages[0]).year, 1953);
-    assert.equal(folioRowFacts(store, item).dateSpan, '1952 – 1953');
+    assert.equal(primaryYear(store, item.pages[0]).year, 1952);
+    assert.equal(folioRowFacts(store, item).dateSpan, '1952');
   });
 
   test('ein Blatt mit eigener Erschliessung behaelt sie', () => {

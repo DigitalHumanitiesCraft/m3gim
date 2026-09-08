@@ -9,9 +9,7 @@
  *     Datei beim Setzen, ohne dass die Anwendung etwas meldet.
  *   * Eine Maskierung läuft über ihre eigenen Ersetzungen und macht aus `&`
  *     zuerst `\&` und dann `\textbackslash{}&`.
- *   * Die CSV-Spalte Beziehungen nennt den Partner ohne die Richtung, obwohl
- *     das Detail „Korrespondenz · Adressat" zeigt; aus der gerichteten
- *     Beziehung wird eine bloße Nennung.
+ *   * Recorded person roles or notes become an inferred relationship in CSV.
  *
  * Lauf: node --test tests/frontend/korb-export.test.mjs
  */
@@ -26,8 +24,8 @@ import { storeFromShipped } from './_shipped.mjs';
 // der andere einen Unterstrich in Titel und Signatur.
 const AMP_ID = 'm3gim-data:NIM_069';
 const UNDERSCORE_ID = 'm3gim-data:NIM_137_15_1';
-// Trägt eine Korrespondenz mit erfasster Rolle des Ziels.
-const CORRESPONDENCE_ID = 'm3gim-data:NIM_003_1_1';
+// Original addressee and author roles, Box 2 rows 330 and 331.
+const CORRESPONDENCE_ID = 'm3gim-data:NIM_016_13';
 
 let store;
 before(async () => { store = await storeFromShipped(); });
@@ -90,16 +88,13 @@ describe('CSV-Zeilen', () => {
     assert.equal(rows.length, 2);
   });
 
-  test('die Beziehung nennt die Richtung wie der Chip im Detail', () => {
-    const rel = store.agentRelations.get(CORRESPONDENCE_ID)
-      .find(r => r.type === 'agrelon:HasCorrespondent' && r.objectRoleLabel);
-    assert.ok(rel, 'Fixture trägt keine Korrespondenz mit Rolle mehr');
+  test('Quellenrollen und Notizen bleiben erhalten ohne erzeugte Beziehung', () => {
     const rows = buildCSVRows([CORRESPONDENCE_ID], store);
-    const cell = rows[1][column(rows, 'Beziehungen')];
-    assert.ok(
-      cell.includes(`Korrespondenz \u00b7 ${rel.objectRoleLabel}: ${rel.objectName}`),
-      cell,
-    );
+    assert.equal(rows[1][column(rows, 'Beziehungen')], '');
+    assert.equal(rows[1][column(rows, 'Personen')],
+      'adressat: Malaniuk, Ira [Box 2 Zeile 330]; verfasser: Rüger [Box 2 Zeile 331]');
+    assert.ok(rows[1][column(rows, 'Anmerkungen')].includes(
+      'Vorname fehlt, Mitarbeiter Süddeutscher Rundfunk'));
   });
 
   test('eine Beziehung ohne Rolle bleibt ungerichtet', () => {

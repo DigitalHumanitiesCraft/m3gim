@@ -178,11 +178,12 @@ describe('M2: kuratierte Index-Felder + Performance-Kette (synthetisch)', () => 
     assert.equal(p.lifespan, '1919-2009');
   });
 
-  test('Werk-Partie kommt im Werk-Store an', async () => {
+  test('Werk-Partie bleibt am konkreten Quellen-Subject', async () => {
     const store = await storeFrom(FIXTURE);
-    const w = store.works.get('Aida');
-    assert.ok(w, 'Werk nicht im Store');
-    assert.equal(w.partie, 'Amneris', 'die von Malaniuk gesungene Partie fehlt');
+    const record = store.records.get('m3gim-data:TEST_1');
+    const work = record['rico:hasOrHadSubject'].find(value => value.name === 'Aida');
+    assert.equal(work['m3gim-ontology:sungPart'], 'Amneris');
+    assert.equal(store.works.get('Aida').partie, undefined);
   });
 
   test('Performance-Kette: Record -> Werk + Performer + Buehnenrolle aufgeloest', async () => {
@@ -241,9 +242,8 @@ describe('Loader gegen den echten Datenstand', () => {
 
   test('AgRelOn + Finanzen kommen an', async () => {
     const store = await storeFrom(loadDocsData());
-    const rel = [...store.agentRelations.values()].flat()
-      .find(r => r.type && r.provenance);
-    assert.ok(rel, 'keine wohlgeformte AgRelOn-Relation');
+    assert.equal([...store.agentRelations.values()].flat().length, 0,
+      'untypisierte Quellangaben dürfen nicht als Sachrelation erscheinen');
     const fin = [...store.finances.values()].flat()
       .find(e => typeof e.amount === 'number' && e.currency);
     assert.ok(fin, 'kein Finanz-Eintrag mit Betrag + Waehrung');
@@ -260,14 +260,12 @@ describe('Loader gegen den echten Datenstand', () => {
   });
 
   // M2: kuratierte Index-Felder + Performance-Kette kommen real an (Drift-Lock).
-  test('M2: Org-Sitze, Werk-Partien und Performance-Kette real im Store', async () => {
+  test('M2: Org-Sitze und neutrale Performance-Carrier kommen real im Store an', async () => {
     const store = await storeFrom(loadDocsData());
     const orgsMitSitz = [...store.organizations.values()].filter(o => o.sitz);
     assert.ok(orgsMitSitz.length >= 15,
       `nur ${orgsMitSitz.length} Institutionen mit Sitz im Store (erwartet >= 15)`);
-    const werkeMitPartie = [...store.works.values()].filter(w => w.partie);
-    assert.ok(werkeMitPartie.length >= 10,
-      `nur ${werkeMitPartie.length} Werke mit Partie im Store (erwartet >= 10)`);
+    assert.ok([...store.works.values()].every(w => w.partie == null));
     assert.ok(store.recordToPerformances.size >= 20,
       `nur ${store.recordToPerformances.size} Records mit aufgeloesten Performances`);
     // Wohlgeformtheit: mind. eine Performance traegt Werk ODER Buehnenrolle.
@@ -367,7 +365,7 @@ describe('Doppelt vergebene Q-ID im Personen-Index', () => {
       'Relationen liegen am schwaecher belegten Namensdublett: ' + verfehlt.join(' | '));
   });
 
-  test('Anker: Wieland Wagner haelt seine Beziehungen unter der kanonischen Schreibweise', async () => {
+  test('Namensvarianten bleiben ohne Beziehungsübertragung getrennt', async () => {
     const store = await storeFromShipped();
     const kanonisch = store.persons.get('Wagner, Wieland');
     const tippfehler = store.persons.get('Wagner, WIeland');
@@ -375,8 +373,7 @@ describe('Doppelt vergebene Q-ID im Personen-Index', () => {
       'Anker-Namen fehlen im Datenstand — Fixture pruefen');
     assert.ok(kanonisch.records.size > tippfehler.records.size,
       'Anker setzt voraus, dass die kanonische Schreibweise belegstaerker ist');
-    assert.ok((kanonisch.relations || []).length >= 8,
-      `'Wagner, Wieland' haelt nur ${(kanonisch.relations || []).length} Relationen`);
+    assert.equal((kanonisch.relations || []).length, 0);
     assert.equal((tippfehler.relations || []).length, 0,
       'die Tippfehlervariante zieht Relationen von der kanonischen Schreibweise ab');
   });

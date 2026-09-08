@@ -63,7 +63,7 @@ The pilot evaluates whether RiC-O 1.1, the m3gim extension and AgRelOn support t
 
 - One result set, shared by all views and restricted through the facets of the one left sidebar.
 - Every data point visible with its role and a way back to the record that carries it. Technical source cells remain available in data and exports (E-285).
-- The four registers of persons, institutions, places and works as entry points, with the Wikidata identity where a match exists.
+- The four registers of recorded person, institution, place and work mentions as entry points, with separately sourced authority references where an identity is explicitly recorded or approved.
 - The Korb as a collection across views, with an export that carries source cells and links.
 - The data state of the dataset named in every view.
 
@@ -72,10 +72,10 @@ The requirements per research question are set out as epics and stories below an
 ### Non-functional
 
 - No backend, no build chain, all data loaded at start, deliverable as static files.
-- `docs/data/m3gim.jsonld` is the single archival data source of the frontend, and no count is hard coded in the application. E-290 adds a separately identified editorial context layer from the research framework.
+- `docs/data/m3gim.jsonld` is the single archival data source of the frontend, and no count is hard coded in the application. E-301 removes the former editorial context layer from the research interface.
 - Reproducible, meaning versioned source exports and a pipeline that derives the same dataset from them.
 - Connectable to linked open data through RiC-O 1.1, AgRelOn, SKOS and Wikidata identifiers.
-- Archival assertions must derive from the metadata. E-290 permits a separate, explicitly editorial and source-linked biographical context layer; it neither changes archival evidence nor participates in document filtering.
+- Archival assertions must preserve the source metadata without added historical interpretation. E-301 removes inferred values and the editorial biography layer from the research interface. Original values, uncertainty and property-level provenance remain accessible.
 - No pre-emptive performance optimization (E-25). A markedly larger fonds in a follow-up project would reassess this.
 - Interface strings and Datenspiegel findings are German. Knowledge is English by default; the partner-facing recording guide stays German.
 
@@ -98,7 +98,7 @@ The dataset carries the place with its role and the record. A date stands at the
 - As a musicologist I want to see every work with its composer and the stage parts the fonds assigns to it, and reach the records from there.
 - As a musicologist I want to recognise when the same work or stage part appears under several spellings, because the tool merges nothing the recording keeps apart.
 
-The dataset carries stage part and work as separate entities and binds them only through the curated Partie of the Werke index. Elsewhere the interface infers the binding from a record that names a single work and marks the result as derived. Spelling variants stand as separate entries, because the tool merges nothing the recording keeps apart.
+The dataset carries stage part and work as separately recorded components. A work–part binding is displayed only where an explicit source statement or the work index records it, with that source identified. A document naming exactly one work supplies no additional binding. Source names remain unchanged; search folding cannot merge identities (E-301).
 
 ### Epic 3. Where did she sing what, when, and for which house?
 
@@ -121,7 +121,7 @@ Every role used in the dataset is exported as a concept with a label (E-254). Th
 - As a musicologist I want to see recorded relations with their kind, correspondence, colleagueship, patronage and the others, and distinguish them from mere co-mention at the same record.
 - As a musicologist I want to move from a person or institution to its surroundings, persons, places, works, houses, and restrict the result set by time.
 
-The dataset carries both kinds of evidence and keeps them apart. Recorded relations are few and each stands in a single document, co-mention is frequent and counted. The tool shows both and marks which is which.
+The current dataset carries person roles and original notes alongside document co-mentions. E-301 removes relationships previously generated from those roles or notes. A formal relationship requires an explicit source statement identifying its participants and kind; the current export supplies no such relationship nodes. The relationship story therefore remains limited to inspection of the recorded wording.
 
 ### Epic 6. How did her knowledge travel?
 
@@ -137,7 +137,7 @@ The dataset carries the document types with their vocabulary hierarchy, a few gr
 - As a researcher I want to see at every view on how many records of the current data state it rests, and the date of that data state.
 - As a researcher I want to collect records across views in the basket and export them with their evidence and links.
 
-The dataset carries the source cell of every data point and, at a normalized entity, the Wikidata identity without a degree of certainty, because the match confidence stays in the reconciliation report and is deliberately not asserted at the entity (E-106). The common coverage line exposes the data-state date through its tooltip and accessible label in all six views.
+The dataset carries source-cell provenance and separates local mentions from their recorded or manually approved authority references. Algorithmic match candidates remain outside archival assertions. Index and Wikidata additions retain property-level provenance. The common coverage line exposes the data-state date through its tooltip and accessible label.
 
 ### What the epics leave out
 
@@ -151,7 +151,7 @@ Version 0.9 is the state in which every story of § Epics and user stories is fu
 
 The implementation scope is the document-centred tool (E-282, E-296). One shared search, facets and the time window select linked source records across the research views. Typing previews suggestions; Enter commits free text and an active suggestion commits its original typed identity. Separate open/focus actions preserve the cut. Graph and chart selection exposes supporting evidence; applying it as a filter is explicit. An explicit filter URL replaces the previous filter; navigation without a filter query preserves it. Filter undo/redo is available across views.
 
-The time window uses the primary record time anchor, with undated records retained as declared context. A map annotation keeps its own date as source evidence; it is not a second, silent time filter. Each view accounts for its eligible subset, such as located places or actors excluding the creator of the fonds. Grouped rows and aggregate counts refer back to the records they represent.
+The time window uses the recorded document dating with its actual precision and boundaries, with undated records retained as declared context. A content date cannot silently replace a missing document date (E-301). A map annotation keeps its own date as source evidence; it is not a second, silent time filter. Each view accounts for its eligible subset, such as located places or actors excluding the creator of the fonds. Grouped rows and aggregate counts refer back to the records they represent.
 
 The Chronik displays every recorded document and statement date within that shared document set (E-287). Its source and entity lanes retain document context, uncertainty, undated evidence and complete access to dense groups. Dated rows do not by themselves bind co-mentioned entities into an occurrence.
 
@@ -163,7 +163,7 @@ The Dashboard supplies two independently configurable, coordinated views over th
 
 The network exposes document co-mention among persons and institutions in the shared result set. Its two-mode projection links actors to their attesting records. Its actor projection connects actors through shared records and counts distinct records as edge strength. Groups follow the model's institution classification. The creator of the fonds and her recorded variants are excluded from the drawing because their ubiquity obscures the other connections; the person facet still includes her.
 
-Explicitly recorded relations remain distinguishable from co-mention and link to their evidence. Co-mention establishes neither collaboration nor a shared appearance. Undated records remain identifiable context under the common time cut. Both projections expose their complete eligible sets without a hidden threshold.
+Original roles and notes remain accessible at their source documents. The current graph contains no formal agent relationships. Co-mention establishes neither collaboration nor a shared appearance. Undated records remain identifiable context under the common time cut. Both projections expose their complete eligible sets without a hidden threshold.
 
 Selection, layout, legends and detail behaviour belong to [design.md](design.md) § Views. Projection, rendering and GEXF serialization belong to [architecture.md](architecture.md) § Views.
 
@@ -174,10 +174,10 @@ All research views use the shared document cut. The common toolbar and sidebar o
 | View | Research operation and evidence |
 |---|---|
 | Bestand | Browse linked archival records in signature and Konvolut order, inspect every recorded field and follow Folio pages. Unlinked records remain outside the application basis. |
-| Chronik | Compare recorded document and statement dates in source and entity lanes, preserving precision, qualifiers, undated evidence and access to dense groups. Separately sourced editorial bands provide biographical context. |
+| Chronik | Compare recorded document and statement dates in source and entity lanes, preserving precision, qualifiers, undated evidence and access to dense groups. |
 | Orte | Find places and recorded roles, inspect complete source evidence, compare geographical distribution through an optional map and open the selected place in the Chronik. Document dates and explicitly dated place statements remain separate. Places without coordinates remain in the list. Historical journeys and realized appearances require source assessment and occurrence binding. |
-| Register | Enter through persons, institutions, places or works, inspect enrichment and document evidence, and continue into the relevant analytical view. Curated, derived and ambiguous work/part bindings remain distinguishable. |
-| Netzwerk | Inspect actor/document co-mention and explicitly recorded relations under the contract above. |
+| Register | Enter through persons, institutions, places or works, inspect sourced enrichment and document evidence, and continue into the relevant analytical view. Explicit source bindings and unassigned stage parts remain distinguishable. |
+| Netzwerk | Inspect actor/document co-mention and follow original roles and notes under the contract above. |
 | Dashboard | Coordinate two chosen visualizations, explore composition, co-mentions, temporal coverage, place-role evidence and set intersections, compare two document sets and extract the exact supporting evidence. The legacy `statistik` route remains valid. |
 | Korb | Collect records across views and export CSV, BibTeX, JSON-LD or GEXF with source cells and links sufficient to trace the evidence. |
 
@@ -190,15 +190,14 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 ### Model and vocabulary
 
 - Gendered role labels. Source forms include gendered labels, while E-63 normalises the colon suffixes and the vocabulary supplies the current display labels. The partners' requested display change remains an editorial decision. Exact original spelling remains recoverable through the source cell; colon-suffix normalisation precedes `derivedFromRole` handling.
-- Further correspondence modelling beyond the existing fonds-centred relation model. E-129 already decides the suppression of self-relations involving the creator, and E-149 defines symmetric correspondence with both participants and their recorded side roles. Any change to this scheme requires an explicit model revision.
+- Explicit correspondence recording with source-bound participants and relation kind. E-301 supersedes the fonds-centred inference model; sender/addressee roles and original notes remain separate source statements.
 - `sammlung` against `konvolut`, meaning whether the two names separate a physical wrapper from a thematic compilation or denote the same thing. The vocabulary carries `collection` without a `skos:broader` on `konvolut` and an editorial note holding the question open.
 - The formal binding of a `StageRole` entity to its work, its relationship with the stage-part literal retained from the work index, and a separate recording index supplying work identity and voice type. StageRole entities are already implemented. The two source rows classifying `protagonist` as a person remain an editorial type finding.
 - The occurrence implementation. The target model is decided (E-125, E-127, E-128), the pipeline grouping and the recording rollout are open, and until they exist the Netzwerk shows co-mention at the record and the binding of person, stage part and performance is missing from the dataset.
 - Formal contract status and realization fields. Current statements in the annotation column are already retained as `rico:generalDescription` and displayed at their data points. A structured status model remains pending clarification with the cataloguing team.
-- The inference rules from co-presence, meaning under which threshold of shared performances and which measure of temporal proximity a co-mention may become an annotated relation. No such rule exists, and none is applied.
-- The interval meaning of qualified datings in the shared time filter. `circa:`, `vor:` and `nach:` are already preserved and displayed; the current filter uses their numeric year anchor. The Chronik renders qualified boundaries independently of that filter contract, including the recorded `nach:1956` value. Wikidata time precision is implemented under E-132 and remains implicit in the value's length.
+- Additional recording of date precision and explicit bounds. E-301 already requires preservation of qualifiers and prohibits turning a qualified or free-text dating into an exact year. No tolerance around `circa` is inferred. Wikidata time precision is retained through the recorded value's length.
 - The RDF shape of annotations and embedded identities, RiC-O range alignment for language, extent and document type, and the placement of `dataPointId` provenance. [data-model.md](data-model.md) records the present compromises.
-- Currency defaults and their derivation, processing-status vocabulary, and the unused `detail` link convention require agreement with the cataloguing team before recording guidance or emission changes.
+- Processing-status vocabulary and conventions for neutral detail recording require agreement with the cataloguing team. E-301 already prohibits currency defaults; missing currencies remain missing.
 - Whether the five movement types of [research-framework.md](research-framework.md) enter the model as a second mobility axis beside the five event perspectives, or whether both sets are merged.
 
 ### Interface and operation

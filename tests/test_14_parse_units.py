@@ -148,12 +148,10 @@ def test_decompose_ort_datum_with_year_only():
 
 
 def test_decompose_ort_datum_freitext_beginn():
-    """'Wien, ab 1956' wird am Komma getrennt und das Freitext-Datum auf den
-    nach:-Qualifier normalisiert (E-102): ort='Wien', datum='nach:1956'. Kein
-    Ort-Leak mehr ins Datumsfeld."""
+    """'Wien, ab 1956' wird getrennt und die Datierung wortgetreu bewahrt."""
     result = decompose_komposit_value("Wien, ab 1956", ["ort", "datum"])
     assert result["ort"] == "Wien"
-    assert result["datum"] == "nach:1956"
+    assert result["datum"] == "ab 1956"
 
 
 @pytest.mark.parametrize("raw,ort,datum", [

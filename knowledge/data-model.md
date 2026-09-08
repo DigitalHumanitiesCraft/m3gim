@@ -52,10 +52,11 @@ The project terms sit in three namespaces separated by the kind of thing they na
 | `schema` | `https://schema.org/` | life dates of persons |
 | `gndo` | `https://d-nb.info/standards/elementset/gnd#` | occupation as a literal |
 | `wd` | `http://www.wikidata.org/entity/` | Wikidata entities as identifiers |
-| `owl` | `http://www.w3.org/2002/07/owl#` | `owl:sameAs` on reconciled entities |
+| `owl` | `http://www.w3.org/2002/07/owl#` | Ontology declarations; local source mentions never use `owl:sameAs` |
 | `geo` | `http://www.w3.org/2003/01/geo/wgs84_pos#` | WGS84 coordinates |
 | `skos` | `http://www.w3.org/2004/02/skos/core#` | organization of the controlled vocabularies |
 | `xsd` | `http://www.w3.org/2001/XMLSchema#` | datatypes |
+| `dcterms` | `http://purl.org/dc/terms/` | source reference of a property-level provenance statement |
 
 Identical names in different namespaces are admissible and denote different things. The property for a composer and the role value for a composer are one such pair, the class for a framing event and the role value for a framing event another.
 
@@ -77,7 +78,7 @@ The extension adds five classes, and the reason for each is a property of the ma
 
 A date row and a place row carrying the same role are not merged into one node (E-139). Merging would assert a togetherness the recording did not record, the derivation is left to the interface, and the source cell stays single-valued per node.
 
-`m3gim-ontology:Performance` is the event class used by the current transformation for source composites of stage part with performer and of date with work. Each emitted node represents such a fragment; it does not establish a fully grouped, realized appearance. `m3gim-ontology:FramingEvent` is the superordinate event within which single performances take place, a festival, a concert series or a season, and its name follows the English label of the term rather than describing a performance (E-139). `m3gim-ontology:MusicalWork` is identified through the work index. `m3gim-ontology:StageRole` makes the stage part a reusable entity rather than a string attribute, because parts recur across documents and years and are referenced as such.
+Source composites of stage part with person and of date with work use neutral `m3gim-ontology:Annotation` carriers under E-301. Existing `perf_` identifiers and the `hasPerformance` access path remain for continuity; their vocabulary declarations do not classify the carrier as an event or establish actual participation. Source `ereignis`, `Aktivität` and `dokument` rows remain neutral statements of their recorded type. The legacy `Performance` and `FramingEvent` classes are not supplied by guessing what these rows describe. `MusicalWork` follows the recorded work type. Stage-part names remain available without inferring which work or appearance they belong to.
 
 ### Roles as one property
 
@@ -95,11 +96,11 @@ The relational properties connect an archival resource to an agent, a performanc
 
 The descriptive and dating properties are strings throughout. Every date value is a string, because historical dating regularly exceeds the schema strictness of a date datatype through spans, incomplete values and the three qualifiers, so whoever filters by time parses those forms. Vocabulary resolution keeps an incoming role alias in `m3gim-ontology:derivedFromRole` when it differs from the preferred label. Exact spelling before case and gender-suffix normalisation remains available at the source cell.
 
-Two properties sit on the role concept rather than on the data and were a hand table in the interface until they moved into the vocabulary (E-150). `m3gim-ontology:datingScope` names what a dating dates and draws from the scheme of dating scopes, and only a dating of the object itself and a dating of an attested event may date a document, the remaining scopes staying readable without setting the time anchor. `m3gim-ontology:datingRank` is an integer deciding between several anchoring datings of one document, the smaller value taking precedence, and a concept without a rank sorting behind every concept with one.
+Two properties sit on the role concept rather than on source statements (E-150). `m3gim-ontology:datingScope` categorises the recorded dating role; `m3gim-ontology:datingRank` provides a display order for those categories. E-301 uses the explicitly recorded document date for the shared time filter. Neither vocabulary property can turn a content date into a missing document date.
 
 `m3gim-ontology:unresolvedAggregate` is true on a main-holdings record that stands at top level without a folio and therefore denotes a collective unit whose folio cataloguing is pending. It replaces a character test on the signature that the interface performed itself, because the holdings group is a statement of the material and belongs in the dataset rather than in display logic.
 
-The quality properties carry a controlled flag derived from uncertainty signals in the note field, together with a confidence value that is declared and deliberately empty (E-102, E-106). The note texts yield no quantifiable confidence signal, and a number set there would be exactly the invented confidence the guardrail forbids. The flag itself is the uncertainty signal.
+Original notes retain their wording as `rico:generalDescription`. E-301 removes heuristic quality flags derived from name forms or note keywords. The separately recorded `datingEvidence` category is preserved; the application assigns no numeric confidence to it. Legacy quality properties remain available only for explicitly recorded values.
 
 The authority-data properties injected from the Wikidata enrichment use an established vocabulary wherever one carries, life dates through schema.org and occupation through the GND literal property, and stay under the project namespace only where none does (E-105). Their four time values are cut to the precision attested in Wikidata and therefore carry the forms of EDTF level 0, with the precision level implicit in the length of the value (E-132). Beside them the curated index properties pass the index columns through onto the entity, which is what reaches an unmatched entity without a Q-identifier. Curated and enriched values stay separate on purpose, and where they overlap, as the curated note does with the enriched occupation, the resolution is open.
 
@@ -109,7 +110,7 @@ Two properties are declared and emitted only where the source column exists, the
 
 An annotation node receives a content-based identifier, a hash over place, role and date prefixed by the record-local identifier, with a stable ordinal suffix where genuine content duplicates occur on one record (E-115). The identifier is thus a pure function of its content and stable against the row order of the source.
 
-A stage part receives a deterministic slug identifier with umlaut transliteration and is deduplicated over it. The vocabulary stays separate from this, because it carries relation roles as values and not stage parts as entities.
+A stage-part mention receives a deterministic identifier scoped to its source statement. Equal part names do not establish an identity across works or documents. The vocabulary stays separate because it carries relation roles as values and not stage parts as entities.
 
 Documents and convolutes keep the archival signature as their local name. An additional type marker would add no distinction and would break every bookmark a second time, because the record identifier travels into the URL hash of the application.
 
@@ -129,25 +130,21 @@ The documentary form types are hierarchical so that a query can filter granularl
 
 AgRelOn, the Agent Relationship Ontology of the German National Library, models relations between agents over a categorized vocabulary of relation types. The model integrates it as a complementary layer for agent-to-agent relations and for meta-statements. It replaces no part of the project model, because its scope is limited to agent and agent and covers neither spatiotemporal nor work-related nor archival relations. The reasons for using it are a standard vocabulary for the institutional and the correspondence layer, connectivity to GND-based holdings of other archives, and one uniform meta-statement pattern.
 
-Five relation classes occur in the dataset, for correspondence, for professional contact, for the employment relation, for patronage and for membership. A colleague relation and a student-teacher relation stand ready as an extension space and are not served by the current mapping pattern. The relations hang on the attesting document over `m3gim-ontology:hasAgentRelation`, which stands without a range, because AgRelOn does not carry its relation classes under a common superclass attested here.
+The former transformation generated fonds-centred correspondence, professional, employment, patronage and membership relations from document roles. E-301 retires that inference. A named institution with a role at a document does not by itself identify the other party or establish an agent-to-agent relationship. A document date cannot supply the beginning of employment.
 
-The n-ary reification pattern, meaning one class per relation type with the agents in subject and object position and validity as a blank node, corresponds exactly to AgRelOn (E-104, amended E-69). Validity, confidence and provenance are the metadata properties of AgRelOn and not the has-properties. The reification carries both the subject and the object side.
-
-Two departures from the plain subject-object shape follow from AgRelOn itself. Where the relation property is declared symmetric, which in this dataset is correspondence, the pipeline emits `agrelon:hasSubjectObject` with both sides in one list, because both carry the same role and a subject-object split would assert a direction the concept does not know. The actual direction, meaning who wrote and who received, is a statement about the document and stays as the recorded role on the respective side. For patronage the orientation is reversed against the default, because the patron holds the subject position and the patronized person sits at the object, which follows the direction of the first name part of the class as the AgRelOn comment on the symmetric property prescribes.
-
-The pipeline builds relations around the creator of the fonds, with participant positions determined by the relation type as described above. A source statement relating her to herself would repeat the same Wikidata identifier. Such self-relations are suppressed while the role assignment stays on the record with its source cell (E-129). Further automatic counterpart derivation would require an explicit model revision.
-
-Because a contracting party and an employer map onto the same AgRelOn class, the origin is no longer distinguishable without the derived-from-role property. The validity period is set for the employment relation alone and carries, as a heuristic, the year of the record's date as a beginning, with no end date, because the source gives none.
+The vocabulary remains available for an explicitly recorded relationship with both parties and its own source evidence. The current recording format supplies no general relationship statement of that shape, so the pipeline emits no inferred `hasAgentRelation` entries. Recorded persons, institutions and document roles remain available independently. AgRelOn's provenance property remains in use on source annotations.
 
 ## Meta-statements and provenance
 
 The model carries two provenance traces separately, a semantic one and a technical one. The semantic pattern comes from AgRelOn and is transferable to every relation of the model rather than only to agent-to-agent relations, which is what makes it one cross-cutting layer above the subject layers. It carries a validity period as a blank node with a beginning and an end, a confidence value, and a provenance reference to the attesting document.
 
-The provenance reference sits on the agent relations and on the annotation nodes and points at the document that attests the statement. Since both hang on that document, the reference is currently a self-reference. Whether the agent relations should instead be carried as their own graph nodes referring to their evidence is open. No statement carries a confidence value.
+The provenance reference on an annotation points to its source document. No statement carries an invented confidence value. Historical relationship reification remains a model option only for source data that explicitly records the relationship.
 
-The dating evidence column of the source is deliberately not serialized (E-106). The earlier mapping of its categorical values onto decimals was an invented projection and no measured value. Should the evidence be needed later it returns as a categorical value, and a decimal is not revived.
+`m3gim-ontology:datingEvidence` retains the source's categorical dating evidence under E-301. The former numeric confidence projection remains prohibited. An entry recorded as `erschlossen` keeps that category in the dataset and frontend; its origin must not disappear through serialization.
 
-The technical trace is the source cell, `m3gim-ontology:xlsxSource`, a typeless container carrying the sheet name and the one-based row number including the header row. It addresses the row in the recording table and serves pipeline and review, and it is not a scholarly source reference. It sits on the record, on every annotation node whether referenced or embedded, on every performance and every entity node derived from a link row, and on every agent relation. Direct record properties receive none, because their origin is implicitly that of the surrounding record, which keeps the serialization readable without repeating provenance per atomic property.
+The technical trace is the source cell, `m3gim-ontology:xlsxSource`, a container carrying the sheet name and the one-based row number including the header row. It addresses the recording table and is distinct from a reference to the archival object. Record and link statements retain their own source row. `recordedType`, `recordedValue` and `recordedRole` preserve the source link cells alongside its original note. Duplicate-looking statements keep every witness.
+
+Properties added from an index or Wikidata carry their own `propertySource` descriptors. Each descriptor names the property, source kind, source value and source URI; index descriptors additionally identify the index row. The exact shape is specified in [data.md](data.md) § Serialization of source fidelity. The surrounding document's source row must not be presented as evidence for an external value. Dataset and basket exports retain these descriptors. `wdPublicationDate` and `wdPremiereDate` preserve distinct authority predicates.
 
 `m3gim-ontology:dataPointId` sits in that container but carries a subject-side bundling rather than an origin (E-125). It belongs on the attested entity rather than on the source cell address, and its successor is the two-level activity identifier of the target model.
 
@@ -155,7 +152,7 @@ The technical trace is the source cell, `m3gim-ontology:xlsxSource`, a typeless 
 
 A financial item is the same node type as a dating or a location and differs only in the properties it carries, the kind of item, the unchanged cell value, the parsed amount, the currency and the role naming the kind of payment. The raw value is kept so the parsing stays checkable. The kind of item stays beside the role, because it carries the direction of the money flow and is therefore independent of the role, a document being able to carry the same amount once as income with a remuneration role and once as a sum with a mention.
 
-Amounts appear in the source in shifting notation, including a trailing currency and a double amount in one cell. The parser separates the currency first and then extracts the numeric value, and a double amount becomes two independent annotation nodes with the same kind of item, so no attested amount is lost. Where the source is unambiguous the ISO 4217 code stands, and historical or ambiguous currencies keep their original code from the source rather than being normalized speculatively. The value range therefore mixes ISO codes and source spellings, and machine evaluation would need a second field with the normalized code. Where the currency is missing the pipeline sets an editorially justified default for two locations, and that derived character is not marked in the data.
+Amounts appear in shifting source notation, including a trailing currency and a double amount in one cell. The parser separates an explicitly recorded currency and extracts the numeric value. A double amount becomes two annotation nodes sharing the original cell value and source row. Ambiguous currency codes retain their source spelling. A missing currency remains missing; no default may be inferred from the signature, location or neighbouring rows (E-301). Totals with an unknown currency cannot be combined with a named currency.
 
 The contract status is not a role. The current source export records `Vertrag nicht eingehalten` in `anmerkung`. The pipeline preserves that statement as `rico:generalDescription` on its affected data points, and the record detail displays it beside their roles and dates. Legacy role-column handling remains in the pipeline. The target fields are a contract status together with a realization flag on the contract record, where the flag would be set only on explicit evidence and never inferred from missing evidence. This formal modelling remains deferred pending clarification with the cataloguing team (E-139).
 
@@ -163,17 +160,17 @@ Financial entries all hang on the document in the generated dataset. Substantive
 
 ## Shape of the graph
 
-The graph is document-centred. Consumers must accept singleton objects and lists for multi-valued properties, including `hasAssociatedAgent` (E-31). Standing as independent top-level nodes with their own identifier are documents, archival units, performances, stage parts, the annotations referenced through the annotation property, and the documentary form type concepts attested in the holdings. Persons, institutions, places and works stand embedded in the document that names them. Where an entity is reconciled against Wikidata, the embedded node carries that identifier, otherwise only a name. The annotations come in two build forms, the referenced datings and locations as top-level nodes addressed by identifier, and the details reached through the detail property as embedded nodes without an identifier of their own.
+The graph is document-centred. Consumers must accept singleton objects and lists for multi-valued properties, including `hasAssociatedAgent` (E-31). Documents, archival units, source-composite annotations, source-scoped stage parts, referenced annotations and documentary form type concepts have top-level identifiers. Persons, institutions, places and works are embedded local mentions. An admitted Wikidata identifier belongs to their `authorityReference`; the local mention remains a blank node. Referenced datings and locations are top-level nodes, while `hasDetail` reaches embedded annotations.
 
 Records carry two levels of containment. A Konvolut is an archival unit whose parts are its folios, and a folio whose pages the source records as `1_1`, `1_2` and so on is itself a record that holds those pages through `rico:hasOrHadPart` in page order. The identifier of that folio record is the signature plus the folio without the page suffix. Where the source carries no object row for the folio itself, the pipeline derives the record and marks it with `m3gim-ontology:derivedFolioRecord`, which leaves it without title and without date, because either taken from a page would state about the folio what the source states about one page of it (E-269).
 
 Three consequences follow for anyone working with the data.
 
-A question about all documents concerning one person is answered over the name or the Wikidata identifier in the embedded node. There is no independent top-level person register in the graph; person nodes are embedded.
+A question about all documents naming a person is answered over the recorded name or admitted authority reference. There is no independent top-level person register in the graph; person mentions are embedded. A name group alone establishes no identity.
 
 Everything that holds only in the context of one document hangs on the embedded node, which concerns the role, the source cell and the quality flag.
 
-On merging to RDF the document context falls away and those context-dependent statements travel to the globally identified entity. A city then carries all place roles of all documents at once and a person all agent roles. The JSON tree holds the context, the flat triple does not.
+On conversion to RDF, the local blank node retains the role and source-cell context of its mention. The Wikidata reference does not merge that node with other mentions of the same entity. This prevents document-specific roles from becoming global assertions about a person or city (E-301).
 
 Two further shape decisions are worth knowing. The alias `name` stands for the RiC-O name property and `role` for the role property in the emitted context, so the serialization reads shorter than the term names suggest. And the figures describing the export sit on the root node of the serialization, which carries no type, so no domain can be given for them and they are not addressable. A node for the dataset itself would make them so.
 
@@ -186,7 +183,7 @@ The five perspectives organize research queries over existing classes and roles.
 | Perspective | Evidence to inspect | Interpretation limit |
 |---|---|---|
 | Performative | Performance, guest-performance, premiere, revival and gala roles; work/performer composites and dated place annotations | Separate fragments in one document need source assessment before they can describe the same appearance. |
-| Institutional | Season roles and employment relations with recorded or derived validity | A contract or season span does not establish uninterrupted presence or realized performances. |
+| Institutional | Recorded season and contract statements with their own dates | A contract or season span does not establish uninterrupted presence or realized performances. |
 | Travel and correspondence | Correspondence relations, letter provenance, dispatch/receiving/departure dates and mobility place roles | A letter's endpoints do not establish the singer's journey. Actor, date and route require their own connection in the source. |
 | Biographical | Residence statements and their recorded temporal context | Sparse evidence cannot establish continuous residence between attestations. |
 | Discursive | Reviews, press items and critiques with creation places or publishing institutions | Publication geography can differ from the geography of the activity discussed. |
@@ -197,11 +194,11 @@ The selected, unevenly catalogued partial estate limits every query. An absent e
 
 ## Limits of the model
 
-A performance falls apart into several nodes, because one arises per link row. Who sang which part in which performance is not reconstructable from that. The answer is the target model below, which is decided and not built.
+Source-composite annotations retain the components recorded together in one link row. Separate rows do not establish a shared occurrence. Who sang which part in which performance requires an explicit source connection; the target model below remains unbuilt.
 
-Stage parts are global and carry neither a work binding nor a voice type. Identically named parts of different works collapse, because deduplication runs over the name alone. Whether that holds is to be settled with the cataloguing team.
+Stage-part nodes are scoped to their source row. Identically named parts remain independent witnesses. Their displayed name grouping supplies no work binding or voice type.
 
-The same part occurs as a literal on the work index entry and as an independent entity without a formal connecting edge. The frontend retains the curated literal binding and may explicitly derive a binding from a record with exactly one work. Multi-work records remain ambiguous; these display rules do not repair the RDF model.
+The same part can occur as a literal on a work index entry and as a source-scoped entity. The frontend retains an explicitly recorded index binding with its provenance. A document containing one work and several parts supplies no additional bindings.
 
 The function of a participation, meaning singing, conducting or directing, is not expressed at the performer edge. It sits on the person node in the role property and therefore holds in the document context, unassigned to the performance.
 

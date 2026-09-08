@@ -139,17 +139,15 @@ describe('B Bestand: Undatiert-Markierung haengt am Record-Datum', () => {
    * eine annotierte Auffuehrung datiert ist, zeigt damit sein Jahr, statt als
    * undatiert zu lesen; erst ohne jeden Anker steht "o. D.".
    */
-  test('Anker am Datenstand: eine abgeleitete Datierung datiert die Zeile', async () => {
+  test('eine Inhaltsdatierung erfindet kein Dokumentdatum', async () => {
     const store = await storeFromShipped();
     const withAnchor = store.records.get('m3gim-data:NIM_139_104');
     const without = store.records.get('m3gim-data:NIM_139_109_12');
     assert.ok(withAnchor && without, 'Ankerdatensaetze fehlen im Datenstand');
     assert.equal(withAnchor['rico:date'], undefined,
       'UAKUG/NIM_139 104 traegt inzwischen ein rico:date — der Fall traegt nicht mehr');
-    assert.equal(primaryYear(store, withAnchor).year, 1956,
-      'die annotierte Auffuehrung datiert UAKUG/NIM_139 104 nicht auf 1956');
-    assert.equal(isUndatedItem({ record: withAnchor }, store), false,
-      'UAKUG/NIM_139 104 gilt trotz abgeleitetem Jahr als undatiert');
+    assert.equal(primaryYear(store, withAnchor).year, null);
+    assert.equal(isUndatedItem({ record: withAnchor }, store), true);
     assert.equal(isUndatedItem({ record: without }, store), true,
       'UAKUG/NIM_139 109_12 gilt ohne jeden Anker als datiert');
   });

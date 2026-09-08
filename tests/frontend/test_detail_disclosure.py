@@ -49,7 +49,7 @@ def test_register_co_mentions_are_optional_and_keep_navigation(frontend_server, 
     page.goto(frontend_server + '#indizes/werke', wait_until='networkidle')
     page.get_by_role('button', name='Details zu Tristan und Isolde', exact=True).click()
     panel = page.locator('.selection-detail__panel')
-    expect(panel.locator('.idx-partien__derived')).to_be_visible()
+    expect(panel.locator('.idx-partien__derived')).to_have_count(0)
     expect(panel.locator('.idx-umfeld')).to_be_hidden()
     before = page.url
     summary = panel.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt')

@@ -185,15 +185,14 @@ describe('3 Rang', () => {
     assert.ok(seen.size > 0, 'Der Datenstand fuehrt keinen einzigen Rang');
   });
 
-  test('jede gefuehrte Rolle traegt den Jahresindex allein', async () => {
+  test('keine Inhaltsrolle traegt den Dokument-Jahresindex', async () => {
     const ranked = [...(await realStore()).roleRank.keys()];
     for (const roleId of ranked) {
       const store = await storeFrom(graphWithRole(
         { '@id': roleId, 'skos:prefLabel': roleId.split(':').pop() }));
       const rec = store.records.get('m3gim-data:TEST_ROLE');
-      assert.equal(primaryYear(store, rec).year, 1957,
-        `${roleId} erreicht den Jahresindex nicht`);
-      assert.ok(store.byYear.has(1957), `${roleId} fehlt im Jahresindex des Stores`);
+      assert.equal(primaryYear(store, rec).year, null);
+      assert.ok(!store.byYear.has(1957));
     }
   });
 });

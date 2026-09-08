@@ -27,13 +27,14 @@ test('qualifiers, ranges, years and malformed values remain explicit', () => {
     context('circa:1963-02', 'ca. Februar 1963', 'circa-month'),
     context('vor:1963', 'vor 1963', 'vor-year'),
     context('nach:1963', 'nach 1963', 'nach-year'),
+    context('ab 1963', 'ab 1963', 'ab-year'),
     context('1963', '1963', 'year'),
     context('1963/1964', '1963–1964', 'range'),
     context('oops', 'oops', 'malformed'),
     context('1963/xx', '1963/xx', 'malformed-range'),
   ];
   assert.equal(summarizeSourceDates(contexts),
-    '8 Datierungen · Jänner 1963 · 1 Zeitraum · 1 ca.-Angabe · 1 Vorher-Angabe · 1 Nachher-Angabe · 1 reine Jahresangabe · 2 unklare Datierungen');
+    '9 Datierungen · Jänner 1963 · 1 Zeitraum · 1 ca.-Angabe · 1 Vorher-Angabe · 1 Nachher-Angabe · 1 offene Beginnangabe · 1 reine Jahresangabe · 2 unklare Datierungen');
 });
 
 test('duplicates count one recorded value', () => {

@@ -124,7 +124,10 @@ export function ensureArray(value) {
 
 /** Pull a Wikidata Q-id from a value ("wd:Q42" -> "wd:Q42", else null). */
 export function asWikidataId(value) {
-  return value && String(value).startsWith('wd:') ? value : null;
+  const candidate = value && typeof value === 'object'
+    ? value['m3gim-ontology:authorityReference']?.['@id'] || value['@id']
+    : value;
+  return candidate && String(candidate).startsWith('wd:') ? candidate : null;
 }
 
 /**

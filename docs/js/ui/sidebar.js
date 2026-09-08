@@ -5,7 +5,7 @@ import { familyIcon } from './family-icons.js';
 import { getFilter, setFilter, subscribe, buildFacetSelectionPatch } from './filter-state.js';
 import { createSearch } from './search.js';
 import {
-  facetInventory, docTypeGroups, linkGroups, YEAR_MIN, YEAR_MAX,
+  facetInventory, docTypeGroups, linkGroups,
 } from '../data/records-for.js';
 import {
   SHARED_FACETS, facetTreeControl, optionListControl,
@@ -72,7 +72,7 @@ let titleSeq = 0;
  */
 export function createSidebar(store, {
   facets = SHARED_FACETS,
-  yearSpan = { min: YEAR_MIN, max: YEAR_MAX },
+  yearSpan = { min: null, max: null },
   getCount = null,
   getScopeDescription = null,
   search = true,
@@ -93,13 +93,13 @@ export function createSidebar(store, {
   ];
 
   const specs = [
-    zeitSection(yearSpan),
+    Number.isFinite(yearSpan.min) && Number.isFinite(yearSpan.max) ? zeitSection(yearSpan) : null,
     ...facetSpecs.map((spec, i) => withRule(spec, i === 0)),
     ...withLeadingRule(sections),
     ...withLeadingRule(legend),
   ];
 
-  const built = buildColumn(specs);
+  const built = buildColumn(specs.filter(Boolean));
   const strip = filterStrip(inventories, localChips);
   const commonSearch = search === false ? null : createSearch(store, {
     selectFacet: (key, values) => setFilter(buildFacetSelectionPatch(getFilter(), key, values)),

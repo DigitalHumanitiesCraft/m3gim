@@ -55,8 +55,8 @@ def test_authority_link_keyboard_activation_leaves_the_filter_unchanged(
 ):
     browser_context.route("https://www.wikidata.org/**", lambda route: route.fulfill(body="Wikidata"))
     page = browser_context.new_page()
-    page.goto(frontend_server + "#bestand/m3gim-data%3ANIM_023_7")
-    chip = page.locator(".archiv-row--detail .chip--role-pair", has_text="Malaniuk, Ira").first
+    page.goto(frontend_server + "#bestand/m3gim-data%3ANIM_137")
+    chip = page.locator(".archiv-row--detail .chip--role-pair", has_text="Hindemith, Paul").first
     link = chip.locator("a.badge--wikidata")
     expect(link).to_be_visible()
     assert chip.locator("button a, a button").count() == 0
@@ -65,28 +65,37 @@ def test_authority_link_keyboard_activation_leaves_the_filter_unchanged(
     with page.expect_popup() as popup:
         link.press("Enter")
     popup.value.wait_for_load_state()
-    assert "wikidata.org/entity/Q94208" in popup.value.url
+    assert "wikidata.org/entity/Q57244" in popup.value.url
     assert page.url == original
     expect(chip.locator("button[data-action='filter']")).to_be_visible()
 
 
 @pytest.mark.parametrize(
-    ("query", "identifiers"),
-    [("NIM_016", ["NIM_016_1", "NIM_016_4"]), ("NIM_016 1962-07-11", ["NIM_016_4"])],
+    ("query", "identifiers", "count"),
+    [("NIM_016", ["NIM_016_1", "NIM_016_4"], "2"),
+     ("NIM_016 1962-07-11", ["NIM_016_4"], "1")],
 )
-def test_relationship_exposes_each_attesting_document_in_the_cut(
-    frontend_server, browser_context, query, identifiers
+def test_document_roles_follow_the_attesting_documents_in_the_cut(
+    frontend_server, browser_context, query, identifiers, count
 ):
     page = browser_context.new_page()
     page.goto(frontend_server + "#indizes/personen?suche=" + quote(query))
     page.get_by_role("button", name="Details zu Baasch, Dr. med. Ernst", exact=True).click()
-    relation = page.locator(".idx-relation")
-    expect(relation).to_have_count(1)
-    relation.locator("summary").focus()
-    relation.locator("summary").press("Enter")
-    links = relation.locator(".idx-evidence")
-    assert [text.removesuffix(" →") for text in links.all_text_contents()] == identifiers
-    links.last.press("Enter")
+    expect(page.locator(".idx-relation")).to_have_count(0)
+    role = page.locator(".idx-rollen .chip", has_text="VERFASSER")
+    expect(role).to_have_count(1)
+    expect(role.locator(".chip-wert")).to_have_text(count)
+    assert parse_qs(page.url.split("?", 1)[1])["suche"] == [query]
+    documents = page.locator('.idx-item[data-entry="Baasch, Dr. med. Ernst"] .idx-doclink')
+    documents.focus()
+    documents.press("Enter")
+    rows = page.locator("#bestand-tbody tr[data-record-row]")
+    assert sorted(rows.evaluate_all("els => els.map(el => el.dataset.recordRow)")) == [
+        "m3gim-data:" + identifier for identifier in identifiers
+    ]
+    target = page.locator('[data-record-row="m3gim-data:NIM_016_4"]')
+    target.focus()
+    target.press("Enter")
     expect(page.locator(".inline-detail__head-sig")).to_have_text("UAKUG/NIM_016 4")
     assert parse_qs(page.url.split("?", 1)[1])["suche"] == [query]
 
@@ -128,25 +137,18 @@ def test_dense_register_detail_keeps_bounds_lists_and_keyboard_return(
     expect(panel.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt')).to_be_visible()
     expect(panel.locator('.idx-umfeld')).to_be_hidden()
     expect(panel.locator(".idx-komponist")).to_contain_text("Komponist:")
-    parts = panel.locator(".idx-partien")
-    expect(parts.locator(".chip:not(.mark-derived) .chip-wert")).to_have_text("Brangäne")
-    more = parts.locator(".idx-roles__more")
+    expect(panel.locator(".idx-partien")).to_have_count(0)
+    panel.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt').click()
+    expect(panel.locator('.idx-umfeld')).to_be_visible()
+    co_mentions = panel.locator('.idx-umfeld__chips > button.chip')
+    assert co_mentions.count() > 5
+    more = panel.locator('.idx-umfeld .idx-more').first
     expect(more).to_be_visible()
     remainder = page.locator("#" + more.get_attribute("aria-controls"))
-    assert not remainder.is_visible()
+    expect(remainder).to_be_hidden()
     more.focus()
     more.press("Enter")
     expect(remainder).to_be_visible()
-    names = parts.locator(".mark-derived .chip-wert").all_text_contents()
-    # Literal output of the documented single-work inference, including suspect bindings.
-    assert sorted(names) == [
-        "Amneris", "Ein Hirte", "Ein Steuermann", "Hirte", "Isolde", "Kurwenal",
-        "König Marke", "Marke", "Matelot", "Melot", "Seemann", "Steuermann",
-        "Stimme eines jungen Seemanns", "Tristan", "Venus", "pâtre",
-    ]
-    expect(parts).to_contain_text("Abgeleitet aus Dokumenten, die genau ein Werk nennen")
-    panel.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt').click()
-    expect(panel.locator('.idx-umfeld')).to_be_visible()
     assert grid.evaluate("el => el.clientHeight") == before["height"]
     assert grid.evaluate("el => el.scrollTop") == before["scroll"]
     metrics = panel.evaluate("""el => {
@@ -167,7 +169,7 @@ def test_dense_register_detail_keeps_bounds_lists_and_keyboard_return(
     expect(entry).to_be_focused()
     entry.press("Enter")
     expect(panel).to_be_visible()
-    expect(panel.locator(".idx-partien .idx-roles__more")).to_have_attribute("aria-expanded", "false")
+    expect(panel.locator('.idx-umfeld')).to_be_hidden()
 
 
 @pytest.mark.parametrize("view", ["indizes/werke", "chronik", "netzwerk"])
@@ -190,3 +192,14 @@ def test_hidden_view_does_not_open_a_modal_over_the_next_tab(
     expect(page.locator("dialog[open]")).to_have_count(0)
     page.locator('[data-tab="statistik"]').first.click()
     expect(page.locator("#tab-statistik")).to_be_visible()
+
+
+def test_raw_person_note_remains_visible_without_identity_merge(frontend_server, browser_context):
+    page = browser_context.new_page()
+    page.goto(frontend_server + "#bestand/m3gim-data%3ANIM_007_2", wait_until="networkidle")
+    chip = page.locator(".chip", has_text="Taubmann, Frau").first
+    expect(chip).to_be_visible()
+    chip.hover()
+    expect(page.locator(".tooltip-portal")).to_contain_text("Frau von Martin H. Taubmann")
+    expect(page.locator(".chip", has_text="Taubmann, Martin Hugo")).to_have_count(1)
+    assert chip.inner_text() != page.locator(".chip", has_text="Taubmann, Martin Hugo").inner_text()

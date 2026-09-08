@@ -5,8 +5,8 @@ import { buildOccurrences, groupPlaces } from '../../docs/js/views/karte-data.js
 import { extractXlsxSource } from '../../docs/js/utils/provenance.js';
 import { ensureArray, roleIdOf, roleToken } from '../../docs/js/utils/format.js';
 
-const key = o => JSON.stringify([o.recordId, o.place, o.roleId || o.role || null,
-  o.xlsxSource?.sheet, o.xlsxSource?.row]);
+const key = o => JSON.stringify([o.recordId, o.place, o.xlsxSource?.sheet,
+  o.xlsxSource?.row, o.xlsxSource?.datenpunkt ?? null]);
 
 test('every shipped source row survives and mirrored paths count once', async () => {
   const store = await storeFromShipped();
@@ -14,13 +14,13 @@ test('every shipped source row survives and mirrored paths count once', async ()
   const expected = new Set();
   for (const rec of store.allRecords) {
     for (const loc of ensureArray(rec['rico:hasOrHadLocation'])) {
-      if (!loc.name || /^\d/.test(loc.name.trim())) continue;
+      if (!loc.name) continue;
       expected.add(key({ recordId: rec['@id'], place: loc.name,
         roleId: roleIdOf(loc.role), role: roleToken(loc.role), xlsxSource: extractXlsxSource(loc) }));
     }
   }
   for (const annotation of store.mobilityEvents.values()) {
-    if (annotation.place && !/^\d/.test(annotation.place.trim())) expected.add(key(annotation));
+    if (annotation.place) expected.add(key(annotation));
   }
   const evidence = buildOccurrences(store);
   assert.deepEqual(new Set(evidence.map(key)), expected);
@@ -37,7 +37,7 @@ test('a Wuppertal performance-place reference retains its separate dating contex
   const wuppertal = evidence.find(o => o.recordId === 'm3gim-data:NIM_023_5' && o.place === 'Wuppertal');
   assert.equal(wuppertal.date, null);
   assert.equal(wuppertal.documentDate, '1953-04-26');
-  assert.equal(wuppertal.recordDate, '1953-04-04');
+  assert.equal(wuppertal.recordDate, '1953-04-26');
 });
 
 test('distinct addresses, rows, qualified datings and caveats remain independent', () => {

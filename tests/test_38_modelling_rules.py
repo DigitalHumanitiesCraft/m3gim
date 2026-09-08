@@ -55,7 +55,7 @@ def test_no_self_referential_agent_relations_and_roles_kept(records):
         assert rec is not None, f"Anker-Record {ident} fehlt im Export"
         agents = [
             a for a in ensure_list(rec.get("m3gim-ontology:hasAssociatedAgent"))
-            if isinstance(a, dict) and a.get("@id") == "wd:Q94208"
+            if isinstance(a, dict) and a.get("name") == "Malaniuk, Ira"
         ]
         assert agents, (
             f"{ident}: Malaniuk nicht mehr als m3gim-ontology:hasAssociatedAgent — "
@@ -84,36 +84,9 @@ def test_no_self_referential_agent_relations_and_roles_kept(records):
     )
 
 
-def test_maybe_add_agrelon_skips_fonds_subject_by_id():
-    """Early exit on identical Wikidata id, with a positive control that the
-    same role still produces a relation for a different agent."""
-    from transform import MALANIUK_SUBJECT, _maybe_add_agrelon
-
-    record = {"@id": "m3gim-data:TEST_1"}
-    _maybe_add_agrelon(record, "person", "adressat", dict(MALANIUK_SUBJECT))
-    assert "m3gim-ontology:hasAgentRelation" not in record, (
-        "Selbstbezug erzeugt weiterhin eine Beziehung"
-    )
-
-    other = {"name": "Barth, Herbert", "@id": "wd:Q1587046"}
-    _maybe_add_agrelon(record, "person", "adressat", other)
-    rels = record.get("m3gim-ontology:hasAgentRelation", [])
-    assert len(rels) == 1 and rels[0]["@type"] == "agrelon:HasCorrespondent", (
-        "Beziehung zu einem anderen Agent wird faelschlich unterdrueckt"
-    )
-
-
-def test_maybe_add_agrelon_skips_fonds_subject_by_name_without_id():
-    """Name comparison is the fallback: a share of the linked agents carries no
-    Wikidata id, so the id check alone would let the self-reference through."""
-    from transform import MALANIUK_SUBJECT, _maybe_add_agrelon
-
-    record = {"@id": "m3gim-data:TEST_2"}
-    _maybe_add_agrelon(record, "person", "auftraggeber",
-                       {"name": MALANIUK_SUBJECT["name"]})
-    assert "m3gim-ontology:hasAgentRelation" not in record, (
-        "Selbstbezug ohne Wikidata-Kennung erzeugt weiterhin eine Beziehung"
-    )
+def test_no_agrelon_inference_helper_remains():
+    import transform
+    assert not hasattr(transform, "_maybe_add_agrelon")
 
 
 # ---------------------------------------------------------------------------

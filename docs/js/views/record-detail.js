@@ -16,7 +16,7 @@ import { formatLanguage, korbIcon, korbTip, familyOfBlock } from '../data/consta
 import { partitionRecord, qualityTipLines, pageNeighbours } from './record-detail-data.js';
 import {
   agentChipEls, workChipEls, performanceChipEls, eventChipEls,
-  relationChipEls, financeChipEls, datingChipEls, QUALITY_ICON_SVG,
+  relationChipEls, financeChipEls, detailChipEls, datingChipEls, QUALITY_ICON_SVG,
 } from './record-chips.js';
 
 /**
@@ -103,7 +103,7 @@ export function buildInlineDetail(record, store, paging = {}) {
   const byKey = new Map(blocks.map(b => [b.key, b]));
   const ORDER = [
     'produktion', 'mitwirkende', 'institutionen', 'werk', 'auffuehrungen', 'ort',
-    'genannte-daten', 'erwaehnt', 'weitere', 'beziehungen', 'finanzen',
+    'genannte-daten', 'erwaehnt', 'weitere', 'beziehungen', 'finanzen', 'weitere-angaben',
   ];
   const body = el('div', { className: 'inline-detail__body' });
   for (const key of ORDER) {
@@ -276,7 +276,7 @@ function renderFoot(record) {
 export function buildRecordBlocks(record, store) {
   const {
     bucket, works, performanceRoles, performances, events, locations,
-    agentRelations, finances, mentionedDatings, eventDatings,
+    agentRelations, finances, details, mentionedDatings, eventDatings,
   } = partitionRecord(record, store);
 
   const blocks = [];
@@ -289,12 +289,13 @@ export function buildRecordBlocks(record, store) {
   push('mitwirkende', 'Mitwirkende', agentChipEls(store, bucket.mitwirkende));
   push('institutionen', 'Institutionen', agentChipEls(store, bucket.institutionen));
   push('werk', 'Werk & Repertoire', workChipEls(works, performanceRoles, store));
-  push('auffuehrungen', 'Aufführungen', performanceChipEls(performances));
+  push('auffuehrungen', 'Datierte Werk- und Rollenangaben', performanceChipEls(performances));
   push('ort', 'Ort & Ereignis', eventChipEls(store, events, locations, eventDatings));
   push('genannte-daten', 'Im Dokument genannte Daten', datingChipEls(store, mentionedDatings));
   push('erwaehnt', 'Erwähnt', agentChipEls(store, bucket.erwaehnt));
   push('weitere', 'Weitere', agentChipEls(store, bucket.weitere));
   push('beziehungen', 'Beziehungen', relationChipEls(agentRelations));
   push('finanzen', 'Finanzen', financeChipEls(finances));
+  push('weitere-angaben', 'Weitere Angaben', detailChipEls(details));
   return blocks;
 }

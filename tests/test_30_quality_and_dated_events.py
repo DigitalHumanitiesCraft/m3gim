@@ -170,28 +170,19 @@ def test_uncertain_datings_routed_to_dated_event(records, graph):
         for node in _annotations_of(r, annotations):
             val = node.get("m3gim-ontology:atDate", "")
             if isinstance(val, str) and val and not iso_or_qual.match(val):
-                assert "datierung-malformed" in ensure_list(
-                    node.get("m3gim-ontology:dataQualityFlag")), (
-                    f"{node['@id']}: nicht-ISO-Datierung ohne Flag: {val!r}"
-                )
+                assert isinstance(node.get("m3gim-ontology:xlsxSource"), dict)
                 nonsiso.append(val)
     assert nonsiso, "Keine nicht-ISO-Datierung am Annotationsknoten — Klammerfall verloren?"
 
 
 # --- 2. Data-quality flags ------------------------------------------------
 
-def test_data_quality_flags_vocab(graph):
-    """Every m3gim-ontology:dataQualityFlag value comes from the controlled
-    vocabulary; at least 10 flags derived from the anmerkung signals present."""
+def test_free_text_does_not_create_data_quality_flags(graph):
+    """Free-text source notes do not create semantic quality categories."""
     values = []
     for n in _all_nodes(graph):
         values.extend(ensure_list(n.get("m3gim-ontology:dataQualityFlag")))
-    assert len(values) >= 10, f"Nur {len(values)} dataQualityFlags — Ableitung greift nicht"
-    offenders = sorted({v for v in values if v not in QUALITY_FLAG_VOCAB})
-    assert not offenders, (
-        f"dataQualityFlag-Werte ausserhalb des Vokabulars {QUALITY_FLAG_VOCAB}: "
-        f"{offenders}"
-    )
+    assert not values
 
 
 def test_quality_confidence_not_fabricated(graph):

@@ -63,7 +63,7 @@ describe('Matrix evidence', () => {
     data.works.get('Walküre').komponist = null;
     const matrix = aggregateMatrix(data, new Set(['r3', 'r4']), 'work-composer');
     assert.deepEqual(matrix.dimensions.find(item => item.dimension === 'work').recordIds, ['r3']);
-    assert.deepEqual(matrix.dimensions.find(item => item.dimension === 'composer').recordIds, []);
+    assert.deepEqual(matrix.dimensions.find(item => item.dimension === 'composer').recordIds, ['r3']);
   });
   test('co-mention cells carry both witnesses without fabricating a joint source', () => {
     const matrix = aggregateMatrix(store(), new Set(['r1', 'r2']), 'doctype-work');
@@ -133,13 +133,27 @@ test('time groups each document by one primary anchor and retains undated', () =
   assert.deepEqual(bins.map(bin => [bin.key, bin.count]), [['1950', 1], ['1955', 1], ['__undated__', 1]]);
 });
 
-test('time witnesses point to the selected primary-anchor row', () => {
+test('time witnesses point to the document row, not an indexed content date', () => {
   const s = store();
   s.recordDatings.set('r1', [{ year: 1951, date: '1951', roleId: 'm3gim-vocab:performance',
     scope: 'm3gim-vocab:attestedDating', rank: 1, origin: 'annotation', ...source('Dates', 9) }]);
   const bin = aggregateTime(s, new Set(['r1'])).find(value => value.key === '1951');
-  assert.deepEqual(bin.witnesses[0].source, { sheet: 'Dates', row: 9, recordId: 'r1' });
-  assert.deepEqual(bin.sourceRefs, [{ sheet: 'Dates', row: 9, recordId: 'r1' }]);
+  assert.equal(bin.witnesses[0].source, null);
+  assert.deepEqual(bin.sourceRefs, []);
+});
+
+test('stacked qualified document dates retain their document type and source witness', () => {
+  const s = store();
+  const qualified = { '@id': 'r5', 'rico:identifier': 'R5', 'rico:date': 'ab 1956',
+    'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:letter' }, ...source('Objects', 17) };
+  s.allRecords = [...s.allRecords, qualified];
+  s.records.set('r5', qualified);
+  const bin = aggregateTime(s, new Set(['r5']), 'year', { stack: 'doctype' })[0];
+  assert.equal(bin.key, 'date:ab 1956');
+  assert.equal(bin.stacks.length, 1);
+  assert.deepEqual(bin.stacks[0].recordIds, ['r5']);
+  assert.equal(bin.stacks[0].witnesses.length, 1);
+  assert.deepEqual(bin.stacks[0].sourceRefs, [{ sheet: 'Objects', row: 17, recordId: 'r5' }]);
 });
 
 test('Sankey conserves distinct source statements at both stages', () => {

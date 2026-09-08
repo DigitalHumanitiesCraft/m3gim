@@ -56,19 +56,18 @@ describe('Herkunft des angezeigten Datums', () => {
 });
 
 describe('Der ausgelieferte Datenstand', () => {
-  test('eine Verknuepfungsdatierung ueberstimmt die Objektdatierung', () => {
+  test('die Objektdatierung bleibt von Inhaltsdatierungen unberuehrt', () => {
     const record = store.bySignatur.get('UAKUG/NIM_007 11');
     assert.ok(record, 'UAKUG/NIM_007 11 steht im ausgelieferten Datensatz');
     assert.equal(extractYear(record['rico:date']), 1968,
       'die Quelle datiert das Objekt auf 1968');
     const anchor = primaryYear(store, record);
-    assert.equal(anchor.year, 1959, 'die Auffuehrung datiert es auf 1959');
-    assert.equal(anchor.label, 'aufführung');
-    assert.ok(!OBJECT_OWN_SOURCES.has(anchor.source),
-      'die Zeile markiert das Jahr als ergaenzt');
+    assert.equal(anchor.year, 1968);
+    assert.equal(anchor.source, 'rico:date');
+    assert.ok(OBJECT_OWN_SOURCES.has(anchor.source));
   });
 
-  test('die Spalte aendert sich fuer eine kleine, benannte Menge', () => {
+  test('die Spalte übernimmt kein abweichendes Inhaltsjahr', () => {
     const base = baseIds(store);
     const changed = store.allRecords
       .filter(r => base.has(r['@id']))
@@ -81,10 +80,7 @@ describe('Der ausgelieferte Datenstand', () => {
       .sort();
     // Von Hand am ausgelieferten Datenstand gezaehlt: zwoelf Datensaetze zeigen
     // in der Spalte ein anderes Jahr als ihre Objektdatierung.
-    assert.ok(changed.length >= 10 && changed.length <= 40,
-      `${changed.length} Datensaetze weichen ab, das ist keine kleine Menge mehr`);
-    assert.ok(changed.includes('UAKUG/NIM_007 11'));
-    assert.ok(changed.includes('UAKUG/NIM_011 7'));
+    assert.deepEqual(changed, []);
   });
 
   test('ohne jeden Anker bleibt die Zeile undatiert', () => {

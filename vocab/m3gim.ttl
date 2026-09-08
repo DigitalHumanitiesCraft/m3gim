@@ -56,11 +56,11 @@ m3gim-ontology:MusicalWork
 m3gim-ontology:Performance
     a owl:Class ;
     rdfs:label "Aufführung"@de , "Performance"@en ;
-    rdfs:comment "Ereignis, in dem ein musikalisches Werk realisiert wird. Die Klasse ist zugleich der Reifikationsknoten für die Komposite aus Bühnenrolle und Interpret sowie aus Datum und Werk."@de ;
+    rdfs:comment "Durch eine ausdrückliche Quelle belegtes Ereignis, in dem ein musikalisches Werk realisiert wird."@de ;
     rdfs:subClassOf rico:Event ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § Target model v2, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor."@de ;
-    skos:editorialNote "Die Aufführung trägt ihre Datierung weiterhin unmittelbar, jetzt als m3gim-ontology:atDate. An diesem Knoten ist das Datum die Datierung des Ereignisses selbst; eine Rollenangabe hätte dort keinen Gegenstand."@de .
+    skos:editorialNote "Die Klasse bleibt für künftig ausdrücklich belegte Aufführungsentitäten verfügbar. Komposite und Aktivitätszellen der Erfassung werden nicht als Instanzen dieser Klasse serialisiert."@de ;
+    skos:editorialNote "unused: Der aktuelle Quellenbestand belegt keine eigenständige Aufführungsentität. Die Klasse ist ausschließlich für eine künftige ausdrücklich belegte Ereignisquelle reserviert."@de .
 
 m3gim-ontology:FramingEvent
     a owl:Class ;
@@ -68,7 +68,8 @@ m3gim-ontology:FramingEvent
     rdfs:comment "Übergeordnete Veranstaltung, in deren Rahmen einzelne Aufführungen stattfinden, etwa Festspiele, eine Konzertreihe oder eine Spielzeit."@de ;
     rdfs:subClassOf rico:Event ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Der frühere Name m3gim:PerformanceEvent sagte Aufführungsereignis und meinte die übergeordnete Veranstaltung, was ihn gegen m3gim-ontology:Performance austauschbar erscheinen ließ. Der neue Name folgt dem englischen Label des Terms."@de .
+    skos:editorialNote "Der frühere Name m3gim:PerformanceEvent sagte Aufführungsereignis und meinte die übergeordnete Veranstaltung, was ihn gegen m3gim-ontology:Performance austauschbar erscheinen ließ. Der neue Name folgt dem englischen Label des Terms."@de ;
+    skos:editorialNote "unused: Der aktuelle Quellenbestand belegt keine eigenständige Rahmenveranstaltungsentität. Erfasste Rollen- und Wertzellen bleiben nach E-301 dokumentlokale Aussagen ohne Ereignisannahme."@de .
 
 m3gim-ontology:Annotation
     a owl:Class ;
@@ -76,7 +77,7 @@ m3gim-ontology:Annotation
     rdfs:comment "Jede Datierung, Verortung und Detailangabe hängt als eigener Annotationsknoten am Subjekt, trägt ihren Wert in einer festen Wertproperty und ihre erfasste Rolle in einer einzigen Rollenproperty aus dem gemeinsamen Vokabular, sodass kein Property-Name mehr eine Rolle ausdrückt und ein Konsument alle Datierungen eines Dokuments über eine Schleife erreicht."@de ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine Verortung."@de ;
-    skos:editorialNote "Die Klasse tritt an die Stelle von m3gim:SpatiotemporalEvent, m3gim:DatedEvent und m3gim:DetailAnnotation. Die beiden ersten trugen rdfs:subClassOf rico:Event. Diese Kante entfällt, weil die Klasse jetzt auch Finanzposten trägt, die kein Ereignis sind. Die Anschlusskanten auf RiC-O bleiben auf Property-Ebene bestehen, m3gim-ontology:atDate als rdfs:subPropertyOf rico:date und m3gim-ontology:atPlace als rdfs:subPropertyOf rico:hasOrHadLocation."@de ;
+    skos:editorialNote "Die Klasse tritt an die Stelle von m3gim:SpatiotemporalEvent, m3gim:DatedEvent und m3gim:DetailAnnotation. Die früheren Event-Oberklassen und RiC-O-Unterproperty-Kanten entfallen: Eine erfasste Datums- oder Ortsangabe belegt für sich weder ein Ereignis noch Anwesenheit."@de ;
     skos:editorialNote "Für die Klasse ist keine Oberklasse festgelegt. RiC-O 1.1 bietet keine passende Aufhängung, weil die Detailangabe weder Ereignis noch Beschreibungselement einer Ressource ist. Ob sie als Reifikation einer Aussage modelliert werden soll, ist offen."@de ;
     skos:editorialNote "Eine Datumszeile und eine Ortszeile derselben Rolle werden nicht zu einem Knoten zusammengeführt. Die Zusammenführung würde eine Zusammengehörigkeit behaupten, die die Erfassung nicht ausdrücklich erfasst hat. Damit bleibt m3gim-ontology:xlsxSource je Knoten einwertig."@de ;
     skos:editorialNote "Wo die Quelle keine Rolle führt, trägt der Knoten keine. Eine aus der Stellung erschlossene Rolle entsteht an keiner Stelle."@de .
@@ -84,10 +85,10 @@ m3gim-ontology:Annotation
 m3gim-ontology:StageRole
     a owl:Class ;
     rdfs:label "Bühnenrolle"@de , "Stage role"@en ;
-    rdfs:comment "Partie eines musikalischen Werks als eigenständige, wiederverwendete Entität. Die Identität ist ein deterministischer ASCII-Slug, gleichnamige Partien werden dedupliziert."@de ;
+    rdfs:comment "Bezeichner für eine ausdrücklich identifizierte Partie eines musikalischen Werks."@de ;
     rdfs:subClassOf rico:Thing ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Die Instanzen tragen im erzeugten Datensatz nur einen Namen. Weder die Zugehörigkeit zum Werk noch das Stimmfach ist gesetzt, und die im Werkindex geführte Partie (m3gim-ontology:sungPart) bleibt ein Literal am Werk statt einer Referenz auf die Bühnenrolle. Ob die Deduplikation über den Namen ohne Werkbindung tragfähig ist, ist mit dem Erschließungsteam zu klären, weil gleichnamige Partien verschiedener Werke zusammenfallen."@de .
+    skos:editorialNote "Ein Rollenname ohne ausdrückliche Werkbindung oder Quellidentifikator begründet keine wiederverwendbare Entität. Solche Erfassungszellen bleiben als recordedValue am dokumentlokalen Annotationsknoten erhalten."@de .
 
 
 # ---------------------------------------------------------------------------
@@ -105,11 +106,9 @@ m3gim-ontology:hasAssociatedAgent
 
 m3gim-ontology:hasPerformance
     a owl:ObjectProperty ;
-    rdfs:label "hat Aufführung"@de , "has performance"@en ;
-    rdfs:comment "Verbindet eine Archivressource mit einer Aufführung, die sie bezeugt."@de ;
+    rdfs:label "hat Aussagenkomposit"@de , "has statement composite"@en ;
+    rdfs:comment "Legacy-Zugriff auf einen dokumentlokalen Annotationsknoten mit gemeinsam erfassten Komponenten. Die Kante belegt keine Aufführung oder andere historische Aktivität."@de ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
-    rdfs:range m3gim-ontology:Performance ;
-    rdfs:subPropertyOf rico:isAssociatedWithEvent ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:hasAnnotation
@@ -130,33 +129,25 @@ m3gim-ontology:hasDetail
     rdfs:range m3gim-ontology:Annotation ;
     rdfs:subPropertyOf m3gim-ontology:hasAnnotation ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "knowledge/data.md nennt zusätzlich die Aufführung als Domain, damit ein Honorar an der Aufführung statt am Dokument hängen kann. Im erzeugten Datensatz hängen alle Detailangaben am Dokument. Die Bindung an die Beteiligung ist für das Zielmodell entschieden (E-128, hasFee)."@de ;
+    skos:editorialNote "Im erzeugten Datensatz hängen Detailangaben am belegenden Dokument."@de ;
     skos:editorialNote "Die Kante bleibt als Unterproperty von m3gim-ontology:hasAnnotation erhalten, obwohl Zielknoten und Aspektknoten jetzt dieselbe Klasse tragen. Sie hält den Finanzposten in einem Tripel adressierbar und erhält den Zugriffspfad, den das Frontend heute liest."@de .
 
 m3gim-ontology:hasPerformer
     a owl:ObjectProperty ;
-    rdfs:label "hat Mitwirkende"@de , "has performer"@en ;
-    rdfs:comment "Verbindet eine Aufführung mit einer Person, die an ihr mitwirkt."@de ;
-    rdfs:domain m3gim-ontology:Performance ;
-    rdfs:range rico:Person ;
-    rdfs:subPropertyOf rico:hasOrHadParticipant ;
-    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Die Funktion der Mitwirkung, also Gesang, Dirigat oder Regie, ist an dieser Kante nicht ausgedrückt. Sie steht am Personenknoten in m3gim-ontology:role und gilt damit im Dokumentkontext. Der Aufführung ist sie nicht zugeordnet."@de .
+    rdfs:label "erfasste Person"@de , "recorded person"@en ;
+    rdfs:comment "Legacy-Zugriff vom Annotationsknoten auf die ausdrücklich in derselben Quellzeile erfasste Personenkomponente. Die Kante behauptet keine Mitwirkung oder Teilnahme."@de ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:performanceOf
     a owl:ObjectProperty ;
-    rdfs:label "ist Aufführung von"@de , "is performance of"@en ;
-    rdfs:comment "Verbindet eine Aufführung mit dem musikalischen Werk, das in ihr realisiert wird."@de ;
-    rdfs:domain m3gim-ontology:Performance ;
-    rdfs:range m3gim-ontology:MusicalWork ;
+    rdfs:label "erfasstes Werk"@de , "recorded work"@en ;
+    rdfs:comment "Legacy-Zugriff vom Annotationsknoten auf die ausdrücklich in derselben Quellzeile erfasste Werkkomponente. Die Kante behauptet keine Aufführung oder Realisierung."@de ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:hasStageRole
     a owl:ObjectProperty ;
-    rdfs:label "hat Bühnenrolle"@de , "has stage role"@en ;
-    rdfs:comment "Verbindet eine Aufführung mit einer in ihr besetzten Partie."@de ;
-    rdfs:domain m3gim-ontology:Performance ;
-    rdfs:range m3gim-ontology:StageRole ;
+    rdfs:label "erfasste Partie"@de , "recorded stage-role value"@en ;
+    rdfs:comment "Legacy-Zugriff vom Annotationsknoten auf eine ausdrücklich in derselben Quellzeile erfasste Partienkomponente. Die Kante behauptet keine Besetzung und keine werkübergreifende Identität."@de ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:atPlace
@@ -165,7 +156,18 @@ m3gim-ontology:atPlace
     rdfs:comment "Verortet einen Annotationsknoten. Fehlt die Angabe, trägt der Knoten eine reine Datierung oder einen reinen Finanzposten."@de ;
     rdfs:domain m3gim-ontology:Annotation ;
     rdfs:range rico:Place ;
-    rdfs:subPropertyOf rico:hasOrHadLocation ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:propertySource
+    a owl:ObjectProperty ;
+    rdfs:label "Eigenschaftsquelle"@de , "property source"@en ;
+    rdfs:comment "Verbindet einen ausgegebenen Wert mit einem Herkunftsdeskriptor, der Eigenschaft, Quellart, Fundstelle und ursprünglichen Quellwert festhält."@de ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:authorityReference
+    a owl:ObjectProperty ;
+    rdfs:label "Normdatenreferenz"@de , "authority reference"@en ;
+    rdfs:comment "Verweist von einer dokumentlokalen Nennung auf einen separat belegten Normdatensatz. Die Referenz setzt den lokalen Nennungsknoten weder mit der Normdatenentität gleich noch überträgt sie Rolle oder Quellzeile auf diese."@de ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:role
@@ -181,24 +183,58 @@ m3gim-ontology:role
 
 m3gim-ontology:hasAgentRelation
     a owl:ObjectProperty ;
+    owl:deprecated true ;
     rdfs:label "hat Akteursbeziehung"@de , "has agent relation"@en ;
     rdfs:comment "Verbindet eine Archivressource mit einer n-är reifizierten AgRelOn-Beziehung zwischen der Nachlassbildnerin und einem zweiten Akteur, für die diese Ressource der Beleg ist."@de ;
     rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Ohne rdfs:range, weil AgRelOn die Beziehungsklassen nicht unter einer gemeinsamen Oberklasse führt, die hier belegt wäre. Verwendet werden agrelon:HasCorrespondent, agrelon:HasProfessionalContact, agrelon:HasEmployeeEmployer, agrelon:IsHasPatron und agrelon:HasIsMember."@de ;
-    skos:editorialNote "Die Beziehung ist am belegenden Dokument aufgehängt und trägt dieses zugleich als agrelon:metadataProvenance. Damit ist die Provenienz ein Selbstverweis. Ob die Beziehungen stattdessen als eigene Graphknoten mit Verweis auf ihre Belege geführt werden sollen, ist offen."@de .
+    skos:editorialNote "Die Beziehung ist am belegenden Dokument aufgehängt und trägt dieses zugleich als agrelon:metadataProvenance. Damit ist die Provenienz ein Selbstverweis. Ob die Beziehungen stattdessen als eigene Graphknoten mit Verweis auf ihre Belege geführt werden sollen, ist offen."@de ;
+    skos:editorialNote "unused: Nach E-301 werden aus Rollen- oder Namenszellen keine Akteursbeziehungen erzeugt. Die Property bleibt nur als veralteter Lesezugang für frühere Exporte deklariert."@de .
 
 m3gim-ontology:xlsxSource
     a owl:ObjectProperty ;
     rdfs:label "hat Quellzelle"@de , "has source cell"@en ;
     rdfs:comment "Verbindet eine aus der Erfassungstabelle abgeleitete Entität mit der Adresse ihrer Ursprungszeile. Die Angabe ist technische Rückverfolgbarkeit für Pipeline und Review, keine wissenschaftliche Quellenangabe."@de ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Ohne rdfs:domain, weil die Property an Dokumenten, Annotationen, Aufführungen, Beziehungen und an allen aus einer Verknüpfungszeile abgeleiteten Entitätsknoten steht. Ohne rdfs:range, weil der Container ein typloser Knoten ist. Eine eigene Klasse für den Container würde ihn adressierbar und validierbar machen."@de .
+    skos:editorialNote "Ohne rdfs:domain, weil die Property an Dokumenten, Annotationen und dokumentlokalen Nennungen steht. Ohne rdfs:range, weil der Container ein typloser Knoten ist."@de .
 
 
 # ---------------------------------------------------------------------------
 # Datatype Properties, Beschreibung und Rollen
 # ---------------------------------------------------------------------------
+
+m3gim-ontology:recordedType
+    a owl:DatatypeProperty ;
+    rdfs:label "erfasster Typ"@de , "recorded type"@en ;
+    rdfs:comment "Unveränderter Wert der Typzelle einer Verknüpfungszeile. Er beschreibt die Erfassungsaussage und klassifiziert keine historische Entität."@de ;
+    rdfs:domain m3gim-ontology:Annotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:recordedValue
+    a owl:DatatypeProperty ;
+    rdfs:label "erfasster Wert"@de , "recorded value"@en ;
+    rdfs:comment "Unveränderter Wert der Namens- oder Wertzelle einer Verknüpfungszeile."@de ;
+    rdfs:domain m3gim-ontology:Annotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:recordedRole
+    a owl:DatatypeProperty ;
+    rdfs:label "erfasste Rolle"@de , "recorded role"@en ;
+    rdfs:comment "Unveränderter Wert der Rollenzelle einer Verknüpfungszeile. Ein leerer Quellwert bleibt abwesend."@de ;
+    rdfs:domain m3gim-ontology:Annotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:datingEvidence
+    a owl:DatatypeProperty ;
+    rdfs:label "Datierungsevidenz"@de , "dating evidence"@en ;
+    rdfs:comment "Unveränderter kategorialer Wert der Objektspalte datierungsevidenz; daraus wird keine numerische Konfidenz abgeleitet."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:composer
     a owl:DatatypeProperty ;
@@ -251,12 +287,11 @@ m3gim-ontology:atDate
     a owl:DatatypeProperty ;
     rdfs:label "zum Datum"@de , "at date"@en ;
     rdfs:comment "Datierung eines Annotationsknotens oder einer Aufführung, im Wortlaut der normalisierten Quelle. Fehlt sie am Annotationsknoten, ist dieser bewusst undatiert, weil die Quelle kein Datum hergibt."@de ;
-    rdfs:domain [ a owl:Class ; owl:unionOf ( m3gim-ontology:Annotation m3gim-ontology:Performance ) ] ;
+    rdfs:domain m3gim-ontology:Annotation ;
     rdfs:range xsd:string ;
-    rdfs:subPropertyOf rico:date ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Die Property tritt an die Stelle von m3gim:dateValue und der sechzehn typisierten Datumsproperties am Dokument. Nach der Umstellung existiert kein Property-Name mehr, der eine Rolle ausdrückt; die Rolle steht in m3gim-ontology:role am selben Knoten."@de ;
-    skos:editorialNote "Am Aufführungsknoten bleibt die Datierung, wo sie heute steht. Dort ist das Datum die Datierung des Ereignisses selbst, und keine Aufführung des Bestands trägt zwei Datierungen."@de ;
+    skos:editorialNote "Die Property steht auf neutralen Annotationsknoten. Eine Datumszelle begründet ohne weitere Quelle kein historisches Ereignis."@de ;
     skos:editorialNote "rico:date bleibt am Dokument und trägt die archivische Datierung der Einheit. Die Umstellung entfernt nur die projekteigene Familie, die daneben stand."@de ;
     skos:editorialNote "Die Datierung der Entstehung eines Dokuments wird am Dokument auf rico:creationDate geführt und nicht auf diese Property."@de .
 
@@ -299,7 +334,7 @@ m3gim-ontology:currency
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Der Wertebereich mischt ISO-Codes und Quellschreibungen, etwa DM neben Belgische Francs. Für maschinelle Auswertung wäre ein zweites Feld mit dem normalisierten Code nötig; ob es angelegt wird, ist offen."@de ;
-    skos:editorialNote "Fehlt die Währung in der Quelle, setzt die Pipeline für zwei Fundstellen einen redaktionell begründeten Vorgabewert. Dieser abgeleitete Charakter ist im Datum nicht markiert, der Wert steht wie ein erfasster da."@de .
+    skos:editorialNote "Fehlt die Währung in der Quelle, bleibt die Property ungesetzt; detailValue erhält den ursprünglichen Zellwert."@de .
 
 
 # ---------------------------------------------------------------------------
@@ -362,13 +397,15 @@ m3gim-ontology:digitizationStatus
 
 m3gim-ontology:dataQualityFlag
     a owl:DatatypeProperty ;
+    owl:deprecated true ;
     rdfs:label "Datenqualitäts-Flag"@de , "data quality flag"@en ;
     rdfs:comment "Kontrolliertes Signal für eine Unsicherheit in der Erfassung, abgeleitet aus dem Anmerkungsfeld der Quellzeile. Belegte Werte sind name-nicht-eindeutig, vorname-fehlt, rolle-unsicher, quelle-tippfehler und datierung-malformed."@de ;
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Ohne rdfs:domain, weil das Flag an jede aus einer Verknüpfungszeile abgeleitete Entität wandern kann, auf die sich die Unsicherheit bezieht."@de ;
     skos:editorialNote "knowledge/data.md typisiert die Property als Zeichenkette mit dem Zusatz SKOS. Die Werte stehen als Literale ohne Concept-IRI, ein Schema für sie existiert nicht. Ob eines angelegt wird, ist offen."@de ;
-    skos:editorialNote "Das Flag nimmt die Notationsabweichungen der Quelle auf, die bisher die Modellgestalt bestimmt haben. Eine Datierung, deren Notation kein ISO-Datum ergibt, wird mit datierung-malformed markiert, statt eine eigene Bauform zu erzwingen."@de .
+    skos:editorialNote "Das Flag nahm in früheren Exporten heuristisch bewertete Notationsabweichungen der Quelle auf."@de ;
+    skos:editorialNote "unused: Nach E-301 werden keine heuristischen Qualitätsflags emittiert. Unsicherheit bleibt ausschließlich im unveränderten Quelltext der Anmerkung erhalten; die Property bleibt als veralteter Lesezugang deklariert."@de .
 
 m3gim-ontology:qualityConfidence
     a owl:DatatypeProperty ;
@@ -482,8 +519,15 @@ m3gim-ontology:wdPremiereDate
     rdfs:comment "Datum der Uraufführung eines Werks laut Wikidata."@de ;
     rdfs:domain m3gim-ontology:MusicalWork ;
     rdfs:range xsd:string ;
-    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Liegt in Wikidata kein Uraufführungsdatum vor, füllt die Anreicherung den Wert ersatzweise aus dem Publikationsdatum. Welche der beiden Quellen einem Wert zugrunde liegt, ist am Datum nicht erkennbar."@de .
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:wdPublicationDate
+    a owl:DatatypeProperty ;
+    rdfs:label "Publikationsdatum laut Wikidata"@de , "publication date according to Wikidata"@en ;
+    rdfs:comment "Publikationsdatum eines Werks laut Wikidata, getrennt vom Uraufführungsdatum."@de ;
+    rdfs:domain m3gim-ontology:MusicalWork ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:wdLocation
     a owl:DatatypeProperty ;
@@ -508,6 +552,27 @@ m3gim-ontology:wdInception
 # ---------------------------------------------------------------------------
 # Datatype Properties, technische Herkunft
 # ---------------------------------------------------------------------------
+
+m3gim-ontology:sourceProperty
+    a owl:DatatypeProperty ;
+    rdfs:label "belegte Eigenschaft"@de , "sourced property"@en ;
+    rdfs:comment "Name der ausgegebenen Eigenschaft, deren Herkunft der Deskriptor beschreibt."@de ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:sourceKind
+    a owl:DatatypeProperty ;
+    rdfs:label "Quellart"@de , "source kind"@en ;
+    rdfs:comment "Art der Quelle eines hinzugefügten Werts; zulässig sind index und wikidata."@de ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+
+m3gim-ontology:sourceValue
+    a owl:DatatypeProperty ;
+    rdfs:label "ursprünglicher Quellwert"@de , "original source value"@en ;
+    rdfs:comment "Wert in der angegebenen Index- oder Autoritätsquelle vor der Serialisierung."@de ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
 
 m3gim-ontology:xlsxSheet
     a owl:DatatypeProperty ;
@@ -572,10 +637,11 @@ m3gim-ontology:approvedManualMatches
 
 m3gim-ontology:lowConfidenceSkipped
     a owl:DatatypeProperty ;
-    rdfs:label "Übergangene unsichere Zuordnungen"@de , "skipped low confidence matches"@en ;
-    rdfs:comment "Anzahl der Wikidata-Zuordnungen, die wegen zu geringer Trefferqualität und fehlender Freigabe nicht in den Export eingegangen sind."@de ;
+    rdfs:label "Nicht freigegebene automatische Zuordnungen"@de , "unapproved automatic matches"@en ;
+    rdfs:comment "Anzahl aller automatisch vorgeschlagenen Wikidata-Zuordnungen, die keine ausdrückliche manuelle Freigabe tragen und deshalb nicht in den Export eingegangen sind. Die Zahl bewertet weder Trefferqualität noch Identitätsgewissheit."@de ;
     rdfs:range xsd:integer ;
-    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> .
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
+    skos:editorialNote "Der Property-Name bleibt aus Kompatibilitätsgründen bestehen; seit E-301 umfasst der Zähler neben fuzzy_low auch nicht freigegebene exact-, alias- und fuzzy-Kandidaten."@de .
 
 
 # ---------------------------------------------------------------------------

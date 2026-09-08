@@ -13,7 +13,6 @@
 
 import { isMalaniuk } from './_netzwerk-geometry.js';
 import { buildEntities, buildOccurrences, hasGeo, countryByCity } from './karte-data.js';
-import { cityOf } from '../utils/format.js';
 import { yearOfId } from '../data/records-for.js';
 import { matchesQuery } from '../utils/normalize.js';
 import { facetValues } from '../ui/filter-state.js';
@@ -54,7 +53,7 @@ const GRID_SOURCES = {
     getEntries: (s) => [...s.persons.entries()]
       .filter(([, data]) => data.records.size > 0)
       .map(([name, data]) => ({
-        name, count: data.records.size, kategorie: data.kategorie, wikidata: data.wikidata, records: data.records,
+        name, count: data.records.size, wikidata: data.wikidata, records: data.records,
         occupation: data.occupation || null, voiceType: data.voiceType || null,
         birthDate: data.birthDate || null, deathDate: data.deathDate || null,
         // AgRelOn relations from loader pass 2.5; without this field the
@@ -62,7 +61,7 @@ const GRID_SOURCES = {
         // 2026-09-03).
         relations: data.relations || null,
       })),
-    searchFields: (e) => [e.name, e.kategorie].filter(Boolean).join(' '),
+    searchFields: (e) => e.name,
   },
   organisationen: {
     getEntries: (s) => [...s.organizations.entries()]
@@ -77,12 +76,11 @@ const GRID_SOURCES = {
   },
   orte: {
     getEntries: (s) => {
-      const country = countryByCity(s);
       return [...s.locations.entries()]
         .filter(([, data]) => data.records.size > 0)
         .map(([name, data]) => ({
           name, count: data.records.size, wikidata: data.wikidata, records: data.records,
-          land: country.get(cityOf(name).toLowerCase()) || null,
+          land: data.countries?.size === 1 ? [...data.countries][0] : null,
         }));
     },
     searchFields: (e) => e.name,
@@ -92,9 +90,6 @@ const GRID_SOURCES = {
       .filter(([, data]) => data.records.size > 0)
       .map(([name, data]) => ({
         name, count: data.records.size, komponist: data.komponist || '', wikidata: data.wikidata, records: data.records,
-        // Die Partie ist die kuratierte Angabe am Werk-Index; die belegten
-        // Buehnenrollen kommen abgeleitet aus workStageRoles.
-        partie: data.partie || '',
       })),
     searchFields: (e) => [e.name, e.komponist].filter(Boolean).join(' '),
   },
@@ -120,8 +115,6 @@ export function getGridEntries(store, gridKey) {
 
 export function clearEntriesCache() {
   entriesCache.clear();
-  rolesCache = null;
-  ambiguousRolesCache = null;
   karteNamesCache = null;
 }
 
@@ -277,80 +270,6 @@ export function karteSelectableNames(store) {
 }
 
 // Memoised role index; cleared with the entry lists.
-let rolesCache = null;
-let ambiguousRolesCache = null;
-
-/**
- * Belegte Buehnenrollen je Werk. Die Aufführungsknoten des Datenstands tragen
- * entweder ein Werk oder eine Rolle, nie beides, weshalb kein Knoten die
- * Bindung hergibt. Sie wird deshalb ueber den Beleg geschlossen, wenn das
- * Dokument genau ein Werk nennt. Alle Rollen desselben Belegs gehören zu
- * diesem Werk; bei mehreren Werken bleibt die Bindung mehrdeutig.
- * Das Ergebnis ist abgeleitet und traegt in der Ansicht die Marke aus Regel 16
- * (E-216).
- *
- * @param {Object} store
- * @returns {Map<string, Array<{name: string, count: number}>>} Werkname -> Rollen
- */
-export function workStageRoles(store, recordIds = null) {
-  if (!recordIds && rolesCache) return rolesCache;
-  const byWork = new Map();
-  const worksOfRecord = new Map();
-  for (const [name, data] of store.works || []) {
-    for (const id of data.records) {
-      if (!worksOfRecord.has(id)) worksOfRecord.set(id, new Set());
-      worksOfRecord.get(id).add(name);
-    }
-  }
-  for (const [recordId, performances] of store.recordToPerformances || []) {
-    if (recordIds instanceof Set && !recordIds.has(recordId)) continue;
-    const roles = new Set();
-    for (const perf of performances) for (const r of perf.stageRoles || []) roles.add(r);
-    const works = new Set(worksOfRecord.get(recordId) || []);
-    for (const perf of performances) if (perf.work && perf.work.name) works.add(perf.work.name);
-    if (roles.size === 0 || works.size !== 1) continue;
-    const work = [...works][0];
-    if (!byWork.has(work)) byWork.set(work, new Map());
-    const counts = byWork.get(work);
-    for (const r of roles) counts.set(r, (counts.get(r) || 0) + 1);
-  }
-  const result = new Map();
-  for (const [work, counts] of byWork) {
-    result.set(work, [...counts.entries()]
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'de-DE')));
-  }
-  if (!recordIds) rolesCache = result;
-  return result;
-}
-
-/** Ambiguous performance evidence is counted without assigning a role. */
-export function ambiguousWorkStageRoles(store, recordIds = null) {
-  if (!recordIds && ambiguousRolesCache) return ambiguousRolesCache;
-  const worksOfRecord = new Map();
-  for (const [name, data] of store.works || []) {
-    for (const id of data.records) {
-      if (!worksOfRecord.has(id)) worksOfRecord.set(id, new Set());
-      worksOfRecord.get(id).add(name);
-    }
-  }
-  const out = new Map();
-  for (const [recordId, performances] of store.recordToPerformances || []) {
-    if (recordIds instanceof Set && !recordIds.has(recordId)) continue;
-    const roles = new Set();
-    const works = new Set(worksOfRecord.get(recordId) || []);
-    for (const perf of performances) {
-      for (const role of perf.stageRoles || []) if (role) roles.add(role);
-      if (perf.work && perf.work.name) works.add(perf.work.name);
-    }
-    if (roles.size > 0 && works.size === 1) continue;
-    if (roles.size === 0 || works.size === 0) continue;
-    for (const work of works) out.set(work, (out.get(work) || 0) + 1);
-  }
-  if (!recordIds) ambiguousRolesCache = out;
-  return out;
-}
-
 /**
  * Der Schnitt, den der Sprung aus einem Registereintrag in den Bestand setzt:
  * der geteilte Filter mit der Facette dieses Eintrags und ohne den Suchbegriff.

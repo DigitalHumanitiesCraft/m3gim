@@ -21,3 +21,22 @@ export function extractXlsxSource(obj) {
     datenpunkt: src['m3gim-ontology:dataPointId'] || null,
   };
 }
+
+/** Property-level sources emitted by the E-301 serializer. */
+export function propertySources(obj, sourceProperty = null) {
+  const values = obj && obj['m3gim-ontology:propertySource'];
+  const list = values == null ? [] : Array.isArray(values) ? values : [values];
+  return list.filter(source => source && (!sourceProperty
+    || source['m3gim-ontology:sourceProperty'] === sourceProperty));
+}
+
+export function compactPropertySource(source) {
+  if (!source) return null;
+  return {
+    sourceProperty: source['m3gim-ontology:sourceProperty'] || null,
+    sourceKind: source['m3gim-ontology:sourceKind'] || null,
+    sourceValue: source['m3gim-ontology:sourceValue'] ?? null,
+    source: source['dcterms:source']?.['@id'] || source['dcterms:source'] || null,
+    xlsxSource: extractXlsxSource(source),
+  };
+}

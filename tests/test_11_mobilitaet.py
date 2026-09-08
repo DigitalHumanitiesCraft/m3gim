@@ -145,15 +145,3 @@ def test_institutional_mobility_query(graph, records):
             if isinstance(rel, dict) and rel.get("@type") == "agrelon:HasEmployeeEmployer":
                 employer_rels.append(rel)
     assert spielzeit or employer_rels, "Keine institutionelle Mobilitaet ableitbar"
-
-
-def test_correspondence_mobility_query(records):
-    """Sicht 3: Wo war sie wann (ueber Korrespondenz)?
-    AgRelOn HasCorrespondent mit Provenance auf Briefe.
-    """
-    has_corr = 0
-    for r in records:
-        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
-            if isinstance(rel, dict) and rel.get("@type") == "agrelon:HasCorrespondent":
-                has_corr += 1
-    assert has_corr > 0, "Keine HasCorrespondent-Relationen"

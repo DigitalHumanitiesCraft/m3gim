@@ -205,7 +205,7 @@ def test_drawing_shows_classes_as_nodes_and_object_properties_as_edges(shipped, 
     object_properties = _curies(vocab_graph, OWL.ObjectProperty, ONTOLOGY_NS)
     drawn = [c.split(":", 1)[1] for c in object_properties if c.split(":", 1)[1] in drawing]
     assert len(drawn) >= 5, f"Zu wenige Object Properties in der Zeichnung: {drawn}"
-    for local in ("Performance", "Annotation", "StageRole"):
+    for local in ("Annotation",):
         assert local in drawing, f"Klasse {local} fehlt in der Zeichnung"
 
 

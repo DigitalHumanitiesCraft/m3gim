@@ -2,7 +2,7 @@
 
 Alle Checks verwenden `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung nicht."""
 
-from _helpers import ensure_list, iter_entities_with_id
+from _helpers import ensure_list
 
 
 def _count_unique_names_by_type(records, prop, type_filter):
@@ -26,16 +26,6 @@ def _count_relations(records):
                      "m3gim-ontology:hasAnnotation"):
             total += len(ensure_list(r.get(prop)))
     return total
-
-
-def _count_wd_matches(records):
-    wd = set()
-    for r in records:
-        for ent in iter_entities_with_id(r):
-            aid = ent.get("@id", "")
-            if aid.startswith("wd:Q"):
-                wd.add(aid)
-    return len(wd)
 
 
 def test_records_count_baseline(records, baseline):
@@ -85,7 +75,3 @@ def test_works_count_baseline(records, baseline):
 
 def test_verknuepfungen_count_baseline(records, baseline):
     assert _count_relations(records) >= baseline["verknuepfungen_min"]
-
-
-def test_wd_matches_count_baseline(records, baseline):
-    assert _count_wd_matches(records) >= baseline["wd_matches_min"]

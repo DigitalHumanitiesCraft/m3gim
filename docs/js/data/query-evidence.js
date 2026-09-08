@@ -4,7 +4,7 @@ import { createWitness, uniqueWitnesses } from './evidence.js';
 import {
   ensureArray, cityOf, getDocTypeId, expandDftFilter, dftLabel, roleIdOf, roleToken,
 } from '../utils/format.js';
-import { normalizePerson, foldText } from '../utils/normalize.js';
+import { foldText } from '../utils/normalize.js';
 
 export const MISSING_ROLE = '__missing__';
 
@@ -24,7 +24,15 @@ function nameOf(entry) {
 }
 
 function roleOf(entry) {
-  return roleIdOf(entry?.role) || roleToken(entry?.role) || entry?.roleId || entry?.role || '';
+  return roleIdOf(entry?.role) || roleToken(entry?.role) || entry?.roleId || entry?.role
+    || entry?.['m3gim-ontology:recordedRole'] || '';
+}
+
+function detailType(entry) {
+  if (entry?.['m3gim-ontology:monetaryAmount'] != null) return 'finanz';
+  return String(entry?.['m3gim-ontology:recordedType']
+    ?? entry?.['m3gim-ontology:detailField'] ?? '').trim().toLocaleLowerCase('de-AT')
+    || 'angabe';
 }
 
 function annotationsOf(store, recordId) {
@@ -33,7 +41,7 @@ function annotationsOf(store, recordId) {
 }
 
 function entityValue(family, value) {
-  return family === 'person' ? normalizePerson(value) : value;
+  return family === 'person' ? String(value || '').trim() : value;
 }
 
 function placeMatches(store, selected, observed) {
@@ -105,7 +113,6 @@ export function facetMemberWitnesses(store, facet, value, candidateIds) {
   const candidates = new Set(candidateIds || []);
   const out = [];
   const docTypes = facet === 'docType' ? expandDftFilter(store, value) : null;
-  const cityCountries = facet === 'land' ? countriesByCity(store) : null;
   for (const record of store?.allRecords || []) {
     const recordId = record['@id'];
     if (!candidates.has(recordId)) continue;
@@ -151,8 +158,7 @@ export function facetMemberWitnesses(store, facet, value, candidateIds) {
       });
     } else if (facet === 'land') {
       for (const item of entriesForRecord(store, record, 'ort')) {
-        const country = item.entry?.['m3gim-ontology:country'] || item.country
-          || cityCountries.get(cityOf(item.value).toLowerCase()) || null;
+        const country = item.entry?.['m3gim-ontology:country'] || item.country || null;
         addEntry(item.entry, facet, country, item.role, item.kind, item.ordinal);
       }
     } else if (facet === 'verknuepfung') {
@@ -179,12 +185,12 @@ export function facetMemberWitnesses(store, facet, value, candidateIds) {
           .map((entry, ordinal) => ({ entry: entry.xlsxSource, ordinal,
             value: entry.date, role: entry.roleId || entry.role,
             nodeId: entry.id, kind: 'annotation' }));
-      } else if (type === 'finanz') {
-        entries = ensureArray(record['m3gim-ontology:hasDetail'])
-          .map((entry, ordinal) => ({ entry, ordinal,
-            value: entry['m3gim-ontology:detailField'] || '', role: roleOf(entry),
-            nodeId: entry?.['@id'], kind: 'finance' }));
       }
+      entries.push(...ensureArray(record['m3gim-ontology:hasDetail'])
+        .filter(entry => detailType(entry) === type)
+        .map((entry, ordinal) => ({ entry, ordinal,
+          value: entry['m3gim-ontology:detailValue'] || '', role: roleOf(entry),
+          nodeId: entry?.['@id'], kind: 'detail' })));
       for (const item of entries) {
         if (selectedRole && (item.role || MISSING_ROLE) !== selectedRole) continue;
         out.push(createWitness({ recordId, dimension: facet, value,
@@ -231,25 +237,6 @@ export function searchMatchWitnesses(store, record, query) {
     }
   }
   return uniqueWitnesses(out);
-}
-
-function countriesByCity(store) {
-  const tally = new Map();
-  for (const record of store?.allRecords || []) {
-    for (const item of entriesForRecord(store, record, 'ort')) {
-      const country = item.entry?.['m3gim-ontology:country'] || item.country || null;
-      if (!item.value || !country) continue;
-      const city = cityOf(item.value).toLowerCase();
-      if (!tally.has(city)) tally.set(city, new Map());
-      const counts = tally.get(city);
-      counts.set(country, (counts.get(country) || 0) + 1);
-    }
-  }
-  const out = new Map();
-  for (const [city, counts] of tally) {
-    out.set(city, [...counts].sort((a, b) => b[1] - a[1])[0][0]);
-  }
-  return out;
 }
 
 function displayRole(store, entry, role) {
@@ -312,7 +299,7 @@ export function linkRoleInventory(store, candidateIds) {
       add(recordId, 'ort', entry, ordinal);
     });
     ensureArray(record['m3gim-ontology:hasDetail']).forEach((entry, ordinal) => {
-      add(recordId, 'finanz', entry, ordinal);
+      add(recordId, detailType(entry), entry, ordinal);
     });
     annotationsOf(store, recordId).forEach((entry, ordinal) => {
       add(recordId, entry.place ? 'ort' : 'datum', entry, ordinal, {

@@ -273,26 +273,16 @@ def test_rows_with_name_but_without_typ_are_counted():
 # 6. Schutzregeln der Index-Uebernahme (data.md § Identity and precedence in the index tables)
 # ---------------------------------------------------------------------------
 
-def test_index_lookup_keeps_the_curated_first_row():
-    """Eine Nachzueglerzeile ohne Kennung verdraengt die gepflegte Zeile nicht."""
+def test_index_lookup_does_not_attach_idless_row_to_id_group():
+    """Eine idlose Zeile wird nicht still einer ID-Identitaet zugeschlagen."""
     from transform import build_index_lookup, load_index
 
     lookup = build_index_lookup(load_index("Personenindex"))
     malaniuk = lookup.get("malaniuk, ira")
     assert malaniuk is not None, "Die Nachlassbildnerin fehlt im Personen-Lookup"
-    assert malaniuk.get("wikidata_id") == "Q94208", (
-        f"Wikidata-Kennung der Nachlassbildnerin verloren: {malaniuk}"
-    )
-    assert malaniuk.get("lebensdaten"), f"Lebensdaten verloren: {malaniuk}"
-
-    with_life = sum(1 for e in lookup.values() if e.get("lebensdaten"))
-    assert with_life >= 15, f"Nur {with_life} Personen mit Lebensdaten"
-
-    conflicts = [e for e in lookup.values() if e.get("index_conflict")]
-    assert len(conflicts) >= 15, (
-        f"Nur {len(conflicts)} Feldkonflikte erkannt; die Lieferung 2026-08-31 "
-        "fuehrt 27 doppelte Namen im Personenindex"
-    )
+    assert malaniuk.get("ambiguous") is True
+    assert len(malaniuk.get("candidates", [])) == 2
+    assert any(c.get("wikidata_id") == "Q94208" for c in malaniuk["candidates"])
 
 
 def test_work_index_is_keyed_by_title_and_composer():

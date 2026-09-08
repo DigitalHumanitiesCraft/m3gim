@@ -157,7 +157,14 @@ describe('Entitaeten und Repertoire im Schnitt', () => {
 
   test('aggregateComposers zaehlt ein Dokument mit zwei Werken desselben Komponisten einmal', () => {
     const store = entityStore();
-    store.works.set('Tristan', { records: new Set(['r1']), komponist: 'Wagner, Richard' });
+    store.allRecords = [
+      { '@id': 'r1', 'rico:hasOrHadSubject': [
+        { '@type': 'm3gim-ontology:MusicalWork', name: 'Tristan', composer: 'Wagner, Richard' },
+        { '@type': 'm3gim-ontology:MusicalWork', name: 'Walküre', composer: 'Wagner, Richard' },
+      ] },
+      { '@id': 'r2', 'rico:hasOrHadSubject': { '@type': 'm3gim-ontology:MusicalWork', name: 'Tristan und Isolde', composer: 'Wagner, Richard' } },
+      { '@id': 'r3', 'rico:hasOrHadSubject': { '@type': 'm3gim-ontology:MusicalWork', name: 'Carmen', composer: 'Bizet, Georges' } },
+    ];
     const rows = aggregateComposers(store, cut);
     assert.deepEqual(rows.map((r) => [r.label, r.count]),
       [['Wagner, Richard', 2], ['Bizet, Georges', 1]]);

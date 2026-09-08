@@ -164,19 +164,18 @@ describe('A2 Ordnung zwischen Rollen (Rang)', () => {
     ],
   };
 
-  test('der Rang am Rollenbegriff entscheidet, nicht die Position', async () => {
+  test('Rollenrang erzeugt kein Dokumentjahr', async () => {
     const store = await storeFrom(FIXTURE);
     const rec = store.records.get('m3gim-data:R_RANK');
     const anchor = primaryYear(store, rec);
-    assert.equal(anchor.year, 1956, 'nicht das Auffuehrungsjahr gewaehlt');
-    assert.equal(anchor.source, 'm3gim-vocab:performance');
-    assert.equal(anchor.label, 'aufführung');
+    assert.equal(anchor.year, null);
+    assert.equal(anchor.source, null);
   });
 
-  test('der Jahresindex des Stores folgt derselben Auswahl', async () => {
+  test('der Jahresindex übernimmt keine Inhaltsdatierung', async () => {
     const store = await storeFrom(FIXTURE);
     const rec = store.records.get('m3gim-data:R_RANK');
-    assert.ok(store.byYear.get(1956)?.includes(rec), 'Record haengt nicht am Rang-Jahr');
+    assert.ok(!store.byYear.get(1956)?.includes(rec));
     assert.ok(!store.byYear.has(1961), 'der nachrangige Wert datiert den Record mit');
   });
 });
@@ -291,7 +290,7 @@ describe('A3 Bezugsebene je Datierung', () => {
 // ---------------------------------------------------------------------------
 
 describe('A4 Zeitanker am Record', () => {
-  test('die ankernde Datierung hat Vorrang vor rico:date', async () => {
+  test('rico:date bleibt Dokumentdatum neben einer Inhaltsdatierung', async () => {
     // Die Werte des Fixtures sind die von UAKUG/NIM_004 5 im ausgelieferten
     // Stand, nur mit der Rolle aufführung statt erscheinungsdatum: die
     // Objektdatierung liegt zehn Jahre neben der bezeugten Aufführung, und
@@ -306,13 +305,13 @@ describe('A4 Zeitanker am Record', () => {
       ],
     });
     const anchor = primaryYear(store, store.records.get('m3gim-data:R_ANCHOR'));
-    assert.equal(anchor.year, 1953, 'rico:date darf den Anker nicht mehr setzen');
-    assert.equal(anchor.source, 'm3gim-vocab:performance');
-    assert.equal(anchor.roleId, 'm3gim-vocab:performance');
-    assert.equal(anchor.date, '1953-03-05', 'der Anker nennt die Datierung, aus der er stammt');
+    assert.equal(anchor.year, 1963);
+    assert.equal(anchor.source, 'rico:date');
+    assert.equal(anchor.roleId, null);
+    assert.equal(anchor.date, '1963-03-06');
   });
 
-  test('am ausgelieferten Stand traegt die Verknuepfungsdatierung den Anker', async () => {
+  test('am ausgelieferten Stand bleibt rico:date der Dokumentanker', async () => {
     // UAKUG/NIM_004 5, Rezension: die Objekttabelle datiert das Blatt auf
     // 1963-03-06, die einzige ankernde Datierung der Verknuepfungszeile ist das
     // Erscheinungsdatum 1953-03-05. Der Fall zeigt, dass der Vorrang auch fuer
@@ -323,9 +322,9 @@ describe('A4 Zeitanker am Record', () => {
     assert.equal(rec['rico:date'], '1963-03-06',
       'Die Quelldatierung des Testfalls hat sich geaendert, der Fall ist neu zu waehlen');
     const anchor = primaryYear(store, rec);
-    assert.equal(anchor.year, 1953);
-    assert.equal(anchor.roleId, 'm3gim-vocab:publicationDate');
-    assert.equal(anchor.date, '1953-03-05');
+    assert.equal(anchor.year, 1963);
+    assert.equal(anchor.roleId, null);
+    assert.equal(anchor.date, '1963-03-06');
   });
 
   test('ohne ankernde Datierung faellt der Anker auf rico:date', async () => {

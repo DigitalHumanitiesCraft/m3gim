@@ -52,13 +52,14 @@ def normalize(val):
         return None
     return str(val).strip()
 
-# Record-side link properties. Since E-96 a stage role reaches the record as
-# an m3gim-ontology:Performance node instead of an attribute.
+# Record-side source paths include neutral annotations and source composites.
 LINK_PROPERTIES = (
     "m3gim-ontology:hasAssociatedAgent",
     "rico:hasOrHadLocation",
     "rico:hasOrHadSubject",
     "m3gim-ontology:hasPerformance",
+    "m3gim-ontology:hasAnnotation",
+    "m3gim-ontology:hasDetail",
 )
 
 
@@ -187,9 +188,7 @@ def audit_verknuepfungen(df_verk, graph):
             subjs = [subjs]
         jsonld_subjects += len(subjs)
         for s in subjs:
-            if s.get("@type") == "m3gim-ontology:FramingEvent":
-                jsonld_events += 1
-            elif s.get("@type") == "rico:Person":
+            if s.get("@type") == "rico:Person":
                 jsonld_mentions += 1
 
         # Each dating hangs off an annotation node under
@@ -201,8 +200,7 @@ def audit_verknuepfungen(df_verk, graph):
             dts = [dts]
         jsonld_dates += len(dts)
 
-        # E-96: rolle links became m3gim-ontology:Performance nodes; the record
-        # points at them via m3gim-ontology:hasPerformance.
+        # Legacy access paths now reach neutral source-composite annotations.
         perfs = node.get("m3gim-ontology:hasPerformance", [])
         if isinstance(perfs, dict):
             perfs = [perfs]
@@ -212,6 +210,10 @@ def audit_verknuepfungen(df_verk, graph):
         if isinstance(dtls, dict):
             dtls = [dtls]
         jsonld_details += len(dtls)
+        jsonld_events += sum(
+            d.get("m3gim-ontology:recordedType", "").strip().lower() == "ereignis"
+            for d in dtls if isinstance(d, dict)
+        )
 
     print(f"  XLSX Verknuepfungstypen:")
     for t, c in sorted(xlsx_types.items(), key=lambda x: -x[1]):
@@ -220,11 +222,11 @@ def audit_verknuepfungen(df_verk, graph):
     print(f"\n  JSON-LD Verteilung:")
     print(f"    Agents (Person+Institution): {jsonld_agents}")
     print(f"    Locations:                   {jsonld_locations}")
-    print(f"    Subjects (Werk+Ereignis):    {jsonld_subjects}")
+    print(f"    Subjects (Quellnennungen):  {jsonld_subjects}")
     print(f"      davon Events:              {jsonld_events}")
     print(f"    Mentions:                    {jsonld_mentions}")
     print(f"    Dates:                       {jsonld_dates}")
-    print(f"    Performances (Rollen):       {jsonld_performances}")
+    print(f"    Quellkomposite (legacy):     {jsonld_performances}")
     print(f"    Details (Schicht 3):         {jsonld_details}")
 
     print(f"\n  XLSX Rollen (Top 20):")
@@ -235,7 +237,7 @@ def audit_verknuepfungen(df_verk, graph):
     if missing_sig > 0:
         print(f"\n  WARNUNG: {missing_sig} Verknuepfungen ohne Signatur (Datenverlust)")
     if missing_typ > 0:
-        print(f"  WARNUNG: {missing_typ} Verknuepfungen ohne Typ (nicht verarbeitbar)")
+        print(f"  WARNUNG: {missing_typ} Verknuepfungen ohne Typ (bei Objektzuordnung neutral erhalten)")
 
     # Handreichung compliance: are all defined types present?
     handreichung_types = {'person', 'ort', 'institution', 'ereignis', 'werk', 'detail',
@@ -344,11 +346,11 @@ def audit_quality(df_objekte, graph):
         for a in agents:
             if a.get("@type") == "rico:Person":
                 total_persons += 1
-                if a.get("@id", "").startswith("wd:"):
+                if a.get("m3gim-ontology:authorityReference", {}).get("@id", "").startswith("wd:"):
                     wd_persons += 1
             elif a.get("@type") in ("rico:CorporateBody", "rico:Group"):
                 total_orgs += 1
-                if a.get("@id", "").startswith("wd:"):
+                if a.get("m3gim-ontology:authorityReference", {}).get("@id", "").startswith("wd:"):
                     wd_orgs += 1
 
         subjs = node.get("rico:hasOrHadSubject", [])
@@ -357,7 +359,7 @@ def audit_quality(df_objekte, graph):
         for s in subjs:
             if s.get("@type") == "m3gim-ontology:MusicalWork":
                 total_works += 1
-                if s.get("@id", "").startswith("wd:"):
+                if s.get("m3gim-ontology:authorityReference", {}).get("@id", "").startswith("wd:"):
                     wd_works += 1
 
     print(f"\n  Wikidata-Abdeckung:")
