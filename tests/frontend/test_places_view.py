@@ -31,11 +31,20 @@ def test_selection_preserves_cut_and_exposes_complete_evidence(frontend_server, 
     expect(detail).to_be_visible()
     assert page.url == original_url
     assert names.count() == count
+    expect(detail.locator(".places-evidence")).to_have_count(0)
+    detail.get_by_role("button", name="Quellen ansehen", exact=True).click()
     expected = page.evaluate("""async () => {
         const {buildOccurrences} = await import('./js/views/karte-data.js');
         const {cityOf} = await import('./js/utils/format.js');
         return buildOccurrences(window.m3gim.store).filter(o => cityOf(o.place).toLowerCase() === 'bayreuth').length;
     }""")
+    expected_documents = page.evaluate("""async () => {
+        const {buildOccurrences} = await import('./js/views/karte-data.js');
+        const {cityOf} = await import('./js/utils/format.js');
+        return new Set(buildOccurrences(window.m3gim.store)
+          .filter(o => cityOf(o.place).toLowerCase() === 'bayreuth').map(o => o.recordId)).size;
+    }""")
+    expect(detail.locator(".places-source-document")).to_have_count(expected_documents)
     expect(detail.locator(".places-evidence")).to_have_count(expected)
     box = detail.bounding_box()
     assert 0 <= box['x'] and box['x'] + box['width'] <= width + 1
@@ -43,7 +52,7 @@ def test_selection_preserves_cut_and_exposes_complete_evidence(frontend_server, 
     assert detail.evaluate("el => el.scrollWidth <= el.clientWidth + 1")
     assert detail.evaluate("el => el.scrollHeight > el.clientHeight")
     detail.evaluate("el => el.scrollTop = el.scrollHeight")
-    expect(detail.locator(".places-evidence").last).to_be_in_viewport()
+    expect(detail.locator(".places-source-document").last).to_be_in_viewport()
     page.keyboard.press("Escape")
     expect(trigger).to_be_focused()
     expect(detail).to_have_count(0)
@@ -60,10 +69,12 @@ def test_wuppertal_keeps_document_and_place_dates_separate(frontend_server, brow
     page = browser_context.new_page()
     page.goto(frontend_server + "#karte?suche=NIM_023%205", wait_until="networkidle")
     page.get_by_role("button", name="Belege zu Wuppertal", exact=True).click()
+    page.get_by_role("button", name="Quellen ansehen", exact=True).click()
+    page.locator(".places-source-document").first.locator("summary").click()
     detail = page.locator(".places-evidence")
     expect(detail).to_have_count(1)
     assert [" ".join(value.split()) for value in detail.locator("dd").all_text_contents()] == ["nicht erfasst", "26. April 1953", "4. April 1953"]
-    detail.locator(".places-source").click()
+    page.locator(".places-source-document__rows .places-source").click()
     expect(page.locator(".inline-detail__head-sig")).to_have_text("UAKUG/NIM_023 5")
     assert parse_qs(page.url.split('?', 1)[1])['suche'] == ['NIM_023 5']
 
@@ -95,7 +106,7 @@ def test_missing_geometry_keeps_place_evidence_usable(frontend_server, browser_c
     page.goto(frontend_server + "#karte", wait_until="networkidle")
     expect(page.locator(".mob-map")).to_contain_text("Karte nicht verfügbar")
     page.locator(".places-name").first.click()
-    expect(page.locator(".places-evidence").first).to_be_visible()
+    expect(page.get_by_role("button", name="Quellen ansehen", exact=True)).to_be_visible()
 
 
 def test_compact_navigator_and_unlocated_evidence(frontend_server, browser_context):
@@ -183,14 +194,26 @@ def test_place_detail_names_coverage_roles_and_document_co_mentions(frontend_ser
     open_navigator(page)
     page.get_by_role('button', name='Belege zu Zürich', exact=True).click()
     detail = page.locator('.places-detail')
-    expect(detail.locator('.places-overview__facts')).to_contain_text('Mit eigenem Datum')
-    expect(detail.locator('.places-overview__roles .places-role')).not_to_have_count(0)
-    expect(detail.locator('.places-evidence')).not_to_have_count(0)
+    expect(page.locator('.selection-detail__subtitle')).to_have_text('42 Dokumente · 66 Ortsbelege')
+    expect(detail.locator('.places-overview__coverage')).to_have_text('6 Ortsbelege mit eigenem Datum')
+    expect(detail.locator('.places-role-button')).to_have_count(10)
+    expect(detail.locator('.places-role-button').nth(0)).to_be_visible()
+    expect(detail.locator('.places-role-button').nth(3)).to_be_hidden()
+    expect(detail.locator('.places-evidence')).to_have_count(0)
+    first_role = detail.locator('.places-role-button').first
+    first_role_label = first_role.locator('span').first.inner_text()
+    first_role.click()
+    expect(page.locator('.selection-detail__back')).to_be_visible()
+    expect(page.locator('.selection-detail__title')).to_have_text(first_role_label)
+    page.locator('.places-source-document').first.locator('summary').click()
+    detail = page.locator('.places-detail')
     first = detail.locator('.places-evidence').first
     expect(first.locator('dt')).to_have_text([
         'Datum der Ortsaussage', 'Dokumentdatum', 'Primärer Zeitanker'
     ])
-    related = detail.locator('.places-related')
+    page.get_by_role('button', name='Zurück zu Zürich', exact=True).click()
+    expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
+    related = page.locator('.places-related')
     expect(related).to_contain_text('Im selben Dokument genannt')
     expect(related.locator('.places-related__family')).not_to_have_count(0)
 
@@ -201,8 +224,8 @@ def test_common_search_opens_typed_place_without_changing_cut(frontend_server, b
     before = page.url
     search = page.get_by_role('combobox', name='Suche', exact=True)
     search.fill('Zürich')
-    option = page.get_by_role('option', name='Ort: Zürich, 42 Dokumente', exact=True)
-    option.hover()
+    expect(page.get_by_role('option', name='Nach Ort Zürich filtern, 42 Dokumente', exact=True)).to_be_visible()
+    search.press('ArrowDown')
     page.get_by_role('button', name='Ort auf der Karte öffnen', exact=True).click()
     expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
     assert page.url == before
@@ -227,6 +250,7 @@ def test_bound_place_query_marks_witnesses_and_keeps_document_context(frontend_s
         .filter(item => item.dimension === 'ort').length;
     }""")
     assert expected == 13
+    page.get_by_role('button', name='Quellen ansehen', exact=True).click()
     detail = page.locator('.places-detail')
     expect(detail.locator('.places-match')).to_have_count(expected)
     assert detail.locator('.places-evidence').count() > expected

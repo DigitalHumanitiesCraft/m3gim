@@ -38,6 +38,7 @@ import {
 } from './_netzwerk-canvas.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { createSelectionDetail } from '../ui/selection-detail.js';
+import { detailDisclosure } from '../ui/detail-disclosure.js';
 import { onViewNavigate } from '../ui/events.js';
 import { recordsFor, baseIds, yearBounds, yearOfId } from '../data/records-for.js';
 import { getFilter, facetValues } from '../ui/filter-state.js';
@@ -520,13 +521,12 @@ function drawActorDetail(panel, node) {
   if (neighbours.length > 0) {
     const list = el('ul', { className: 'netzwerk__node-list' });
     for (const n of neighbours) list.appendChild(nodeRow(n.node, n.weight));
-    panel.appendChild(section(`Nachbarn · ${neighbours.length}`, list));
+    panel.appendChild(detailDisclosure(`Nachbarn ansehen (${neighbours.length})`, list));
   }
 
-  const firstRecord = [...(node.records || [])].find((id) => _last.result.ids.has(id));
-  if (firstRecord) {
-    panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: firstRecord })));
-  }
+  const recordIds = [...(node.records || [])].filter(id => _last.result.ids.has(id));
+  if (recordIds.length) panel.appendChild(detailDisclosure(
+    `Quellen ansehen (${recordIds.length} Dokumente)`, recordList(recordIds)));
 }
 
 function drawRecordDetail(panel, node) {
@@ -564,8 +564,12 @@ function drawEdgeDetail(panel, graph, edge) {
   }
   if (chips.childNodes.length > 0) panel.appendChild(section('Rollen', chips));
 
+  panel.appendChild(detailDisclosure(`Gemeinsame Dokumente ansehen (${edge.records.length})`, recordList(edge.records)));
+}
+
+function recordList(recordIds) {
   const list = el('ul', { className: 'netzwerk__record-list' });
-  for (const id of edge.records) {
+  for (const id of recordIds) {
     const record = _store.records.get(id);
     if (!record) continue;
     list.appendChild(el('li', {
@@ -583,7 +587,7 @@ function drawEdgeDetail(panel, graph, edge) {
       el('span', { className: 'netzwerk__record-date' }, record['rico:date'] || ''),
       el('span', { className: 'netzwerk__record-title' }, record['rico:title'] || '(ohne Titel)')));
   }
-  panel.appendChild(section('Gemeinsame Dokumente', list));
+  return list;
 }
 
 function bestandButton(onClick) {

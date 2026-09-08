@@ -8,7 +8,7 @@ import { onViewNavigate } from '../ui/events.js';
 import { recordsFor, yearBounds } from '../data/records-for.js';
 import { logStamp } from '../utils/env.js';
 import { buildEntities, buildOccurrences, hasGeo, groupPlaces, occurrencesInCut } from './karte-data.js';
-import { buildPlaceDetail } from './karte-detail.js';
+import { buildPlaceOverview, buildPlaceSources } from './karte-detail.js';
 import { buildMap, loadCountries } from './karte-map.js';
 
 let cleanup = null;
@@ -125,9 +125,7 @@ export function renderMobilitaet(store, container) {
       detail.close({ restoreFocus: false });
       navigateToView(tab, context);
     };
-    detail.open({ title: group.city, kicker: 'Ortsbelege',
-      subtitle: `${group.records.size} Dokumente · ${group.evidence.length} Ortsbelege`, trigger: detailTrigger,
-      content: buildPlaceDetail(store, group, {
+    const actions = {
         matchingWitnesses: matchingPlaceWitnesses,
         navigate, filter: () => {
           detail.close({ restoreFocus: false });
@@ -137,8 +135,18 @@ export function renderMobilitaet(store, container) {
           setFilter(buildFacetSelectionPatch(getFilter(), 'ort', [group.city]));
           navigateToView('chronik');
         },
-      }),
+      };
+    const openOverview = () => detail.open({ title: group.city, kicker: 'Ortsbelege',
+      subtitle: `${group.records.size} Dokumente · ${group.evidence.length} Ortsbelege`,
+      trigger: detailTrigger, content: buildPlaceOverview(store, group, actions) });
+    actions.openSources = (role, sourceTrigger) => detail.open({
+      title: role || 'Quellen', kicker: group.city,
+      subtitle: role ? `${role} · Quellen` : 'Alle Ortsbelege nach Dokument',
+      trigger: sourceTrigger,
+      back: { label: `Zurück zu ${group.city}`, onClick: openOverview },
+      content: buildPlaceSources(store, group, actions, role),
     });
+    openOverview();
     markSelection(); map?.draw();
     queueCentre(group.city);
   }

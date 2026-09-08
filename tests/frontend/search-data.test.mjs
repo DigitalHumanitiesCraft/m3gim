@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { storeFromShipped } from './_shipped.mjs';
-import { searchSuggestions } from '../../docs/js/ui/search-data.js';
+import { searchSuggestions, textSearchCount } from '../../docs/js/ui/search-data.js';
 
 const store = await storeFromShipped();
 
@@ -10,6 +10,14 @@ test('Zürich suggestion counts the typed place without committing draft text', 
   const before = JSON.stringify(filter);
   const hits = searchSuggestions(store, filter, 'Zürich');
   assert.equal(hits.find(item => item.family === 'ort' && item.rawValue === 'Zürich').count, 42);
+  assert.equal(JSON.stringify(filter), before);
+});
+
+test('text action count replaces committed text while preserving other filters', () => {
+  const filter = { search: 'Bayreuth', ort: [] };
+  const before = JSON.stringify(filter);
+  assert.equal(textSearchCount(store, filter, 'Zürich'), 45);
+  assert.equal(textSearchCount(store, { ...filter, ort: ['Zürich'] }, 'Zürich'), 42);
   assert.equal(JSON.stringify(filter), before);
 });
 

@@ -16,7 +16,6 @@
   font-size: var(--text-xs);
 }
 
-.research-search__submit,
 .research-search__more,
 .research-search__open,
 .filter-history__button {
@@ -61,16 +60,18 @@
 
 .research-search__option {
   display: grid;
-  grid-template-columns: 85px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-2);
   padding: var(--space-2);
   border-bottom: 1px solid var(--line-soft);
   cursor: pointer;
 }
 
-.research-search__option--active,
 .research-search__option:hover { background: var(--surface-3); }
-.research-search__family { font-size: var(--text-2xs); }
+.research-search__option--active {
+  background: var(--surface-3);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
 .research-search__label { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-xs); }
 .research-search__title { display: block; color: var(--color-text-secondary); font-size: var(--text-2xs); }
 .research-search__count { font-size: var(--text-xs); font-variant-numeric: tabular-nums; }

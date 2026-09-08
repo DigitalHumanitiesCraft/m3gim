@@ -66,10 +66,10 @@ export function createSelectionDetail({ host, onClose = () => {}, onChange = () 
         if (event.key !== 'Escape') return;
         event.preventDefault(); event.stopPropagation(); close();
       },
-    }, actions,
+    }, el('header', { className: 'selection-detail__header' }, actions,
     kicker ? el('div', { className: 'selection-detail__kicker' }, kicker) : null,
     el('h3', { className: 'selection-detail__title', id: `${id}-title` }, title || ''),
-    subtitle ? el('p', { className: 'selection-detail__subtitle' }, subtitle) : null,
+    subtitle ? el('p', { className: 'selection-detail__subtitle' }, subtitle) : null),
     el('div', { className: 'selection-detail__content' }, content || ''));
     host.classList.add('selection-detail-open');
     place();

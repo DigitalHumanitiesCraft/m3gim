@@ -139,6 +139,7 @@ def test_der_eintrag_listet_keine_dokumente_mehr(page):
                  ".idx-detail__show-all", ".idx-detail__header"):
         assert page.locator(f"#tab-indizes {gone}").count() == 0, gone
 
+    page.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt').click()
     # Each family initially shows five entries; its remainder expands in place.
     groups = page.locator("#tab-indizes .idx-umfeld__group")
     assert groups.count() > 0

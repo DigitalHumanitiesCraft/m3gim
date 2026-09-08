@@ -15,21 +15,52 @@ def test_search_commit_undo_and_typed_collision(frontend_server: str, browser_co
     expect(search).to_be_visible()
     before = page.url
     search.fill('Zürich')
-    expect(page.get_by_role('option', name='Ort: Zürich, 42 Dokumente', exact=True)).to_be_visible()
+    text_action = page.get_by_role('option', name='Nach „Zürich“ im Text suchen, 45 Dokumente', exact=True)
+    expect(text_action).to_be_visible()
+    expect(text_action).to_have_attribute('aria-selected', 'true')
+    expect(page.get_by_role('option', name='Nach Ort Zürich filtern, 42 Dokumente', exact=True)).to_be_visible()
     assert page.url == before
     search.press('Enter')
     expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('45 von 188')
     page.get_by_role('button', name='Filter rückgängig', exact=True).click()
     search.fill('Zürich')
-    page.get_by_role('option', name='Ort: Zürich, 42 Dokumente', exact=True).click()
+    page.get_by_role('option', name='Nach Ort Zürich filtern, 42 Dokumente', exact=True).click()
     expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('42 von 188')
     page.get_by_role('button', name='Filter rückgängig', exact=True).click()
     page.get_by_role('button', name='Filter wiederherstellen', exact=True).click()
     expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('42 von 188')
     page.get_by_role('button', name='alle zurücksetzen', exact=True).click()
     search.fill('Bayreuth')
-    expect(page.get_by_role('option', name='Ort: Bayreuth, 49 Dokumente', exact=True)).to_be_visible()
-    assert page.locator('.research-search__option[aria-label^="Institution: Bayreuth,"]').count() == 1
+    expect(page.get_by_role('option', name='Nach Ort Bayreuth filtern, 49 Dokumente', exact=True)).to_be_visible()
+    assert page.locator('.research-search__option[aria-label^="Nach Institution Bayreuth filtern,"]').count() == 1
+
+
+def test_hover_does_not_change_enter_action(frontend_server: str, browser_context: BrowserContext) -> None:
+    page = browser_context.new_page()
+    page.goto(frontend_server + '#bestand')
+    search = page.get_by_role('combobox', name='Suche', exact=True)
+    search.fill('Zürich')
+    hovered = page.get_by_role('option', name='Nach Ort Zürich filtern, 42 Dokumente', exact=True)
+    active = page.get_by_role('option', name='Nach „Zürich“ im Text suchen, 45 Dokumente', exact=True)
+    hovered.hover()
+    expect(active).to_have_attribute('aria-selected', 'true')
+    assert active.evaluate("el => getComputedStyle(el).boxShadow") != 'none'
+    assert hovered.evaluate("el => getComputedStyle(el).boxShadow") == 'none'
+    search.press('Enter')
+    expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('45 von 188')
+    expect(page.get_by_role('button', name='Text: „Zürich“', exact=False)).to_be_visible()
+
+
+def test_implied_generic_link_chip_remains_editable(frontend_server: str, browser_context: BrowserContext) -> None:
+    page = browser_context.new_page()
+    page.goto(frontend_server + '#bestand?ort=Z%C3%BCrich&verknuepfung=ort')
+    strip = page.locator('#tab-bestand .filter-strip')
+    expect(strip.get_by_role('button', name='Ort: Zürich', exact=False)).to_be_visible()
+    expect(strip.get_by_role('button', name='Verknüpfung: Ort', exact=False)).to_have_count(0)
+    assert 'verknuepfung=ort' in page.url
+    strip.get_by_role('button', name='Ort: Zürich', exact=False).click()
+    expect(strip.get_by_role('button', name='Verknüpfung: Ort', exact=False)).to_be_visible()
+    assert 'verknuepfung=ort' in page.url
 
 
 @pytest.mark.parametrize('width', [390, 800, 1440])

@@ -2,7 +2,7 @@ import { el } from '../utils/dom.js';
 import { getFilter, setFilter, facetSelectionValues } from './filter-state.js';
 import { navigateToView } from './router.js';
 import { labelNode } from './sidebar-options.js';
-import { searchSuggestions, SEARCH_FAMILIES } from './search-data.js';
+import { searchSuggestions, textSearchCount, SEARCH_FAMILIES } from './search-data.js';
 
 let sequence = 0;
 const REGISTERS = { person: 'personen', institution: 'organisationen', werk: 'werke', ort: 'orte' };
@@ -15,8 +15,6 @@ export function createSearch(store, { selectFacet } = {}) {
     'aria-label': 'Suche', placeholder: 'Dokumente, Personen, Institutionen, Werke und Orte suchen',
     role: 'combobox', autocomplete: 'off', 'aria-autocomplete': 'list',
     'aria-controls': `${id}-options`, 'aria-expanded': 'false' });
-  const submit = el('button', { type: 'button', className: 'research-search__submit',
-    onClick: commitText }, 'Text suchen');
   const list = el('div', { id: `${id}-options`, role: 'listbox', 'aria-label': 'Suchvorschläge',
     className: 'research-search__options' });
   const status = el('span', { className: 'research-search__status', 'aria-live': 'polite' });
@@ -26,7 +24,7 @@ export function createSearch(store, { selectFacet } = {}) {
     onClick: () => { if (items[active]) openSuggestion(items[active]); } });
   const popup = el('div', { className: 'research-search__popup' }, status, list, more, open);
   popup.hidden = true;
-  root.append(el('div', { className: 'research-search__row' }, input, submit), popup);
+  root.append(el('div', { className: 'research-search__row' }, input), popup);
   let active = -1;
   let items = [];
   let limit = 20;
@@ -45,6 +43,7 @@ export function createSearch(store, { selectFacet } = {}) {
     setFilter({ search: value });
   }
   function choose(item) {
+    if (item.action === 'text') { commitText(); return; }
     close();
     input.value = '';
     if (item.family === 'document') {
@@ -74,27 +73,27 @@ export function createSearch(store, { selectFacet } = {}) {
       input.setAttribute('aria-activedescendant', row.id);
       row.scrollIntoView({ block: 'nearest' });
     } else input.removeAttribute('aria-activedescendant');
-    open.hidden = !row;
-    if (row) open.textContent = items[active].family === 'document'
+    open.hidden = !row || items[active].action === 'text';
+    if (row && items[active].action !== 'text') open.textContent = items[active].family === 'document'
       ? 'Dokument öffnen' : items[active].family === 'ort' ? 'Ort auf der Karte öffnen' : 'Registereintrag öffnen';
   }
   function paint() {
     if (!expanded) return;
-    items = searchSuggestions(store, getFilter(), input.value);
-    if (active >= Math.min(limit, items.length)) active = -1;
+    const draft = input.value.trim();
+    items = draft ? [{ action: 'text', family: 'text', label: draft,
+      count: textSearchCount(store, getFilter(), draft), key: JSON.stringify(['text', draft]) },
+    ...searchSuggestions(store, getFilter(), draft)] : [];
+    if (active < 0 || active >= Math.min(limit, items.length)) active = items.length ? 0 : -1;
     list.replaceChildren();
     for (const [index, item] of items.slice(0, limit).entries()) {
       const row = el('div', { role: 'option', id: `${id}-${index}`, 'aria-selected': 'false',
         className: 'research-search__option', onClick: () => choose(item),
-        onMousemove: () => { active = index; paintActive(); },
-        'aria-label': `${SEARCH_FAMILIES[item.family]}: ${item.label}, ${item.count} Dokumente`,
-      }, el('span', { className: `research-search__family fam-mark--${item.family}` }, SEARCH_FAMILIES[item.family]),
-      el('span', { className: 'research-search__label' }, labelNode(item.label, input.value),
-        item.title ? el('span', { className: 'research-search__title' }, item.title) : null),
+        'aria-label': actionLabel(item),
+      }, actionNode(item, input.value),
       el('span', { className: 'research-search__count' }, String(item.count)));
       list.append(row);
     }
-    status.textContent = `${items.length} Vorschläge · Enter ohne Auswahl sucht den Text`;
+    status.textContent = items.length ? `${items.length} Aktionen · Enter führt die ausgewählte Aktion aus` : '';
     more.hidden = items.length <= limit;
     more.textContent = `Weitere Vorschläge (${Math.max(0, items.length - limit)})`;
     popup.hidden = false;
@@ -132,4 +131,18 @@ export function createSearch(store, { selectFacet } = {}) {
     window.removeEventListener('m3gim:view-change', tabChange);
     root.removeEventListener('focusout', leave);
   } };
+}
+
+function actionLabel(item) {
+  const count = `${item.count} ${item.count === 1 ? 'Dokument' : 'Dokumente'}`;
+  if (item.action === 'text') return `Nach „${item.label}“ im Text suchen, ${count}`;
+  return `Nach ${SEARCH_FAMILIES[item.family]} ${item.label} filtern, ${count}`;
+}
+
+function actionNode(item, draft) {
+  const prefix = item.action === 'text' ? 'Nach „' : `Nach ${SEARCH_FAMILIES[item.family]} `;
+  const suffix = item.action === 'text' ? '“ im Text suchen' : ' filtern';
+  return el('span', { className: `research-search__label fam-mark--${item.family}` },
+    prefix, labelNode(item.label, draft), suffix,
+    item.title ? el('span', { className: 'research-search__title' }, item.title) : null);
 }

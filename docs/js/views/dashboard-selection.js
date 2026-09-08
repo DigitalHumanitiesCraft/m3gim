@@ -1,5 +1,6 @@
 import { el } from '../utils/dom.js';
 import { createSelectionDetail } from '../ui/selection-detail.js';
+import { detailDisclosure } from '../ui/detail-disclosure.js';
 import { getFilter, setFilter } from '../ui/filter-state.js';
 import { navigateToView } from '../ui/router.js';
 import { isInKorb, toggleKorb } from '../ui/basket.js';
@@ -108,17 +109,28 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
       content.appendChild(chips);
     }
     content.appendChild(el('p', { className: 'dashboard-selection__evidence' },
-      `${merged.recordIds.length} Dokumente · ${merged.witnesses.length} Dimensionsbelege · ${merged.sourceRefs.length} Quellenstellen`));
+      `${merged.witnesses.length} Dimensionsbelege · ${merged.sourceRefs.length} Quellenstellen`));
+    const bindings = new Set(marks.map(mark => mark.dimensions?.binding));
+    const associations = new Set(merged.witnesses.map(item => item.association));
+    if (bindings.has('co-mention')) content.appendChild(el('p', { className: 'dashboard-note' },
+      'Die ausgewählten Angaben stehen im selben Dokument. Ihr Zusammenhang bleibt quellenabhängig.'));
+    if (bindings.has('derived') || associations.has('derived-single-work')) {
+      content.appendChild(el('p', { className: 'dashboard-note' },
+        'Enthält abgeleitete Zuordnungen. Ihre Grundlage steht in den Dimensionsbelegen.'));
+    }
+    if (associations.has('unassigned')) content.appendChild(el('p', { className: 'dashboard-note' },
+      'Enthält Bühnenrollen ohne gesicherte Werkzuordnung.'));
     const selectedIds = new Set(merged.recordIds);
     const queryWitnesses = (getQueryWitnesses?.() || []).filter(item => selectedIds.has(item.recordId));
-    content.appendChild(el('h4', { className: 'dashboard-selection__heading' }, 'Trefferbelege des gemeinsamen Filters'));
-    content.appendChild(witnessList(store, queryWitnesses,
-      'Der gemeinsame Filter enthält keine aussagengebundene Bedingung.'));
+    if (queryWitnesses.length) content.appendChild(detailDisclosure(
+      `Trefferbelege des gemeinsamen Filters (${queryWitnesses.length})`,
+      witnessList(store, queryWitnesses, 'Keine Trefferbelege vorhanden.')));
+    else content.appendChild(el('p', { className: 'dashboard-note' },
+      'Keine aussagengebundenen Filterbelege für diese Auswahl.'));
     if (merged.witnesses.length) {
-      content.appendChild(el('h4', { className: 'dashboard-selection__heading' }, 'Dimensionsbelege der Markierung'));
-      content.appendChild(witnessList(store, merged.witnesses, 'Keine Dimensionsbelege vorhanden.'));
+      content.appendChild(detailDisclosure(`Dimensionsbelege der Markierung (${merged.witnesses.length})`,
+        witnessList(store, merged.witnesses, 'Keine Dimensionsbelege vorhanden.')));
     }
-    content.appendChild(el('h4', { className: 'dashboard-selection__heading' }, 'Vollständiger Dokumentkontext'));
     const list = el('ul', { className: 'dashboard-selection__records' });
     for (const id of merged.recordIds) {
       const record = store.records.get(id);
@@ -127,7 +139,7 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
       }) }, record ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}` : id);
       list.appendChild(el('li', {}, open));
     }
-    content.appendChild(list);
+    content.appendChild(detailDisclosure(`Quellen ansehen (${merged.recordIds.length} Dokumente)`, list));
     const units = [...new Set(marks.map(mark => mark.unit || 'documents'))];
     detail.open({ title: marks.length === 1 ? marks[0].label : 'Kombinierte Belegauswahl',
       kicker: 'Dashboard-Belege',

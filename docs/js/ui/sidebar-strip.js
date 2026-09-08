@@ -12,16 +12,7 @@ import {
 import { predicateLabel } from '../data/query-predicates.js';
 import { FACET_META, labelIn } from './sidebar-facets.js';
 
-/**
- * The active values above the data, grouped by facet: the facet name once, then
- * one removable chip per value. The grouping is what states the semantics, that
- * several values of one facet act as OR and different facets as AND (E-151); a
- * flat row of "Facette: Wert" chips could not show it.
- *
- * The strip hangs above the data in the main area and not in the column,
- * because a chip that appears there would move every control under it
- * (Projektleitung, 2026-09-03); empty it takes no room.
- */
+/** Removable conditions remain grouped by facet to expose their OR/AND semantics. */
 export function filterStrip(inventories, localChips) {
   const element = el('div', { className: 'filter-strip' });
 
@@ -45,19 +36,20 @@ export function filterStrip(inventories, localChips) {
     for (const [key, meta] of Object.entries(FACET_META)) {
       if (!deviating.has(key)) continue;
       const inventory = inventories.get(key) || [];
-      const chips = facetValues(filter, key).map(value =>
-        removeChip(labelIn(inventory, value),
+      const values = facetValues(filter, key).filter(value => !isImpliedLinkKind(filter, key, value));
+      const chips = values.map(value =>
+        removeChip(`${meta.title}: ${labelIn(inventory, value)}`,
           () => setFilter({ [key]: facetValues(getFilter(), key).filter(v => v !== value) })));
       if (chips.length > 0) element.appendChild(stripGroup(meta.title, chips));
     }
     if (deviating.has('zeitfenster') && Array.isArray(filter.zeitfenster)) {
       const [von, bis] = filter.zeitfenster;
       element.appendChild(stripGroup('Zeitraum',
-        [removeChip(`${von}–${bis}`, () => setFilter({ zeitfenster: null }))]));
+        [removeChip(`Zeitraum: ${von}–${bis}`, () => setFilter({ zeitfenster: null }))]));
     }
     const q = (filter.search || '').trim();
     if (deviating.has('search') && q) {
-      element.appendChild(stripGroup('Suche', [removeChip(q, () => setFilter({ search: '' }))]));
+      element.appendChild(stripGroup('Suche', [removeChip(`Text: „${q}“`, () => setFilter({ search: '' }))]));
     }
     for (const group of local) {
       element.appendChild(stripGroup(group.title,
@@ -109,6 +101,11 @@ export function filterStrip(inventories, localChips) {
 
   update();
   return { element, update };
+}
+
+function isImpliedLinkKind(filter, key, value) {
+  return key === 'verknuepfung' && ['ort', 'person', 'institution', 'werk'].includes(value)
+    && facetValues(filter, value).length > 0;
 }
 
 /** Circular arrow before the reset link, in the tone of the chips' close

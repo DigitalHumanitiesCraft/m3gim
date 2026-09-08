@@ -100,6 +100,7 @@ def test_register_search_does_not_hide_a_co_mentioned_target(frontend_server, br
     page.get_by_role("button", name="Registereintrag öffnen", exact=True).click()
     entry = page.get_by_role("button", name="Details zu Tristan und Isolde", exact=True)
     expect(entry).to_be_visible()
+    page.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt').click()
     chip = page.locator(".idx-umfeld__chips > button.chip").first
     name = chip.locator(".chip-wert").inner_text()
     chip.click()
@@ -124,7 +125,8 @@ def test_dense_register_detail_keeps_bounds_lists_and_keyboard_return(
     entry.press("Enter")
     panel = page.locator("#tab-indizes .selection-detail__panel")
     expect(panel).to_be_visible()
-    expect(panel.get_by_role("heading", name="Im selben Dokument genannt")).to_be_visible()
+    expect(panel.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt')).to_be_visible()
+    expect(panel.locator('.idx-umfeld')).to_be_hidden()
     expect(panel.locator(".idx-komponist")).to_contain_text("Komponist:")
     parts = panel.locator(".idx-partien")
     expect(parts.locator(".chip:not(.mark-derived) .chip-wert")).to_have_text("Brangäne")
@@ -143,6 +145,8 @@ def test_dense_register_detail_keeps_bounds_lists_and_keyboard_return(
         "Stimme eines jungen Seemanns", "Tristan", "Venus", "pâtre",
     ]
     expect(parts).to_contain_text("Abgeleitet aus Dokumenten, die genau ein Werk nennen")
+    panel.locator('.detail-disclosure > summary', has_text='Im selben Dokument genannt').click()
+    expect(panel.locator('.idx-umfeld')).to_be_visible()
     assert grid.evaluate("el => el.clientHeight") == before["height"]
     assert grid.evaluate("el => el.scrollTop") == before["scroll"]
     metrics = panel.evaluate("""el => {
@@ -163,7 +167,7 @@ def test_dense_register_detail_keeps_bounds_lists_and_keyboard_return(
     expect(entry).to_be_focused()
     entry.press("Enter")
     expect(panel).to_be_visible()
-    expect(panel.locator(".idx-roles__more")).to_have_attribute("aria-expanded", "false")
+    expect(panel.locator(".idx-partien .idx-roles__more")).to_have_attribute("aria-expanded", "false")
 
 
 @pytest.mark.parametrize("view", ["indizes/werke", "chronik", "netzwerk"])

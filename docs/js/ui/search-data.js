@@ -5,6 +5,11 @@ export const SEARCH_FAMILIES = Object.freeze({
   person: 'Person', institution: 'Institution', werk: 'Werk', ort: 'Ort', document: 'Dokument',
 });
 
+/** Number of records produced when the draft replaces the committed text query. */
+export function textSearchCount(store, filter, draft = '') {
+  return recordsFor(store, { ...(filter || {}), search: draft.trim() }).ids.size;
+}
+
 /** The draft matches labels; committed filters alone determine eligibility. */
 export function searchSuggestions(store, filter, draft = '') {
   const found = [];

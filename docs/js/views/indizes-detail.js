@@ -2,6 +2,7 @@
 import { el } from '../utils/dom.js';
 import { AGRELON_LABELS } from '../data/constants.js';
 import { familyIcon } from '../ui/family-icons.js';
+import { detailDisclosure } from '../ui/detail-disclosure.js';
 import {
   buildUmfeld, entryRoles, workStageRoles, ambiguousWorkStageRoles,
 } from './indizes-data.js';
@@ -107,7 +108,7 @@ function umfeld(store, register, entry, recordIds, navigate) {
       }, familyIcon(group.family, { size: 12, className: `fam-mark fam-mark--${group.family}` }), group.label),
       chips));
   }
-  return section('Im selben Dokument genannt', box);
+  return detailDisclosure('Im selben Dokument genannt', box);
 }
 
 export function buildRegisterDetail({ store, register, entry, recordIds, properties, span, navigate }) {
@@ -118,8 +119,9 @@ export function buildRegisterDetail({ store, register, entry, recordIds, propert
   const roles = entryRoles(store, register, entry, recordIds);
   if (roles.length) content.appendChild(section('Rollen in den Dokumenten', el('div', {
     className: 'idx-relations idx-rollen',
-  }, ...roles.map(role => chip(String(role.name).toUpperCase(), String(role.count),
-    `${role.count} Dokument${role.count === 1 ? '' : 'e'} führen ${entry.name} in dieser Rolle`)))));
+  }, expandable(roles, 3, role => chip(String(role.name).toUpperCase(), String(role.count),
+    `${role.count} Dokument${role.count === 1 ? '' : 'e'} führen ${entry.name} in dieser Rolle`),
+  'Dokumentrollen', 'idx-document-roles__more'))));
   const relationSection = relations(entry, recordIds, navigate);
   if (relationSection) content.appendChild(relationSection);
   const parts = register === 'werke' ? stageRoles(store, entry, recordIds) : null;

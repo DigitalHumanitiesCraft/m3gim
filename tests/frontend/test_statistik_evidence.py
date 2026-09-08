@@ -53,7 +53,9 @@ def test_matrix_composer_cell_opens_complete_task4_sources(frontend_server, brow
         "els => els.map(el => el.dataset.recordId)"
     ))
     assert ids == TASK4_IDS
-    expect(detail.locator(".dashboard-selection__witnesses li").first).to_be_visible()
+    expect(detail.locator(".dashboard-selection__witnesses li").first).to_be_hidden()
+    detail.locator('.detail-disclosure > summary', has_text='Dimensionsbelege der Markierung').click()
+    expect(detail.locator(".detail-disclosure[open] .dashboard-selection__witnesses li").first).to_be_visible()
     with page.expect_download() as source_download:
         detail.get_by_role("button", name="Quellen JSON").click()
     payload = json.loads(source_download.value.path().read_text(encoding="utf-8"))

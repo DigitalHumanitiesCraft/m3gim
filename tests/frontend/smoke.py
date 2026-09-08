@@ -323,7 +323,7 @@ def main() -> int:
             # erst nach dem Aufklappen bedienbar.
             page.get_by_role('combobox', name='Suche', exact=True).fill("Bayreuther Festspiele")
             page.wait_for_timeout(200)
-            suggestions = page.locator('.research-search__option[aria-label^="Institution: Bayreuther Festspiele,"]')
+            suggestions = page.locator('.research-search__option[aria-label^="Nach Institution Bayreuther Festspiele filtern,"]')
             picker = suggestions.count()
             nodes_entity = None
             target = suggestions.first
@@ -365,7 +365,7 @@ def main() -> int:
             errs_before = len(global_errors)
             page.get_by_role('combobox', name='Suche', exact=True).fill("Bayreuth")
             page.wait_for_timeout(200)
-            page.locator('.research-search__option[aria-label^="Ort: Bayreuth,"]').click()
+            page.locator('.research-search__option[aria-label^="Nach Ort Bayreuth filtern,"]').click()
             page.wait_for_timeout(500)
             vk_stamp = stamps.get('netzwerk', '')
             page.locator('[data-tab="bestand"]').first.click()

@@ -167,10 +167,8 @@ describe('Filterstreifen ueber den Daten', () => {
     assert.match(css, /\.vs-status__reset > span \{ text-decoration: underline; \}/);
   });
 
-  test('der Chip traegt nur den Wert, die Semantik haengt am Gruppentitel', () => {
+  test('die Gruppentitel erklären weiterhin die Oder-/Und-Semantik', () => {
     const src = read('ui/sidebar-strip.js');
-    assert.match(src, /removeChip\(labelIn\(inventory, value\),/,
-      'Kein "Facette: Wert" mehr im Chip selbst.');
     const group = src.slice(src.indexOf('const STRIP_TIP'),
       src.indexOf('function removeChip'));
     assert.match(group, /einer genügt \(oder\)/);
