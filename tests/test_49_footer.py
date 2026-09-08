@@ -9,6 +9,7 @@ lebende Tabliste statt der Links und das ``aria-current`` auf dem Link der
 eigenen Seite, erzeugt ``topbar_for`` und wird deshalb mitverglichen.
 """
 
+import json
 import re
 import shutil
 from pathlib import Path
@@ -113,6 +114,7 @@ def test_impressum_marks_nothing_in_the_topbar() -> None:
 def test_read_only_sync_reports_drift_without_writing(tmp_path: Path) -> None:
     copied = tmp_path / "docs"
     copied.mkdir()
+    shutil.copytree(DOCS / "js", copied / "js")
     for page in _pages():
         shutil.copy2(page, copied / page.name)
     target = copied / "about.html"
@@ -123,3 +125,30 @@ def test_read_only_sync_reports_drift_without_writing(tmp_path: Path) -> None:
     assert target.read_text(encoding="utf-8") == stale
     assert site_html.sync_site_html(copied) == ["about.html"]
     assert site_html.sync_site_html(copied, write=False) == []
+
+
+def test_import_map_covers_every_module_and_precedes_entry() -> None:
+    head = site_html.head_for("index.html")
+    match = re.search(r'<script type="importmap">(.*?)</script>', head, re.DOTALL)
+    assert match
+    imports = json.loads(match.group(1))["imports"]
+    assert set(imports) == {
+        "./" + path.relative_to(DOCS).as_posix() for path in (DOCS / "js").rglob("*.js")
+    }
+    entry = f'<script type="module" src="{imports["./js/start.js"]}">'
+    assert head.index(entry) > match.end()
+
+
+def test_module_version_tracks_dependency_edits_and_normalizes_line_endings(tmp_path: Path) -> None:
+    js = tmp_path / "js"
+    js.mkdir()
+    (js / "start.js").write_text("import './dependency.js';\n", encoding="utf-8")
+    dependency = js / "dependency.js"
+    dependency.write_bytes(b"export const value = 1;\n")
+    initial = site_html.module_imports(tmp_path)
+    dependency.write_bytes(b"export const value = 1;\r\n")
+    assert site_html.module_imports(tmp_path) == initial
+    dependency.write_bytes(b"export const value = 2;\n")
+    changed = site_html.module_imports(tmp_path)
+    assert changed.keys() == initial.keys()
+    assert all(changed[name] != initial[name] for name in initial)

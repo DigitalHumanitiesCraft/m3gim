@@ -8,6 +8,7 @@ only replaces the head, navigation and footer and leaves page bodies intact.
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import os
@@ -285,7 +286,24 @@ def structured_data(page_name: str) -> dict:
     return {"@context": "https://schema.org", "@graph": [_website_schema(), _page_schema(page)]}
 
 
-def head_for(page_name: str) -> str:
+def module_imports(docs: Path = DOCS) -> dict[str, str]:
+    """Version the whole local module graph, including transitive imports."""
+    paths = sorted((docs / "js").rglob("*.js"))
+    if docs / "js" / "start.js" not in paths:
+        raise ValueError(f"{docs}: js/start.js fehlt")
+    digest = hashlib.sha256()
+    names = []
+    for path in paths:
+        name = "./" + path.relative_to(docs).as_posix()
+        names.append(name)
+        digest.update(name.encode("utf-8") + b"\0")
+        # Normalize checkout line endings so the generated head stays portable.
+        digest.update(path.read_text(encoding="utf-8").encode("utf-8") + b"\0")
+    version = digest.hexdigest()[:16]
+    return {name: f"{name}?v={version}" for name in names}
+
+
+def head_for(page_name: str, *, docs: Path = DOCS) -> str:
     """Render the complete shared head from the page catalogue."""
     page = page_definition(page_name)
     title = html.escape(page.title, quote=True)
@@ -300,13 +318,18 @@ def head_for(page_name: str) -> str:
     schema = "\n".join(f"    {line}" for line in schema.splitlines())
     scripts = []
     if page.app:
+        imports = module_imports(docs)
+        import_map = json.dumps({"imports": imports}, ensure_ascii=False, indent=2)
         scripts = [
             "",
             "  <!-- D3.js -->",
             '  <script src="vendor/d3-7.9.0.min.js"></script>',
             "",
             "  <!-- App -->",
-            '  <script type="module" src="js/start.js"></script>',
+            '  <script type="importmap">',
+            *(f"    {line}" for line in import_map.splitlines()),
+            "  </script>",
+            f'  <script type="module" src="{imports["./js/start.js"]}"></script>',
         ]
     lines = [
         HEAD_OPEN,
@@ -483,9 +506,9 @@ def _replace_region(text: str, open_marker: str, close_marker: str, block: str, 
     return text[:start] + block + text[end:]
 
 
-def synchronized_html(page_name: str, source: str) -> str:
+def synchronized_html(page_name: str, source: str, *, docs: Path = DOCS) -> str:
     """Return one page with the catalogue-driven shared regions replaced."""
-    text = _replace_region(source, HEAD_OPEN, HEAD_CLOSE, head_for(page_name), page_name)
+    text = _replace_region(source, HEAD_OPEN, HEAD_CLOSE, head_for(page_name, docs=docs), page_name)
     text = _replace_region(text, TOPBAR_OPEN, TOPBAR_CLOSE, topbar_for(page_name), page_name)
     return _replace_region(text, FOOTER_OPEN, FOOTER_CLOSE, FOOTER, page_name)
 
@@ -507,7 +530,7 @@ def sync_site_html(docs: Path = DOCS, *, write: bool = True) -> list[str]:
     for page_name in PAGES:
         path = docs / page_name
         original = path.read_text(encoding="utf-8")
-        updated = synchronized_html(page_name, original)
+        updated = synchronized_html(page_name, original, docs=docs)
         if updated == original:
             continue
         changed.append(page_name)

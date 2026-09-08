@@ -261,7 +261,7 @@ def test_application_fallback_and_skip_target_are_explicit():
     assert noscript and "JavaScript" in noscript.group(1)
     assert 'href="projekt.html"' in noscript.group(1)
     assert 'href="data/m3gim.jsonld"' in noscript.group(1)
-    assert 'type="module" src="js/start.js"' in html
+    assert re.search(r'type="module" src="\./js/start\.js\?v=[0-9a-f]+"', html)
 
 
 # ---------------------------------------------------------------------------

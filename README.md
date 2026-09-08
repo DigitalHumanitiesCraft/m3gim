@@ -43,7 +43,7 @@ python -m http.server 8000 --bind 127.0.0.1 --directory docs
 
 Run the server command from the repository root, then open [the local application](http://127.0.0.1:8000/) or [the Chronik](http://127.0.0.1:8000/#chronik). Reload the browser after editing frontend files. Viewing it needs no data regeneration. Use the pipeline below when source data or transformation code changes.
 
-Shared HTML metadata, navigation, footer and stylesheet links are maintained in `scripts/_site_html.py`. Synchronize those regions independently of the data pipeline; `--check` reports drift without writing files.
+Shared HTML metadata, navigation, footer and stylesheet links are maintained in `scripts/_site_html.py`. Run the synchronizer after JavaScript edits as well; it versions the complete module graph through an import map so cached dependencies cannot mix application revisions. Synchronization is independent of the data pipeline; `--check` reports drift without writing files.
 
 ```bash
 python scripts/sync-site-html.py
