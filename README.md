@@ -4,6 +4,8 @@ M³GIM is a digital humanities pilot study on the mobility and the knowledge pro
 
 The published application is available at [dhcraft.org/m3gim](https://dhcraft.org/m3gim). Local changes become available there only after publication. The [current plan](knowledge/plan.md) records the locally implemented state, verification and pending user acceptance.
 
+The current prerelease is [0.9-rc.1, Prüffassung für Projektpartner](https://github.com/DigitalHumanitiesCraft/m3gim/releases/tag/v0.9-rc.1). It provides the technically verified application for partner review. Known source defects and scholarly acceptance remain open; the release notes state the verification scope and link to the findings.
+
 ## Structure
 
 ```text

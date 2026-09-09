@@ -7,7 +7,7 @@ status: reviewed
 language: en
 version: 0.8
 created: 2026-06-17
-updated: 2026-09-08
+updated: 2026-09-09
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -144,6 +144,8 @@ The dataset carries source-cell provenance and separates local mentions from the
 The cataloguing status is not a research subject. It stays as a data point in the record detail and leaves sidebar and statistics. The cataloguing team reads the pipeline reports, not the interface. Stories that presuppose an interpretation, for instance which forms of mobility the fonds does not attest, are not stories. The tool shows the roles that exist with their counts, and the absence is read by the researcher.
 
 ## Versions 0.9 and 1.0
+
+The project lead authorised `0.9-rc.1` as the partner-review prerelease on 2026-09-09, labelled `Prüffassung für Projektpartner` and identified by Git tag `v0.9-rc.1`. It packages the technically verified application while explicitly retaining the documented source defects and pending scholarly acceptance. This designation does not change the acceptance criteria for 0.9 or 1.0. [plan.md](plan.md) owns its publication and verification state.
 
 Version 0.9 is the state in which every story of § Epics and user stories is fulfilled in the interface as far as the dataset carries it, the data reach the interface completely and correctly, and the project lead has accepted the task set of [research-framework.md](research-framework.md) § Evaluation: tasks 1–9 in the browser and task 10 against the cataloguing artefacts. Version 1.0 is the same state after the project partners have run the task set and accepted the result. Data keep growing between and after both versions without changing either definition.
 
