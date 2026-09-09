@@ -20,7 +20,7 @@ REPO = Path(__file__).resolve().parent.parent
 DOCS = REPO / "docs"
 SITE_URL = "https://digitalhumanitiescraft.github.io/m3gim/"
 IMAGE_URL = f"{SITE_URL}img/og.png"
-ASSET_VERSION = "2026-09-08f"
+ASSET_VERSION = "2026-09-09"
 
 HEAD_OPEN = "<head>"
 HEAD_CLOSE = "</head>"

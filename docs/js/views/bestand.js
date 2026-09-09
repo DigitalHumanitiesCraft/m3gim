@@ -35,6 +35,7 @@ import {
 let store = null;
 let container = null;
 let sidebar = null;
+let tableResizeObserver = null;
 let expandedRecord = null; // only one at a time
 let outsideRecord = null;
 /** The page of a Folio row the open detail shows. Null on every other row. It
@@ -86,6 +87,7 @@ let pendingRowFocus = null;
  */
 export function renderBestand(storeRef, containerEl) {
   sidebar?.destroy();
+  tableResizeObserver?.disconnect();
   store = storeRef;
   container = containerEl;
 
@@ -107,6 +109,8 @@ export function renderBestand(storeRef, containerEl) {
     onChange: () => updateBestandView(),
   });
   container.appendChild(viewShell(sidebar.element, main));
+  tableResizeObserver = new ResizeObserver(syncDetailColumns);
+  tableResizeObserver.observe(main);
   updateBestandView();
 
   // Cross-navigation: Indizes "Alle im Archiv anzeigen", Korb-Klick oder
@@ -257,6 +261,16 @@ function buildHead() {
     tr.appendChild(th);
   }
   return el('thead', {}, tr);
+}
+
+function syncDetailColumns() {
+  const table = mainEl()?.querySelector('.archiv-table');
+  const cell = table?.querySelector('.archiv-row--detail > td');
+  if (!cell) return;
+  const columns = [...table.querySelectorAll('thead th')]
+    .filter(th => getComputedStyle(th).display !== 'none').length;
+  // Hidden columns must not create anonymous columns through the detail span.
+  if (columns && cell.colSpan !== columns) cell.colSpan = columns;
 }
 
 function renderRows(items, anchorRecord = null) {
@@ -491,12 +505,14 @@ function renderRows(items, anchorRecord = null) {
     // Inline detail expansion
     if (expandedRecord === recordId) {
       const detailTr = el('tr', { className: 'archiv-row--detail' });
-      const detailTd = el('td', { colspan: '6' });
+      const detailTd = el('td');
       detailTd.appendChild(buildDetail(item));
       detailTr.appendChild(detailTd);
       tbody.appendChild(detailTr);
     }
   }
+
+  syncDetailColumns();
 
   // A keyboard toggle rebuilds the tbody under the focused row; without this
   // the focus falls back to the document and the arrow walk starts over.

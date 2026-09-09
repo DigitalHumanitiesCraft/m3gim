@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.8
 created: 2026-02-19
-updated: 2026-09-08
+updated: 2026-09-09
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -73,6 +73,8 @@ Footer. One fixed row, neutral and without accent, in two groups, the KUG mark w
 ## Views
 
 Bestand. The records in archival order, convolutes as group heads with their children in signature order (E-82, E-203). A frameless record table over the full width, rows white on a warm hairline, the tinted tone only on hover, column head and parked open convolute head (E-191, E-198). A convolute opens closed, its chevron unfolds it and parks the head under the column head, and a direct link to a child opens its convolute (E-175, E-206). Arrow keys, Enter, space and Escape run through the heads (E-214). The head carries signature, title and date span, folded also the type distribution as small chips, with its numbers and its cataloguing state in the tooltip of the title (E-190, E-197). An object row carries an indented chevron for its inline detail with `aria-expanded`, shows the folio number without prefix, leaves the date empty where it equals the convolute, and shows the family icons of the entities it names with their counts (E-212, E-215, E-217). There is no sorting, because a hierarchy does not order flat.
+
+Below 700 pixels, Bestand hides the type column and entity counts. Below 500 pixels, it also hides the date column and narrows signature, entity and basket columns to preserve readable titles. The opened record retains the complete type and date. Its detail spans exactly the currently visible columns, including after a resize; hidden columns must not take title space or stretch sticky heads beyond the viewport (E-302).
 
 Indizes. One register per page, selected in the tab menu, with count/alphabet sorting in the head (E-226, E-230, E-231). The list has one fixed-height row per entity. The shared detail separates properties, roles in documents, recorded relationships, stage parts and Im selben Dokument genannt. It previews three document roles; the complete role remainder and initially closed co-mention section expand in place. Stage parts remain unassigned unless a source statement explicitly binds them. Index information is identified by its own source; it is never presented as a binding attested by every document mentioning the work. Relationship groups expose every attesting document in the current cut. General document browsing uses the row link to Bestand; Netzwerk and Karte remain explicit view actions. Typed register and map navigation preserves the shared document filter and the recorded identity family (E-296, E-299).
 

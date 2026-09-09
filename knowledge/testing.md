@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.7
 created: 2026-02-19
-updated: 2026-09-08
+updated: 2026-09-09
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -127,6 +127,10 @@ These checks establish referential integrity. A consolidation also needs a conte
 Node tests exercise the production DOM-free modules with real vocabulary and shipped-graph fixtures for research semantics, plus synthetic boundary cases. Shared selector integration is supplemented by independent source-backed expected sets. Filter-event tests restore browser substitutes and filter state after every run. Retired helpers lose their exclusive tests once the distinct guarantees remain covered through production paths.
 
 Browser tests start their own local server and use isolated contexts in a session-scoped Chromium process. The server allows concurrent module loading over persistent HTTP/1.1 connections; failures report request URLs and transport errors. Playwright is required for candidate verification. Setup and commands are maintained in [README.md](../README.md). An unavailable browser supplies no verification evidence.
+
+The standalone smoke also accepts the public application URL through `M3GIM_SMOKE_URL`. All non-empty workspaces must render content; cross-view filters and reload persistence are checked through visible chips and document counts. Development log stamps are required only when the application's environment module enables them. The graph check resolves its data relative to the application URL, including the Pages repository prefix. A successful local run alone does not establish publication.
+
+The Bestand direct-arrival regression covers grouped and flattened records at 320, 390, 800, 1366 and 2048 pixels. It requires the addressed title and detail signature inside the viewport. A separate resize case keeps the open source while moving between four, five and six visible columns and checks usable title width and horizontal bounds (E-302).
 
 | Area | Behaviour and source-backed checks |
 |---|---|

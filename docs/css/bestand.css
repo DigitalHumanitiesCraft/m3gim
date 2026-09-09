@@ -445,6 +445,25 @@
   }
 }
 
+@container view-shell (width < 500px) {
+  .archiv-col-signatur {
+    width: 88px;
+  }
+
+  /* Reserve title space; the full date remains in the opened record. */
+  .archiv-col-datum {
+    display: none;
+  }
+
+  .archiv-col-links {
+    width: 76px;
+  }
+
+  .archiv-col-korb {
+    width: 28px;
+  }
+}
+
 /* Print — the table alone */
 
 /* On paper the filter column, the strip and the Korb column are all ways of

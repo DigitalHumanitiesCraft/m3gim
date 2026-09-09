@@ -63,7 +63,7 @@ def row_top(page, record_id: str) -> float:
 
 
 @pytest.mark.frontend
-@pytest.mark.parametrize("viewport", [(800, 900), (1366, 800), (2048, 1111)])
+@pytest.mark.parametrize("viewport", [(320, 900), (390, 960), (800, 900), (1366, 800), (2048, 1111)])
 @pytest.mark.parametrize("query", ["", "?suche=NIM_023"])
 def test_bestand_direct_record_starts_below_sticky_context(
     frontend_server: str, browser_context, viewport: tuple[int, int], query: str
@@ -91,6 +91,10 @@ def test_bestand_direct_record_starts_below_sticky_context(
     expect(record).to_have_attribute("aria-expanded", "true")
     expect(detail).to_have_class("archiv-row--detail")
     expect(detail).to_be_visible()
+    expect(detail.locator('.inline-detail__head-sig')).to_be_in_viewport()
+    title = record.locator('.archiv-titel')
+    expect(title).to_be_in_viewport()
+    assert title.bounding_box()['width'] >= 80
 
     geometry = page.evaluate(
         """() => {
@@ -114,6 +118,27 @@ def test_bestand_direct_record_starts_below_sticky_context(
         assert geometry["parent"]["top"] >= context_bottom - 2
         context_bottom = geometry["parent"]["bottom"]
     assert abs(geometry["record"]["top"] - context_bottom) <= 2
+
+
+@pytest.mark.frontend
+def test_bestand_open_detail_tracks_visible_columns_on_resize(frontend_server: str, browser_context) -> None:
+    from playwright.sync_api import expect
+
+    page = browser_context.new_page()
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": 1440, "height": 960})
+    page.goto(frontend_server + "#bestand/m3gim-data%3ANIM_023_5", wait_until="networkidle")
+    cell = page.locator('.archiv-row--detail > td')
+    for width, columns in [(1440, 6), (650, 5), (390, 4), (320, 4), (800, 6), (1440, 6)]:
+        page.set_viewport_size({"width": width, "height": 960})
+        expect(cell).to_have_attribute('colspan', str(columns))
+        title = page.locator('[data-record-row="m3gim-data:NIM_023_5"] .archiv-titel')
+        assert title.bounding_box()['width'] >= 80
+        assert page.locator('.archiv-main').evaluate('el => el.scrollWidth <= el.clientWidth + 1')
+        assert page.locator('.archiv-table').evaluate(
+            'el => el.getBoundingClientRect().right <= innerWidth'
+        )
+    expect(page.locator('.inline-detail__head-sig')).to_have_text('UAKUG/NIM_023 5')
 
 
 @pytest.mark.frontend

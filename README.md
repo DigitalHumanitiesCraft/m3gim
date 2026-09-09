@@ -105,6 +105,8 @@ python tests/frontend/smoke.py
 
 Other shells can set the same environment variable. Without it, the script uses port 8765. The smoke run fails on warnings as well as errors.
 
+For publication verification, set `M3GIM_SMOKE_URL` to `https://dhcraft.org/m3gim/` and run the same script. It checks visible filters and counts on the public application and resolves its dataset under the repository prefix. Development log stamps remain an additional local-only check.
+
 ## Data flow
 
 The recording tables under `data/google-spreadsheet/` go through the pipeline into `data/output/m3gim.jsonld`, from there as a copy into `docs/data/m3gim.jsonld`, and from there into the loader of the application, which reads the whole dataset once at startup. Views derive their groups from this archival dataset in the browser.

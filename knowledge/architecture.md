@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.8
 created: 2026-02-19
-updated: 2026-09-08
+updated: 2026-09-09
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -118,6 +118,8 @@ Vanilla JavaScript with ES modules, no build step (E-03), no framework (E-01), d
 The application head contains a generated import map for every module under `docs/js/` (E-298). A deterministic digest of their paths and text versions all module URLs and the `start.js` entry together. The map applies to static and dynamic imports and retains one shared module instance for filter and store state. Relative addresses also work under the Pages repository prefix. After JavaScript edits, `scripts/sync-site-html.py` refreshes the map; its read-only check detects stale versions. Line-ending normalization keeps the generated head stable across Windows and Unix checkouts. This prevents fresh HTML from importing incompatible dependencies retained in the browser's HTTP cache.
 
 ### Module layout
+
+The Bestand table synchronizes an open detail cell's span with the visible column headings after row rendering and when its host resizes. The view disconnects its previous resize observer before mounting another table. This preserves title width when responsive styles hide columns (E-302).
 
 Every view follows the same cut. The orchestrator holds the view-local state, builds the sidebar and draws. The data layer beside it is free of DOM and D3 and therefore checkable with Node unit tests, and where the drawing grows it lives in a module of its own.
 

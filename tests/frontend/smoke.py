@@ -1,20 +1,10 @@
-"""Frontend-Smoke-Test via Playwright.
+"""Check the served application with Playwright, locally or after publication.
 
-Laedt die SPA unter http://localhost:8765/ in einem Headless-Chromium, klickt
-die sieben sichtbaren Tabs durch und prueft pro Tab: keine JS-Errors, DOM rendert
-nicht-leer. Der Mobilitaets-Tab (D3-geo-Karte, E-111) hat zusaetzlich einen
-Karten-Canary (Knoten und Pfeile rendern nach dem asynchronen Geometrie-Load).
-Zusaetzlich werden im Archiv-Tab Anker-Records geoeffnet und das Detail-Panel
-gegen Konsolen-Fehler + erwartete Sektionen gecheckt.
-
-Aufruf (Server muss laufen: `python -m http.server 8765` in `docs/`):
-
-    python tests/frontend/smoke.py
-
-Exitcode 0 = alles OK, Exitcode 1 = mindestens ein FAIL.
-
-Bewusst *kein* pytest-Integration bis der Test stabil laeuft — einfacher
-Standalone-Script mit kompaktem Protokoll.
+Run ``python tests/frontend/smoke.py`` against a running server. Set
+``M3GIM_SMOKE_URL`` to its application URL, including a repository prefix.
+Checks cover views, source details, shared filters and URL persistence.
+Local runs additionally require development log stamps; production keeps
+them disabled. Any warning or failure exits 1. See knowledge/testing.md.
 """
 
 import os
@@ -140,6 +130,10 @@ def main() -> int:
             browser.close()
             return 1
 
+        diagnostics_enabled = page.evaluate(
+            "async () => (await import('./js/utils/env.js')).IS_DEV"
+        )
+
         # --- Tab-Durchlauf ---
         for tab in TABS:
             errs_before = len(global_errors)
@@ -158,7 +152,7 @@ def main() -> int:
                     f'#tab-{tab} .dashboard-panel'
                 ).count()
                 new_errs = global_errors[errs_before:]
-                status = "OK" if not new_errs else "WARN"
+                status = "OK" if not new_errs and (visible or tab == "korb") else "FAIL"
                 results.append((status, f"tab:{tab:20s}",
                                 f"{visible:4d} Elemente, {len(new_errs)} Konsole"))
                 for e in new_errs[:3]:
@@ -187,8 +181,11 @@ def main() -> int:
                            "msZeichnen", "msGesamt", "msErstzeichnung"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
-        for view, required in stamp_expectations.items():
-            results.append(expect_stamp(stamps, view, required))
+        if diagnostics_enabled:
+            for view, required in stamp_expectations.items():
+                results.append(expect_stamp(stamps, view, required))
+        else:
+            print("Production mode: development log stamps are disabled; checking visible state.")
 
         # --- Canary Chronik: the scaled axis opens sources through its detail.
         try:
@@ -351,14 +348,7 @@ def main() -> int:
             results.append(("FAIL", "karte:render               ",
                             f"Karte nicht gezeichnet: {str(e)[:90]}"))
 
-        # --- Canary M4: geteilter Cross-View-Filter
-        #     (architecture.md § Cross-View-Filter). Im
-        #     Netzwerk-Graph Ort=Bayreuth setzen -> der Graph fokussiert
-        #     Bayreuth (Stempel ort:Bayreuth) UND der bereits gerenderte Bestand
-        #     filtert synchron auf die Bayreuth-Records (Stempel gefiltert:ja).
-        #     Harter Schutz fuer die Synchronitaet ueber den geteilten filter-state.
-        #     Der Ort steht seit dem Sidebar-Umbau als Facette in der linken
-        #     Spalte: Suchfeld eingrenzen, dann den Wert anklicken.
+        # Visible filter receipts also work with production diagnostics disabled.
         try:
             page.locator('[data-tab="netzwerk"]').first.click()
             page.wait_for_timeout(500)
@@ -368,16 +358,26 @@ def main() -> int:
             page.locator('.research-search__option[aria-label^="Nach Ort Bayreuth filtern,"]').click()
             page.wait_for_timeout(500)
             vk_stamp = stamps.get('netzwerk', '')
+            vk_count = page.locator('#tab-netzwerk .vs-status__count .fs-option__count').inner_text()
+            vk_filter = page.locator('#tab-netzwerk .filter-strip').inner_text()
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(600)
             bestand_stamp = stamps.get('bestand', '')
+            bestand_count = page.locator('#tab-bestand .vs-status__count .fs-option__count').inner_text()
+            bestand_filter = page.locator('#tab-bestand .filter-strip').inner_text()
             new_errs = expect_no_new_errors(global_errors, errs_before)
-            if 'ort:Bayreuth' in vk_stamp and 'gefiltert:ja' in bestand_stamp and not new_errs:
+            stamps_match = not diagnostics_enabled or (
+                'ort:Bayreuth' in vk_stamp and 'gefiltert:ja' in bestand_stamp
+            )
+            if (vk_count == bestand_count and ' von ' in vk_count
+                    and 'Bayreuth' in vk_filter and 'Bayreuth' in bestand_filter
+                    and stamps_match and not new_errs):
                 results.append(("OK", "m4:cross-view-filter        ",
                                 f"Graph Ort=Bayreuth -> Bestand synchron gefiltert"))
             else:
                 results.append(("FAIL", "m4:cross-view-filter        ",
-                                f"vk={vk_stamp[-40:]!r} bestand={bestand_stamp[-40:]!r} "
+                                f"Netzwerk={vk_count!r} Bestand={bestand_count!r} "
+                                f"stamps_match={stamps_match} "
                                 f"errs={len(new_errs)}"))
                 for e in new_errs[:2]:
                     results.append(("  ", " " * 24, e[:120]))
@@ -399,15 +399,20 @@ def main() -> int:
             page.locator('[data-tab="netzwerk"]').first.click()
             page.wait_for_timeout(600)
             vk_after = stamps.get('netzwerk', '')
+            count_after = page.locator('#tab-netzwerk .vs-status__count .fs-option__count').inner_text()
+            filter_after = page.locator('#tab-netzwerk .filter-strip').inner_text()
             new_errs = expect_no_new_errors(global_errors, errs_before)
             if ("ort=Bayreuth" in hash_before and "ort=Bayreuth" in hash_after
-                    and "ort:Bayreuth" in vk_after and not new_errs):
+                    and hash_before == hash_after and count_after == vk_count
+                    and 'Bayreuth' in filter_after
+                    and (not diagnostics_enabled or "ort:Bayreuth" in vk_after)
+                    and not new_errs):
                 results.append(("OK", "filter:url-roundtrip        ",
                                 "Ort im Hash, nach Reload weiterhin gefiltert"))
             else:
                 results.append(("FAIL", "filter:url-roundtrip        ",
                                 f"vorher={hash_before!r} nachher={hash_after!r} "
-                                f"vk={vk_after[-40:]!r} errs={len(new_errs)}"))
+                                f"count={count_after!r} errs={len(new_errs)}"))
                 for e in new_errs[:2]:
                     results.append(("  ", " " * 24, e[:120]))
         except Exception as e:
@@ -737,12 +742,11 @@ def main() -> int:
             results.append(("WARN", "bestand:filterstreifen-leer      ",
                             f"check uebersprungen: {e}"))
 
-        # --- Spezial-Check: duplicate @id im JSON-LD (Frontend-Store) ---
-        # JSON-LD-Graph direkt ueber das window.m3gim-Debug-Objekt pruefen
-        # (falls vorhanden) oder ueber einen fetch auf /data/m3gim.jsonld.
+        # Resolve the dataset inside the deployed application prefix.
         try:
             dups = page.evaluate("""async () => {
-                const res = await fetch('/data/m3gim.jsonld');
+                const res = await fetch(new URL('./data/m3gim.jsonld', document.baseURI));
+                if (!res.ok) throw new Error(`Dataset HTTP ${res.status}`);
                 const data = await res.json();
                 const seen = new Map();
                 const dup = [];
