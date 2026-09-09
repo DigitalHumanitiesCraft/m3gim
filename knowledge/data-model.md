@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.6
 created: 2026-02-19
-updated: 2026-09-08
+updated: 2026-09-09
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -64,7 +64,7 @@ Identical names in different namespaces are admissible and denote different thin
 
 RiC-O 1.1 carries the archival core. A convolute is a `rico:RecordSet` with `rico:Record` children joined by `rico:hasOrHadPart`, and the kind of a record set is a value of `ric-rst:` rather than a class, the fonds and the file both being record sets with a type. Agents are `rico:Person`, `rico:CorporateBody` and `rico:Group`, places are `rico:Place`. Description runs over the RiC-O description properties, and the archival dating of a unit stays on `rico:date` with the pure creation dating beside it on `rico:creationDate`.
 
-Four subproperty edges connect the project statements to RiC-O, and all four are verified against the official component lists of RiC-O 1.1 rather than extrapolated (E-103). A performance is associated with an event, a place of an annotation is a location, a performer is a participant, and the date of an annotation is a date. Anyone querying only the RiC-O level therefore receives the project statements with it. Two earlier edges were withdrawn with E-136, the one from the annotation property, because the target node now also carries financial items that are no events, and the one onto the beginning date, because it asserted the start of a document's own duration.
+The current vocabulary retains one internal subproperty edge, from `m3gim-ontology:hasDetail` to `m3gim-ontology:hasAnnotation`. The four RiC-O subproperty mappings introduced under E-103 are absent after E-301. Legacy access paths for recorded people and source composites must not infer participation or historical events through vocabulary entailment. RiC-O queries reach archival records through their directly declared types and properties; project annotations require the project vocabulary.
 
 Three value-form deviations remain open. The term conformance test checks that an external term exists, not that the value fits its range, and three object properties receive a value form their range excludes. Language and extent expect an individual of a RiC-O class and receive a string, and the documentary form type expects a RiC-O individual and receives a concept typed only as `skos:Concept`.
 
@@ -76,7 +76,7 @@ The extension adds five classes, and the reason for each is a property of the ma
 
 `m3gim-ontology:Annotation` is the load-bearing one (E-136). Every dating, location and detail hangs as its own annotation node on its subject, carries its value in a fixed value property and its recorded role in a single role property, so that no property name expresses a role any more and a consumer reaches every dating of a document through one loop. Without a place it is a pure dating, without a date a pure location. The class replaces the three earlier classes for the spatiotemporal event, the dated event and the detail annotation. It has no superclass, because the earlier subclass edge onto the event class no longer holds once financial items sit on the same node, and RiC-O 1.1 offers no fitting anchor, a detail being neither an event nor a description element of a resource. Whether it should be modelled as the reification of a statement is open.
 
-A date row and a place row carrying the same role are not merged into one node (E-139). Merging would assert a togetherness the recording did not record, the derivation is left to the interface, and the source cell stays single-valued per node.
+A date row and a place row carrying the same role remain separate source statements (E-139, E-301). Their shared role supplies no occurrence binding in either the pipeline or the interface. A composite cell retains its complete original value alongside any explicitly separable components.
 
 Source composites of stage part with person and of date with work use neutral `m3gim-ontology:Annotation` carriers under E-301. Existing `perf_` identifiers and the `hasPerformance` access path remain for continuity; their vocabulary declarations do not classify the carrier as an event or establish actual participation. Source `ereignis`, `Aktivität` and `dokument` rows remain neutral statements of their recorded type. The legacy `Performance` and `FramingEvent` classes are not supplied by guessing what these rows describe. `MusicalWork` follows the recorded work type. Stage-part names remain available without inferring which work or appearance they belong to.
 
@@ -86,15 +86,15 @@ The recording carries a single role column. Before the rebuild the pipeline dist
 
 The property is an object property with `skos:Concept` as its range. The role value is a reference to a concept, and the referencing node carries that concept's `skos:prefLabel` along, so the display text is available without a lookup and the values stay machine-readable through the IRI. Where the source carries no role the node carries none, and a role inferred from position arises nowhere. An unmapped source value can remain a literal and requires editorial review. Current contract-status statements are retained as descriptions, as explained under the financial layer.
 
-The role holds only in the context of its document but hangs on the entity node. Where that node carries a Wikidata IRI, the document context is lost on merging to RDF, which is the consequence discussed under the shape of the graph below.
+The role and source reference belong to a document-local mention or annotation. An admitted Wikidata IRI is the object of `m3gim-ontology:authorityReference`; it does not identify the node carrying the local role. RDF expansion therefore preserves separate document contexts under E-301.
 
 ### Property families
 
 The term list itself is in [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl) and in `docs/datenmodell.html`. Six families exist, and only what a reader cannot see from the term names is stated here.
 
-The relational properties connect an archival resource to an agent, a performance, an annotation or a detail, and the performance in turn to its work, its performer and its stage part. The detail property remains a subproperty of the annotation property although both point at the same class now, because it keeps a financial item addressable in one triple and preserves the access path the interface reads.
+The relational properties connect an archival resource to local agent mentions, source-composite annotations and detail statements. A composite may expose the person, work or stage-part components explicitly recorded in its source row. The legacy property names establish no performance or participation. The detail property remains a subproperty of the annotation property, keeping financial items addressable through their existing access path.
 
-The descriptive and dating properties are strings throughout. Every date value is a string, because historical dating regularly exceeds the schema strictness of a date datatype through spans, incomplete values and the three qualifiers, so whoever filters by time parses those forms. Vocabulary resolution keeps an incoming role alias in `m3gim-ontology:derivedFromRole` when it differs from the preferred label. Exact spelling before case and gender-suffix normalisation remains available at the source cell.
+The descriptive and dating properties are strings throughout. Date strings retain spans, limited precision and qualifiers, so time consumers parse those forms explicitly. Vocabulary resolution keeps an incoming role alias in `m3gim-ontology:derivedFromRole` when it differs from the preferred label. `m3gim-ontology:recordedRole` retains the exact source spelling alongside its source-cell reference.
 
 Two properties sit on the role concept rather than on source statements (E-150). `m3gim-ontology:datingScope` categorises the recorded dating role; `m3gim-ontology:datingRank` provides a display order for those categories. E-301 uses the explicitly recorded document date for the shared time filter. Neither vocabulary property can turn a content date into a missing document date.
 

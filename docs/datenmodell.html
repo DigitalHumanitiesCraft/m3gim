@@ -456,7 +456,7 @@
           </dl>
           <p class="term__note">Die Property tritt an die Stelle von m3gim:role, m3gim:eventRole, m3gim:dateRole und m3gim:detailRole. Die vier zogen bereits aus einem einzigen Vokabular, weil eine einzige Spalte der Erfassungstabelle ihre Werte trägt und die Pipeline sie nur nach Verknüpfungstyp verteilt hat.</p>
           <p class="term__note">Der Wert ist ein Verweis auf ein Concept des Vokabulars m3gim-vocab. Der Verweisknoten führt das skos:prefLabel des Concepts mit, damit der Anzeigetext ohne Nachschlagen im Vokabular verfügbar ist.</p>
-          <p class="term__note">Die Rolle gilt nur im Kontext des jeweiligen Dokuments, hängt aber am Entitätsknoten. Trägt dieser Knoten eine Wikidata-IRI, geht der Dokumentkontext beim Zusammenführen zu RDF verloren, und dieselbe global identifizierte Entität erhält einander ausschließende Rollen. Wie die Rolle an das Dokument gebunden wird, ist mit dem Projekt zu klären.</p>
+          <p class="term__note">Rolle und Quellverweis bleiben am dokumentlokalen Nennungs- oder Annotationsknoten. Eine belegte Wikidata-IRI wird über authorityReference referenziert und identifiziert nicht den Knoten mit der lokalen Rolle. Die RDF-Expansion bewahrt dadurch den Dokumentkontext gemäß E-301.</p>
         </div>
         <div class="term">
           <h3 class="term__head">
