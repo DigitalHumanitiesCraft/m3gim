@@ -1373,11 +1373,17 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         datum = clean_date(recorded_date)
         anmerkung = source_string(row.get('anmerkung'))
 
-        # A row containing only the join columns carries no statement. Rows
-        # with any source content still proceed to the neutral preservation
-        # path when their type is absent or unsupported.
+        # Join-only rows carry no statement. A type without value, role, date
+        # or note is incomplete metadata and is reported below. Every other
+        # source-bearing row proceeds to neutral preservation when its type is
+        # absent or unsupported.
         if not any((recorded_type, recorded_value, recorded_role,
                     recorded_date, anmerkung)):
+            continue
+        if recorded_type and not any((recorded_value, recorded_role,
+                                      recorded_date, anmerkung)):
+            record_drop("Verknuepfungszeile nur mit Typ",
+                        _verk_location(df, row, idx))
             continue
 
         if typ is None:

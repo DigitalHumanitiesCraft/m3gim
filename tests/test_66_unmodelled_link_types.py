@@ -1,16 +1,10 @@
-"""Datenspiegel: Verknuepfungstypen ohne Modellabbildung.
+"""Report recorded link types without a dedicated processing handler.
 
-``RELATION_HANDLERS`` in ``scripts/transform.py`` ist die vollstaendige
-Abbildung von erfasstem Typ auf Modelleigenschaft. Ein Typ ohne Eintrag
-erzeugt nichts, die Zeile faellt aus dem Datensatz und ist im Frontend
-unsichtbar. Am aktuellen Datenstand betrifft das die Typen ``dokument`` und
-``aktivitaet``: beide sind erfasst, beide sind noch nicht modelliert.
-
-Der Test ist absichtlich ROT, solange solche Zeilen in der Quelle stehen. Seine
-Fehlermeldung ist die Befundliste mit Signatur und Quellzeile, damit das
-Erschliessungsteam die Faelle wiederfindet, ohne den Transform-Lauf zu lesen.
-Er wird gruen, sobald das Modell die Typen aufnimmt (dann tragen sie einen
-Handler) oder die Quelle sie aufloest.
+E-301 preserves unsupported values as neutral source statements when their
+target record resolves. A missing handler therefore indicates a cataloguing
+question, not lost source content. The current dedicated neutral handlers also
+cover ``dokument`` and ``aktivitaet``. This data-quality check keeps source
+locations available for reviewing any additional types.
 """
 
 import sys
@@ -67,15 +61,16 @@ def test_every_recorded_link_type_has_a_model_mapping(xlsx_verknuepfungen):
     if not findings:
         return
 
-    lines = ["Verknuepfungstypen ohne Abbildung in RELATION_HANDLERS. Die Zeilen "
-             "gehen im Transform verloren:"]
+    lines = ["Verknuepfungstypen ohne eigenen Handler in RELATION_HANDLERS. "
+             "Bei aufloesbarem Zielobjekt bleiben ihre Werte als neutrale "
+             "Quellaussagen erhalten:"]
     for typ, places in sorted(findings.items(), key=lambda x: -len(x[1])):
         lines.append(f"  Typ {typ!r}: {len(places)} Zeilen")
         for place in places:
             lines.append(f"    {place}")
     lines.append(
-        "Entweder das Modell nimmt den Typ auf (data.md verankern, Vokabular "
-        "nachziehen, Handler ergaenzen), oder die Erfassung loest ihn auf einen "
-        "bestehenden Typ auf."
+        "Den Typ anhand der Quelle pruefen. Eine fachliche Modellierung in "
+        "data.md verankern und bei Bedarf Vokabular und Handler ergaenzen; "
+        "eine Erfassungskorrektur benoetigt einen Quellenbeleg."
     )
     pytest.fail("\n".join(lines))

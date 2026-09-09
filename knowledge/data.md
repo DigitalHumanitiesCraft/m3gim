@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.7
 created: 2026-02-19
-updated: 2026-09-08
+updated: 2026-09-09
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -36,7 +36,7 @@ The formal side, meaning classes, properties, controlled vocabularies and serial
 
 The project lead requires source statements and extracted values to reach the frontend without additional historical interpretation. This contract supersedes earlier permissions for inferred currencies, fonds-centred agent relations, inferred relationship periods, name-based identity repairs, single-work stage-part associations and editorial timeline phases. Implementation and verification status are recorded in [plan.md](plan.md).
 
-Rows containing only a signature or folio reference and no type, value, role or note remain in the original export but produce no source statement. Preserving an empty row must not create an apparent annotation or enlarge the linked document basis.
+Rows containing only a signature or folio reference and no type, value, role, date or note remain in the original export but produce no source statement. A row that adds only a type while value, role, date and note remain empty is an incomplete recording rather than a source statement; the pipeline reports its sheet and row and emits no annotation. Preserving either incomplete shape must not create an apparent annotation or enlarge the linked document basis. A value, role, date or note remains substantive source content even when its type is absent.
 
 - Keep the source exports unchanged. Preserve each contributing source row, its recorded type, value, role and note, and its sheet and row. A duplicate-looking row remains a separate witness. An absent record identifier or an unmatched link is a reported source defect; it does not authorise inventing an archival record or assigning the row to a plausible neighbour.
 - Preserve missing values. Do not supply a currency, event role, participant, work association, relationship or relationship date from context. A recorded `Aktivität` remains an activity statement without an invented subtype. `dokument` remains a recorded document mention and creates no archival containment. Other unsupported link values remain neutral statements with their recorded type and value, without a guessed entity family. If a composite type supplies no separable components, retain the complete value as a neutral statement. For example, `ort, datum` with the single value `06-09` cannot establish both a place and a date; `Wien, ab 1956` explicitly supplies both components.
@@ -79,7 +79,7 @@ Cataloguing is selective and unfinished. Title and document type are the best co
 
 The authoritative source format is the CSV export of the spreadsheet. The reason is that the XLSX export converts date, folio and bundling columns into cell types and thereby invents precision the recording does not carry, a bare month becoming the first of that month and a year-less entry becoming a calendar date of the export year (E-152). The CSV export passes the recorded text through unchanged.
 
-The link table lives as one CSV per sheet under `data/google-spreadsheet/verknuepfungen/`, one file per box plus the value list `Typ-Rolle.csv`. File names carry the sheet label with an underscore, `Box_1.csv` and so on, while the sheet name in the provenance keeps the spelling of the source, `Box 1`. The box numbers are not contiguous, because a sheet without a usable data row is not carried along. The object table is a CSV as well, `M3GIM-Objekte.csv`, beside the workbook. Ordinary production requires these CSV exports. The four index tables stay XLSX, because they hold no endangered column.
+The link table lives as one CSV per sheet under `data/google-spreadsheet/verknuepfungen/`, currently nine box exports plus the value list `Typ-Rolle.csv`. File names carry the sheet label with an underscore, `Box_1.csv` and so on, while the sheet name in the provenance keeps the spelling of the source, `Box 1`. An incomplete or scaffolding row remains in its raw box export; the source-fidelity guard above prevents it from creating an apparent statement or enlarging the linked document basis. The object table is a CSV as well, `M3GIM-Objekte.csv`, beside the workbook. Ordinary production requires these CSV exports. The four index tables stay XLSX, because they hold no endangered column.
 
 `resolve_verknuepfungen_source` takes every `Box_*.csv` in that directory. A missing required source stops production with an explicit error. Any legacy XLSX reader is a compatibility path, not an equivalent production input.
 

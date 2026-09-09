@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Laufzeit des Reports: 2026-09-08T17:43+02:00_
+_Laufzeit des Reports: 2026-09-09T09:58+02:00_
 
 Grundlage: `data/output/m3gim.jsonld` + `data/output/wikidata-reconciliation.json`.
 

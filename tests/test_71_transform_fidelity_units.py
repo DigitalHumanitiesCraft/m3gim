@@ -1,11 +1,14 @@
 """Focused source-fidelity regressions for the E-301 transform contract."""
 
-import pandas as pd
-import sys
+from collections import Counter
 from pathlib import Path
+import sys
+
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
+import transform
 from transform import (
     _inject_enrichment,
     add_relations_to_records,
@@ -44,6 +47,22 @@ def test_join_only_row_does_not_create_a_statement():
         "_xlsx_sheet": "Box 1", "_xlsx_row": 2925,
     }])
     assert process_verknuepfungen(source, {}) == {}
+
+
+def test_type_only_row_is_reported_without_creating_a_statement(monkeypatch):
+    monkeypatch.setattr(transform, "DROPS", Counter())
+    monkeypatch.setattr(transform, "DROP_SAMPLES", {})
+    source = pd.DataFrame([{
+        "archivsignatur": "UAKUG/NIM_024", "folio": None,
+        "typ": "dokument", "name": None, "rolle": None, "anmerkung": None,
+        "_xlsx_sheet": "Box 3", "_xlsx_row": 2,
+    }])
+
+    assert process_verknuepfungen(source, {}) == {}
+    assert transform.DROPS == Counter({"Verknuepfungszeile nur mit Typ": 1})
+    assert transform.DROP_SAMPLES == {
+        "Verknuepfungszeile nur mit Typ": ["Box 3 Zeile 2"]
+    }
 
 
 def test_each_substantive_untyped_field_keeps_the_row_neutral():

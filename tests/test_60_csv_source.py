@@ -31,7 +31,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 CSV_DIR = REPO_ROOT / "data" / "google-spreadsheet" / "verknuepfungen"
-BOX_SHEETS = ["Box 1", "Box 2", "Box 4", "Box 5", "Box 6", "Box 7", "Box 9"]
+BOX_SHEETS = [f"Box {number}" for number in range(1, 10)]
 
 
 # ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ def test_csv_source_layout():
     """Das Quellverzeichnis fuehrt je Blatt eine Datei plus die Wertliste."""
     assert CSV_DIR.is_dir(), f"CSV-Quellverzeichnis fehlt: {CSV_DIR}"
     boxes = sorted(p.name for p in CSV_DIR.glob("Box_*.csv"))
-    assert len(boxes) >= 7, f"Zu wenige Box-Dateien: {boxes}"
+    assert boxes == [f"{sheet.replace(' ', '_')}.csv" for sheet in BOX_SHEETS]
     assert (CSV_DIR / "Typ-Rolle.csv").exists(), "Wertliste Typ-Rolle.csv fehlt"
     xlsx = list(CSV_DIR.parent.glob("M3GIM-Verkn*pfungen*.xlsx"))
     assert not xlsx, (
@@ -244,7 +244,12 @@ def test_signature_stub_is_an_error():
     assert len(stubs) == 1, "Signaturstumpf ohne Befund durchgelassen"
 
     real = [i for i in _source_issues() if i.code == "E014"]
-    assert not real, f"Signaturstuempfe in der uebernommenen Quelle: {[i.value for i in real]}"
+    expected = {
+        (row["_sheet"], row["_row"], row.get("", "").strip())
+        for row in _raw_rows()
+        if row.get("", "").strip() == "UAKUG/NIM_"
+    }
+    assert {(i.sheet, i.row, i.value) for i in real} == expected
 
 
 # ---------------------------------------------------------------------------
@@ -262,7 +267,7 @@ def test_typ_rolle_cross_check_is_a_finding_list():
 
 
 def test_rows_with_name_but_without_typ_are_counted():
-    """Eine Zeile ohne Typ traegt keine auswertbare Aussage und wird gemeldet."""
+    """Named rows without a type are reported and remain neutral statements."""
     typeless = [i for i in _source_issues() if i.code == "E013"]
     assert len(typeless) >= 200, f"Nur {len(typeless)} typlose Zeilen gemeldet"
     signatures = Counter(i.value.split(" | ")[0] for i in typeless)

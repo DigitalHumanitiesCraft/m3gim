@@ -115,10 +115,11 @@ def test_recorded_link_cells_round_trip_on_neutral_carriers(graph, xlsx_verknuep
     for row in _resolvable_link_rows(xlsx_verknuepfungen, graph):
         recorded_type = _raw(row.get("typ"))
         recorded_value = _raw(row.get("name"))
-        if not recorded_type and not recorded_value:
-            continue
         key = (_text(row.get("_xlsx_sheet")), int(row.get("_xlsx_row")))
         candidates = carriers.get(key, [])
+        if not any(_text(row.get(field)) for field in ("name", "rolle", "datum", "anmerkung")):
+            assert not candidates, f"Incomplete row became a statement: {key}"
+            continue
         if not candidates:
             missing.append(key)
             continue

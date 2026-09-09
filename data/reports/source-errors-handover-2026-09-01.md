@@ -65,6 +65,8 @@ Drei Konvolute tragen als Titel nur eine Jahresangabe. Im Bestand steht das Datu
 | mehrere Boxen | Beteiligungskennung | `1.1` statt `1.01` in 26 Zeilen | Zweistellig schreiben, sonst ist Beteiligung 01 nicht von 10 zu unterscheiden |
 | Verknüpfungstabelle | Name | `Teatro Colon` ohne Akzent | Der Index führt `Teatro Colón` mit Akzent. Schreibung angleichen, sonst greift die Normdaten-Verknüpfung nicht |
 | Verknüpfungstabelle | Ortsname | `bayreuth` (klein) und `Bayeuth` (Tippfehler, Box 5 Zeile 44 im Komposit `Bayeuth, 1951-08-04`) | Auf `Bayreuth` vereinheitlichen. `Bayeuth` steht heute als eigener Eintrag im Ortsregister der Anwendung |
+| Box 3, `UAKUG/NIM_024`, Zeile 2, am 2026-09-09 bereitgestellter Export | name / rolle / anmerkung | Nur Signatur und Typ `dokument` sind ausgefüllt | Den gemeinten Dokumentwert anhand der Quelle ergänzen, falls eine Aussage erfasst werden soll. Die Rohzeile bleibt erhalten; die Pipeline meldet die unvollständige Erfassung und erzeugt daraus keinen Detailknoten oder zusätzlichen Treffer |
+| Box 8, Zeile 2, am 2026-09-09 bereitgestellter Export | Signatur / Inhalt | Nur der unvollständige Signaturpräfix `UAKUG/NIM_` ist eingetragen | Als Erfassungsgerüst behandeln, bis Signatur und Inhalt belegt sind. Die Rohzeile bleibt erhalten und erzeugt keine Aussage |
 
 ### Werktitel in Kurzform, Dubletten im Werke-Register und fehlende Komponisten (2026-09-04)
 
