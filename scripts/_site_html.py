@@ -442,7 +442,7 @@ def topbar_for(page_name: str) -> str:
         TOPBAR_OPEN,
         '    <div class="topbar__lead">',
         f'      <a class="topbar__brand" href="index.html" data-tip="{BRAND_SUBTITLE}">M³GIM</a>',
-        '      <a class="topbar__badge" href="projekt.html">Research Preview</a>',
+        '      <a class="topbar__badge" href="about.html" data-tip="Forschungsvorschau. Daten und Oberfläche sind in Arbeit und können sich ändern." aria-label="Research Preview"><span class="topbar__badge-long">Research </span>Preview</a>',
         "    </div>",
         "",
         (

@@ -315,6 +315,7 @@ Selected historical verification is retained here because it substantiates a com
 | Search/Orte/Dashboard, `649f04a` | The stable combined run passed 722 Node and 684 Python/browser checks, with four strict source-fix xfails, nine deselections and no skips. The project lead gave positive screenshot feedback; guided research acceptance remained open (E-296). |
 
 The unresolved transfer of cross-project method experience remains in [handoff.md](handoff.md).
+| Research Preview badge, 2026-10-02 | The badge was hidden below 1200 pixels and set in small capitals. It now stays visible at every width in readable size, shortened to Preview on phones, carries a tooltip on the preview status and links to the Über page. The shared header template in `scripts/_site_html.py` and the header test follow the new markup. |
 
 ## Related
 

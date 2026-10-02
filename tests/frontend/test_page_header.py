@@ -41,7 +41,7 @@ SUBTITLE = "Teilnachlass Ira Malaniuk — UAKUG/NIM"
 BRAND_RE = re.compile(
     r'<a class="topbar__brand" href="([^"]+)" data-tip="([^"]+)">([^<]+)</a>'
 )
-BADGE_RE = re.compile(r'<a class="topbar__badge" href="([^"]+)">([^<]+)</a>')
+BADGE_RE = re.compile(r'<a class="topbar__badge" href="([^"]+)"([^>]*)>(.*?)</a>')
 NAV_RE = re.compile(r'<nav class="tab-bar"([^>]*)>')
 GROUP_RE = re.compile(r'<div class="tab-bar__group" role="none" data-group="([a-z]+)">')
 TAB_RE = re.compile(r'<(?:button|a) class="tab-bar__tab[^"]*"[^>]*>')
