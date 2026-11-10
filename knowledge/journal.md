@@ -7,7 +7,7 @@ status: active
 language: en
 version: 0.6
 created: 2026-02-19
-updated: 2026-09-09
+updated: 2026-11-10
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -313,13 +313,14 @@ Selected historical verification is retained here because it substantiates a com
 | M6b source-label removal | The verifier opened 187 records and 51 Folio pages and checked 4,899 role/value chips and 25 grouped dates. Four actual export formats retained provenance. Counts describe that dataset and revision. |
 | M6d direct arrival | Six filtered/unfiltered cases at 800 × 900, 1366 × 800 and 2048 × 1111 aligned the target below sticky heads. Manual scrolling and title copying were checked separately. |
 | Search/Orte/Dashboard, `649f04a` | The stable combined run passed 722 Node and 684 Python/browser checks, with four strict source-fix xfails, nine deselections and no skips. The project lead gave positive screenshot feedback; guided research acceptance remained open (E-296). |
+| Research Preview badge, 2026-10-02 | The badge was hidden below 1200 pixels and set in small capitals. It now stays visible at every width in readable size, shortened to Preview on phones, carries a tooltip on the preview status and links to the Über page. The shared header template in `scripts/_site_html.py` and the header test follow the new markup. |
+| Maintenance check, 2026-11-10 | On `3f75a46`, unchanged since 2026-10-02 and equal to `origin/main`, the invariant run passed 732 Python and browser checks with four strict source-fix xfails and nine deselections, and 735 Node tests passed. The data mirror kept seven failures and one pass. `sync-site-html.py --check` and `vocab/check-coverage.py` exited 0. Code, data and `docs/` were not changed. |
 
 The unresolved transfer of cross-project method experience remains in [handoff.md](handoff.md).
-| Research Preview badge, 2026-10-02 | The badge was hidden below 1200 pixels and set in small capitals. It now stays visible at every width in readable size, shortened to Preview on phones, carries a tooltip on the preview status and links to the Über page. The shared header template in `scripts/_site_html.py` and the header test follow the new markup. |
 
 ## Related
 
 - [INDEX.md](INDEX.md) for the knowledge base and its glossary.
 - [journal-archive.md](journal-archive.md) for superseded decisions and the full session narratives.
 - [specification.md](specification.md) for the current state, the open decisions and the epics.
-- [handoff.md](handoff.md) for the open handover points and the assignments of the lanes.
+- [handoff.md](handoff.md) for the open handover points.
