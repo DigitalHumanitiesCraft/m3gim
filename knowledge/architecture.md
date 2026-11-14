@@ -256,5 +256,5 @@ What the suite guarantees, how the two layers of invariants and data mirror diff
 | Test suite and TDD workflow | [testing.md](testing.md) |
 | Architecture and model decisions | [journal.md](journal.md) |
 | Identity, scope and state of work | [specification.md](specification.md) |
-| Open handover points | [handoff.md](handoff.md) |
+| Open handover points | [journal.md](journal.md) § Open |
 | Research framework and use cases | [research-framework.md](research-framework.md) |

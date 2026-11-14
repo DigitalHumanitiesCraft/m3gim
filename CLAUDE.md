@@ -4,9 +4,9 @@ Shared repository instructions for Claude and Codex. [AGENTS.md](AGENTS.md) rout
 
 ## Session start
 
-Read this file, [knowledge/INDEX.md](knowledge/INDEX.md), [knowledge/handoff.md](knowledge/handoff.md), then [knowledge/plan.md](knowledge/plan.md) § Current state and next action. Read the relevant specification, design or data document before substantive changes. Inspect the real branch, working tree and recent commits; distinguish existing local work from your task.
+Read this file, [knowledge/INDEX.md](knowledge/INDEX.md), [knowledge/journal.md](knowledge/journal.md) § Open, then [knowledge/plan.md](knowledge/plan.md) § Current state and next action. Read the relevant specification, design or data document before substantive changes. Inspect the real branch, working tree and recent commits; distinguish existing local work from your task.
 
-Project identity, requirements and version definitions live in [knowledge/specification.md](knowledge/specification.md). The plan owns active work, verification and user acceptance. The handoff is an inbox for unresolved inputs, not a duplicate task list. The journal owns decision provenance. Resume from these documents rather than session memory or an assumed milestone state.
+Project identity, requirements and version definitions live in [knowledge/specification.md](knowledge/specification.md). The plan owns active work, verification and user acceptance. The journal owns decision provenance, and its § Open is the inbox for unresolved inputs, not a duplicate task list. Resume from these documents rather than session memory or an assumed milestone state.
 
 ## Lanes and delegation
 

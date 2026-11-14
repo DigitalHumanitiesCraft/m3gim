@@ -267,8 +267,8 @@ def test_titled_section_references_resolve():
 
     Geprueft wird `knowledge/` gegen `knowledge/`. Ausserhalb davon nennen
     CLAUDE.md, README.md, Docstrings und die redaktionellen Notizen des
-    Vokabulars dieselben Verweise in der alten Fassung; sie stehen als eigener
-    Punkt in knowledge/handoff.md und gehoeren einer anderen Lane.
+    Vokabulars dieselben Verweise in der alten Fassung; sie gehoeren einer
+    anderen Lane.
     """
     sections = _titled_sections_by_document()
     assert sections, "Kein Wissensdokument fuehrt Abschnittstitel"

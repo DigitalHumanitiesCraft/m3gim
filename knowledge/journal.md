@@ -7,7 +7,7 @@ status: active
 language: en
 version: 0.6
 created: 2026-02-19
-updated: 2026-11-10
+updated: 2026-11-14
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -23,6 +23,37 @@ related: [specification, INDEX, journal-archive]
 # Journal
 
 This journal records decision provenance and substantive transitions. Its rows retain the wording and reasons of their time, with successor notes where decisions changed. Current requirements, model, implementation and design live in their responsible documents; [plan.md](plan.md) owns active work and acceptance. Earlier superseded decisions remain addressable in [journal-archive.md](journal-archive.md). Every E identifier keeps its definition.
+
+## Open
+
+This section carries open handover points only. Accepted future work lives in [plan.md](plan.md) and decisions that wait on the project lead in [specification.md](specification.md) § Open decisions. Findings the cataloguing team fixes at the source stand in [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the authority findings in [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md).
+
+- To a vault session, received 2026-09-03: process the cross-project method experience below into the Promptotyping method document in the Obsidian vault. Source: the method-experience block formerly in the decision register of this journal, preserved below in its original German wording. The repository session has not verified any integration, and a search of the vault on 2026-11-14 found none of its sentences. Next action: a vault session checks whether the content is already integrated in other words, transfers any remaining value and then removes this point.
+
+  > #### Was funktioniert hat
+  >
+  > - Promptotyping-Dokumente als Source of Truth → Code-Generierung
+  > - Synthetische Daten entkoppeln Frontend- von Datenarbeit
+  > - Design-System als CSS Custom Properties vorab definiert
+  > - Offline-first ueberlebt Funding-Gaps
+  > - Iterative Vis-Entwicklung (Partitur → Patterns fuer Matrix/Kosmos)
+  >
+  > #### Iteration-2-Erkenntnisse
+  >
+  > - Data-first statt UI-first
+  > - Modularisierung von Anfang an
+  > - User Testing frueher
+  > - Evaluation-driven Priorisierung (schwach abgedeckte Forschungsfragen früh benennen)
+  > - Controlled Vocabulary Enforcement bei Datenerfassung
+  > - Der Datenintegritätskern verträgt keinen großen autonomen Lauf. Der Lauf vom 2026-06-17 lieferte die Loader-Absorption (E-95) und blieb bei Test-Welle und Modell-Features stecken; die Empfehlung des Implementierungsplans lautet seither, seriell und human-guided umzusetzen.
+  > - Agenten-Selbstberichte gelten erst nach Gegenprüfung am realen Dateistand. Ein Verify-Agent meldete für denselben Lauf einen Totalverlust der Daten, den die direkte Prüfung der Sheet-Provenance widerlegte; seine Annahme, der Record-Identifier trage kein Folio, war falsch.
+  >
+  > #### Positive Ueberraschungen aus Datenanalyse
+  >
+  > - Erschliessungstiefe bei den feinerschlossenen Konvoluten (NIM_003/004/005/006/007) uebertrifft Erwartungen
+  > - Gender-inklusives Rollen-Vokabular mit substanziellem `:in`-Anteil
+  > - Hoher Personen-Kategorien-Abdeckungsgrad — Matrix bekommt direkt Daten
+  > - Werk-Verknuepfungen ermoeglichen substantiellen Rollen-Kosmos
 
 ## Decision register
 
@@ -188,7 +219,7 @@ One row per decision retained in this register, with its date, reason and canoni
 | E-218 | 2026-09-04 | The map applies the full shared filter, its evidence set is the cut of `recordsFor`, the time window stays on the date of the evidence, and points, country list, counters and the evidence list of a place share the same set. The annotation-date filter clause is superseded by E-282; annotation dates remain evidence within the shared record cut. | The map read only time window and place yet showed the person chip and claimed a cut it did not draw. | [architecture.md](architecture.md) § Frontend |
 | E-219 | 2026-09-04 | A record addressed by id always opens; where a facet excludes it the holdings widen that facet by exactly one value the record carries, the rarest, and the time window to its year, and every widening appears as a chip. | Deep links to deferred records and records without a cataloguing state opened nothing and without a hint, which breaks the jump back to the source that the evaluation sets as a measure of success. | [specification.md](specification.md) § Views |
 | E-220 | 2026-09-04 | In the network detail every annotated AgRelOn relation carries a chip with type and signature of the attesting document, clickable through the router and grouped by type, and the evidence list puts annotated evidence first with the straight line of the legend. | The counting chips named no document and the evidence list was the full co-occurrence, so the evidence question of the evaluation was solvable only by guessing. | [specification.md](specification.md) § Netzwerk view |
-| E-221 | 2026-09-04 | Superseded by E-285. The former provenance pill stopped the click and named sheet, row and data point; its proposed sheet jump is retired. | The click fell through to the chip and set its filter, and the label promised a display that is not built. | [handoff.md](handoff.md) |
+| E-221 | 2026-09-04 | Superseded by E-285. The former provenance pill stopped the click and named sheet, row and data point; its proposed sheet jump is retired. | The click fell through to the chip and set its filter, and the label promised a display that is not built. | `handoff.md`, removed 2026-11-14 |
 | E-222 | 2026-09-04 | The chip value carries every modelled data point of its node in the tooltip in a fixed order, source fields first and then the enrichment introduced by „ergänzt: aus Wikidata"; the work chip carries the role of the work as a prefix and the composer in the value, and a `rico:generalDescription` shows the quality marker in its wording. | The story that every data point is visible or reachable did not hold, and the contract state „nicht eingehalten" was readable nowhere. | [design.md](design.md) § Components |
 | E-223 | 2026-09-04 | The map still starts with the creator of the fonds as its entity (E-126) but shows this map-local narrowing and the chosen country as removable chips in the groups „Entität" and „Land" of the filter strip, for which the strip takes local groups of a view through `localChips`. | The section title did not reveal that the list hung on the entity, and the evaluation task on the countries was answered wrongly on the opening screen. | [design.md](design.md) § Components |
 | E-224 | 2026-09-04 | The country reach counts documents with evidence of presence, meaning place roles of the performative and institutional perspectives together with place of residence and contract place; mention, dispatch, destination, departure, receipt and creation do not count, while the map points still show all roles. The country-reach restriction is superseded by the shared country facet under E-282, which counts records with country-resolvable place evidence across roles. | The list counted every mention of a place and reported reach where only a sender sat or a place of death was mentioned. | [research-framework.md](research-framework.md) UC-3 |
@@ -316,11 +347,11 @@ Selected historical verification is retained here because it substantiates a com
 | Research Preview badge, 2026-10-02 | The badge was hidden below 1200 pixels and set in small capitals. It now stays visible at every width in readable size, shortened to Preview on phones, carries a tooltip on the preview status and links to the Über page. The shared header template in `scripts/_site_html.py` and the header test follow the new markup. |
 | Maintenance check, 2026-11-10 | On `3f75a46`, unchanged since 2026-10-02 and equal to `origin/main`, the invariant run passed 732 Python and browser checks with four strict source-fix xfails and nine deselections, and 735 Node tests passed. The data mirror kept seven failures and one pass. `sync-site-html.py --check` and `vocab/check-coverage.py` exited 0. Code, data and `docs/` were not changed. |
 
-The unresolved transfer of cross-project method experience remains in [handoff.md](handoff.md).
+On 2026-11-14 `knowledge/handoff.md` was dissolved into this journal by the operator's decision of that day, under which a Promptotyping repository keeps no handoff file and the journal opens with what is open. Its one point, the unresolved transfer of cross-project method experience to a vault session, moved unchanged into § Open together with the inbox's pointers to the source-error and reconciliation reports. Nothing was dropped. CLAUDE.md, README.md, INDEX.md, architecture.md, plan.md, specification.md and the docstring of `tests/test_45_knowledge_integrity.py` now point to § Open or no longer name the file. The address of the superseded row E-221 names the removed file as plain text, so the link check of the knowledge base keeps passing.
 
 ## Related
 
 - [INDEX.md](INDEX.md) for the knowledge base and its glossary.
 - [journal-archive.md](journal-archive.md) for superseded decisions and the full session narratives.
 - [specification.md](specification.md) for the current state, the open decisions and the epics.
-- [handoff.md](handoff.md) for the open handover points.
+- § Open at the beginning of this journal for the open handover points.

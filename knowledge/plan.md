@@ -11,7 +11,7 @@ authors: [Christopher Pollin]
 generated-with: Codex
 method:
   name: Promptotyping
-related: [INDEX, specification, research-framework, data, data-model, architecture, design, testing, handoff, journal]
+related: [INDEX, specification, research-framework, data, data-model, architecture, design, testing, journal]
 ---
 
 # Implementation Plan
@@ -198,7 +198,7 @@ Earlier verification, including network selection measurements and exhaustive so
 
 ## Session close and re-entry
 
-Resume through [CLAUDE.md](../CLAUDE.md) and this document's first section. External knowledge awaiting integration remains in [handoff.md](handoff.md). Git preserves completed changes and superseded wording.
+Resume through [CLAUDE.md](../CLAUDE.md) and this document's first section. External knowledge awaiting integration remains in [journal.md](journal.md) § Open. Git preserves completed changes and superseded wording.
 
 ## Source and model limits requiring acceptance
 

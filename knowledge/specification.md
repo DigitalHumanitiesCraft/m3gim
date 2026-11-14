@@ -24,7 +24,7 @@ knowledge-sources:
     RiC-O: https://www.ica.org/standards/RiC/ontology
     AgRelOn: https://d-nb.info/standards/elementset/agrelon
 topics: ["[[Requirements]]", "[[User Stories]]", "[[Scope]]"]
-related: [research-framework, data, data-model, architecture, design, journal, testing, handoff, plan]
+related: [research-framework, data, data-model, architecture, design, journal, testing, plan]
 ---
 
 # Specification

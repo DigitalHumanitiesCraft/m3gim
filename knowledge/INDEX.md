@@ -18,7 +18,7 @@ language: en
 version: 0.7
 authors: [Christopher Pollin]
 generated-with: Codex
-related: [specification, plan, data, data-model, recording-guide, research-framework, architecture, design, journal, journal-archive, testing, handoff]
+related: [specification, plan, data, data-model, recording-guide, research-framework, architecture, design, journal, journal-archive, testing]
 ---
 
 # M³GIM Knowledge Base
@@ -39,7 +39,6 @@ This page is the entry point into the knowledge base of the project. It orders t
 | [architecture.md](architecture.md) | Architecture | How does the data pipeline run, and how is the static SPA built? | with a change to `scripts/`, `docs/js/` or the data flow |
 | [design.md](design.md) | Design | How does the application look, and how does it behave? | with a change to the design stance or the design system |
 | [testing.md](testing.md) | Quality assurance | What is guaranteed, and how is it checked? | with a change to the test suite or the TDD workflow |
-| [handoff.md](handoff.md) | Handoff | Which checked handover points wait for integration or rejection? | when a point arrives or is processed |
 | [journal.md](journal.md) | Provenance | How did the project arrive here, and why was it decided this way? | after transitions that belong together, and with every decision in the decision register |
 | [journal-archive.md](journal-archive.md) | Provenance archive | Which earlier decision was superseded or lapsed? | retain existing decision references; use Git for superseded prose |
 
@@ -55,7 +54,7 @@ The data findings live operationally under `data/reports/`. The errors that can 
 
 ## Reading paths
 
-- Session start: [`../AGENTS.md`](../AGENTS.md) routes to the shared [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [handoff.md](handoff.md) → [plan.md](plan.md) § Current state and next action → the relevant specification, design or data document.
+- Session start: [`../AGENTS.md`](../AGENTS.md) routes to the shared [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [journal.md](journal.md) § Open → [plan.md](plan.md) § Current state and next action → the relevant specification, design or data document.
 - Understanding or changing the data model: [data.md](data.md) → [data-model.md](data-model.md) → [journal.md](journal.md) § Decision register. First the source material, then its formalization. The model change is anchored in [data.md](data.md), and vocabulary, pipeline, tests and frontend follow.
 - Working with the generated dataset without knowing the pipeline: [data-model.md](data-model.md) → [`data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md).
 - Running or debugging the pipeline: [`../CLAUDE.md`](../CLAUDE.md) § Core commands → [architecture.md](architecture.md) § Pipeline → [testing.md](testing.md).
