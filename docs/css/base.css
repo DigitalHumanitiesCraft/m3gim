@@ -361,6 +361,14 @@ a:focus-visible {
     height: 0;
   }
 
+  /* The bar is the scroll container here. A shrinkable tab list with its own
+     overflow collapsed to a few pixels once the badge took its room, which left
+     phones without view navigation, so the list keeps its natural width. */
+  .topbar .tab-bar {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
   /* The status stays visible on phones, shortened so the tabs keep their room. */
   .topbar__badge-long {
     display: none;
