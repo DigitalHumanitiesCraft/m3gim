@@ -169,19 +169,19 @@ let _coverage = null;
  */
 const LEGEND = [
   { mark: 'dot', kind: 'person', label: 'Person',
-    tip: 'Ein erwähnter Eintrag des Schnitts; die Größe ist die Zahl seiner Dokumente. Ira Malaniuk ist als Nachlassbildnerin ausgeblendet, weil ihre fast durchgehende Nennung das Netz verbinden würde.' },
+    tip: 'Ein erwähnter Eintrag des Schnitts. Die Größe ist die Zahl seiner Dokumente. Ira Malaniuk ist als Nachlassbildnerin ausgeblendet, weil ihre fast durchgehende Nennung das Netz verbinden würde.' },
   { mark: 'dot', kind: 'institution', label: 'Institution',
     tip: 'Haus, Festival, Sender oder Ensemble, in derselben Lesart wie eine Person.' },
   { mark: 'dot', kind: 'record', label: 'Dokument',
-    tip: 'Ein Datensatz des Schnitts; die Größe ist die Zahl seiner erwähnten Einträge.' },
+    tip: 'Ein Datensatz des Schnitts. Die Größe ist die Zahl seiner erwähnten Einträge.' },
   { mark: 'dot', kind: 'relation', label: 'Beziehung',
     tip: 'Ring am Knoten: eine erfasste Beziehung zur Nachlassbildnerin, belegt in der Detailspalte.' },
   { mark: 'line', kind: 'mention', label: 'Erwähnt',
-    tip: 'Nennung ohne eigene Funktion; die Rolle steht im Tooltip der Kante.' },
+    tip: 'Nennung ohne eigene Funktion. Die Rolle steht im Tooltip der Kante.' },
   { mark: 'line', kind: 'role', label: 'Rolle',
     tip: 'Nennung mit erfasster Rolle, etwa Sänger, Dirigent oder Veranstalter.' },
   { mark: 'dot', kind: 'focus', label: 'Auswahl',
-    tip: 'Der angeklickte Knoten und seine Nachbarschaft; alles andere tritt zurück.' },
+    tip: 'Der angeklickte Knoten und seine Nachbarschaft. Alles andere tritt zurück.' },
 ];
 
 function viewHead() {
@@ -257,7 +257,7 @@ function knotenSection() {
           const s = stats();
           return s ? `Einzelbelege blass ${s.single}` : 'Einzelbelege blass';
         },
-        tip: () => 'Einträge mit genau einem Dokument treten zurück; entfernt wird keiner.',
+        tip: () => 'Einträge mit genau einem Dokument treten zurück. Entfernt wird keiner.',
         value: () => local.fadeSingle,
         onChange: v => { local.fadeSingle = v; _redraw(); } },
     ],

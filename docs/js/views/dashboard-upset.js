@@ -77,7 +77,7 @@ export function renderUpSet(host, context) {
   }
   host.appendChild(el('p', { className: 'dashboard-note' }, mode === 'exclusive'
     ? 'Exklusiv: Dokumente gehören genau zu den markierten Mengen unter den dargestellten Mengen.'
-    : 'Inklusiv: Dokumente gehören mindestens zu allen markierten Mengen; weitere Zugehörigkeiten sind möglich.'));
+    : 'Inklusiv: Dokumente gehören mindestens zu allen markierten Mengen. Weitere Zugehörigkeiten sind möglich.'));
   appendAccessibleList(host, model.intersections, context);
   return { aggregates: model.intersections, destroy() { clear(host); } };
 }

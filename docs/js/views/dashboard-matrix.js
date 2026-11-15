@@ -102,7 +102,7 @@ export function renderMatrix(host, context) {
       const maxCell = Math.max(...data.cells.map(item => item.count), 1);
       const quantile = Math.max(1, Math.ceil(5 * cell.count / maxCell));
       const button = el('button', { type: 'button', className: `dashboard-matrix__cell dashboard-matrix__cell--q${quantile}`,
-        dataset: { tip: `${cell.label}; ${cell.binding === 'co-mention' ? 'Dokument-Co-Mention' : cell.binding}`, tipWrap: '' },
+        dataset: { tip: `${cell.label}, ${cell.binding === 'co-mention' ? 'Dokument-Co-Mention' : cell.binding}`, tipWrap: '' },
         'aria-label': `${cell.label}: ${text}`,
         onClick: () => context.onSelect(cell, button) }, text);
       button._dashboardAggregate = cell;
@@ -125,7 +125,7 @@ export function renderMatrix(host, context) {
     ? 'Die Zellen verbinden getrennt belegte Dimensionen innerhalb desselben Dokuments.'
     : data.pair.binding === 'explicit-vs-co-mention'
       ? 'Explizite Beziehungen und Dokument-Co-Mentionen historisch belegter Akteurspaare bleiben als getrennte Spalten sichtbar.'
-      : 'Die Zellen beruhen auf der angegebenen Bindung; abgeleitete Werk-Partie-Zuordnungen sind in den Belegen gekennzeichnet.';
+      : 'Die Zellen beruhen auf der angegebenen Bindung. Abgeleitete Werk-Partie-Zuordnungen sind in den Belegen gekennzeichnet.';
   host.appendChild(el('p', { className: 'dashboard-note' }, bindingNote));
   const axes = [...rows.map(row => axisAggregate(data.cells, 'row', row, data.denominator, data.pair)),
     ...columns.map(column => axisAggregate(data.cells, 'column', column, data.denominator, data.pair))];

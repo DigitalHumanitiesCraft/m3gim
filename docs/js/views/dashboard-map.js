@@ -71,7 +71,7 @@ export function renderPlaceMap(host, context) {
   }).catch(() => { if (!destroyed) emptyState(mapHost, 'Die Karten-Geometrie konnte nicht geladen werden. Die Ortsbelege bleiben in der Werteliste erreichbar.'); });
   const missing = eligible.filter(statement => !hasGeo(statement));
   host.appendChild(el('p', { className: 'dashboard-note' },
-    `${groups.length} Orte; ${new Set(missing.map(value => value.recordId)).size} Dokumente mit Ortsaussagen ohne Kartenpunkt.`));
+    `${groups.length} Orte, ${new Set(missing.map(value => value.recordId)).size} Dokumente mit Ortsaussagen ohne Kartenpunkt.`));
   appendAccessibleList(host, aggregates, { ...context, onSelect: select });
   return { aggregates, highlight, destroy() {
     destroyed = true; cancelAnimationFrame(centreFrame); cancelAnimationFrame(settleFrame);

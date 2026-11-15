@@ -11,7 +11,7 @@
 
 import { splitHash, buildHash, parseFilterQuery, viewParams, hasFilterQuery } from './filter-url.js';
 import { getFilter, replaceFilter, addFacetValue, subscribe as subscribeFilter } from './filter-state.js';
-import { initTabKeyboard, setRovingTabindex } from './tabs.js';
+import { initTabKeyboard, setRovingTabindex, initBarOverflowHint } from './tabs.js';
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
 // damit Hash-URLs und Code-Pfade nicht brechen.
@@ -45,6 +45,7 @@ export function initRouter({ onTab, onRecord } = {}) {
 
   // Arrow/Home/End across the whole tablist; the groups are visual only.
   initTabKeyboard(document.querySelector('.tab-bar'), (tab) => switchTab(tab));
+  initBarOverflowHint(document.querySelector('.topbar'));
 
   // Parse initial hash
   parseHash();

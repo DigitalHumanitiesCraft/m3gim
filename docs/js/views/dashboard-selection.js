@@ -100,7 +100,7 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
     content.appendChild(actions);
     if (marks.length > 1) {
       content.appendChild(el('p', { className: 'dashboard-selection__union' },
-        `ODER-Auswahl aus ${marks.length} Markierungen; ${merged.recordIds.length} distinkte Dokumente.`));
+        `ODER-Auswahl aus ${marks.length} Markierungen mit ${merged.recordIds.length} distinkten Dokumenten.`));
       const chips = el('ul', { className: 'dashboard-selection__marks' });
       marks.forEach((mark, index) => chips.appendChild(el('li', {},
         el('span', {}, mark.label), el('button', { type: 'button', className: 'ui-action',

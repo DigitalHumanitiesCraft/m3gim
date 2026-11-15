@@ -50,7 +50,7 @@ export function renderTime(host, context) {
   const selectableAggregates = stack === 'doctype'
     ? all.flatMap(bin => bin.stacks?.length ? bin.stacks : [bin]) : all;
   if (!dated.length) {
-    emptyState(host, `Der aktuelle Schnitt enthält keine exakten Dokumentjahre${qualified.length ? `; ${qualified.reduce((sum, bin) => sum + bin.count, 0)} Dokumente tragen qualifizierte oder intervallförmige Datierungen` : ''}${undated ? `; ${undated.count} Dokumente sind undatiert` : ''}.`);
+    emptyState(host, `Der aktuelle Schnitt enthält keine exakten Dokumentjahre.${qualified.length ? ` ${qualified.reduce((sum, bin) => sum + bin.count, 0)} Dokumente tragen qualifizierte oder intervallförmige Datierungen.` : ''}${undated ? ` ${undated.count} Dokumente sind undatiert.` : ''}`);
     appendAccessibleList(host, selectableAggregates, context);
     return { aggregates: selectableAggregates, destroy() { clear(host); } };
   }
@@ -142,7 +142,7 @@ export function renderTime(host, context) {
       el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ range: null }) }, 'Zur gesamten Zeitachse'));
   }
   host.append(rangeControls, el('p', { className: 'dashboard-note' },
-    staleRange ? 'Das gespeicherte lokale Zeitfenster liegt außerhalb des aktuellen Schnitts; die gesamte verfügbare Zeitachse wird gezeigt. ' : '',
+    staleRange ? 'Das gespeicherte lokale Zeitfenster liegt außerhalb des aktuellen Schnitts. Die gesamte verfügbare Zeitachse wird gezeigt. ' : '',
     `${dated.reduce((sum, bin) => sum + bin.count, 0)} Dokumente mit exaktem Jahr, ${qualified.reduce((sum, bin) => sum + bin.count, 0)} mit qualifizierter oder intervallförmiger Datierung und ${undated?.count || 0} undatierte Dokumente. `
       + 'Die Achse bewahrt zeitliche Lücken. Ein angewandtes Zeitfenster lässt undatierte Dokumente gemäß dem gemeinsamen Filtervertrag im Schnitt und benennt sie weiterhin separat.'));
   appendAccessibleList(host, selectableAggregates, context);

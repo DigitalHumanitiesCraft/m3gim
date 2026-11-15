@@ -87,7 +87,7 @@ export function renderMobilitaet(store, container) {
   const sidebar = createSidebar(store, {
     yearSpan: yearBounds(store), search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
     getCount: () => recordsFor(store, getFilter()).ids.size,
-    getScopeDescription: () => `${new Set(scoped.map(o => o.recordId)).size} Dokumente mit Ortsbelegen; ${groups.filter(g => !g.located).length} Orte ohne Kartenpunkt.`,
+    getScopeDescription: () => `${new Set(scoped.map(o => o.recordId)).size} Dokumente mit Ortsbelegen, ${groups.filter(g => !g.located).length} Orte ohne Kartenpunkt`,
     onChange: redraw,
   });
   container.appendChild(viewShell(sidebar.element,

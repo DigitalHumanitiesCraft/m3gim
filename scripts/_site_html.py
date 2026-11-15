@@ -82,7 +82,7 @@ PAGE_DEFINITIONS = (
         "M³GIM Teilnachlass Ira Malaniuk",
         "Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) am Universitätsarchiv der Kunstuniversität Graz.",
         "Dataset",
-        "M³GIM — Teilnachlass Ira Malaniuk (UAKUG/NIM)",
+        "M³GIM, Teilnachlass Ira Malaniuk (UAKUG/NIM)",
         app=True,
     ),
     PageDefinition(
@@ -102,7 +102,7 @@ PAGE_DEFINITIONS = (
     PageDefinition(
         "impressum.html",
         "Impressum M³GIM",
-        "Impressum, Projektverantwortung, Förderung und Datenschutz von M³GIM — Mapping Mobile Musicians.",
+        "Impressum, Projektverantwortung, Förderung und Datenschutz von M³GIM, Mapping Mobile Musicians.",
         "WebPage",
         "Impressum",
     ),
@@ -210,7 +210,7 @@ INFO_LINKS = (
     ("projekt.html", "Projekt"),
     ("datenmodell.html", "Datenmodell"),
 )
-BRAND_SUBTITLE = "Teilnachlass Ira Malaniuk — UAKUG/NIM"
+BRAND_SUBTITLE = "Teilnachlass Ira Malaniuk, UAKUG/NIM"
 DEFAULT_TAB = "bestand"
 
 
@@ -351,7 +351,7 @@ def head_for(page_name: str, *, docs: Path = DOCS) -> str:
         f'  <meta property="og:image" content="{IMAGE_URL}">',
         '  <meta property="og:image:width" content="1200">',
         '  <meta property="og:image:height" content="630">',
-        '  <meta property="og:image:alt" content="M³GIM — Mapping Mobile Musicians">',
+        '  <meta property="og:image:alt" content="M³GIM, Mapping Mobile Musicians">',
         '  <meta name="twitter:card" content="summary_large_image">',
         f'  <meta name="twitter:title" content="{title}">',
         f'  <meta name="twitter:description" content="{description}">',

@@ -36,7 +36,7 @@ PAGES = (APP_PAGE, *INFO_PAGES)
 OPEN = '<header class="topbar">'
 CLOSE = "</header>"
 
-SUBTITLE = "Teilnachlass Ira Malaniuk — UAKUG/NIM"
+SUBTITLE = "Teilnachlass Ira Malaniuk, UAKUG/NIM"
 
 BRAND_RE = re.compile(
     r'<a class="topbar__brand" href="([^"]+)" data-tip="([^"]+)">([^<]+)</a>'

@@ -369,6 +369,27 @@ a:focus-visible {
     overflow: visible;
   }
 
+  /* Shown by tabs.js while the bar can scroll further: an arrow on a fade at
+     the band's right edge, outside the scrolling box so it stays put. */
+  .topbar__more {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: var(--brand-band-height);
+    border: 0;
+    padding: 0 var(--space-2) 0 var(--space-4);
+    text-align: end;
+    font-size: var(--text-xl);
+    color: var(--color-text-inverse);
+    background: linear-gradient(to right, transparent, var(--accent) 45%);
+    cursor: pointer;
+  }
+
+  .topbar__more[hidden] {
+    display: none;
+  }
+
   /* The status stays visible on phones, shortened so the tabs keep their room. */
   .topbar__badge-long {
     display: none;

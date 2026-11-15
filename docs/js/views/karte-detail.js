@@ -32,8 +32,8 @@ function isMatchingWitness(occurrence, witnesses) {
 
 function evidenceRow(occurrence, group, actions) {
   const location = occurrence.placement === 'unlocatable'
-    ? 'Ohne Koordinaten im Datenstand; der Beleg bleibt über das Dokument zugänglich.'
-    : 'Kartenpunkt aus dem Ortsabgleich; Darstellung auf Ortsebene.';
+    ? 'Ohne Koordinaten im Datenstand. Der Beleg bleibt über das Dokument zugänglich.'
+    : 'Kartenpunkt aus dem Ortsabgleich. Darstellung auf Ortsebene.';
   const documentDate = occurrence.documentDate || occurrence.recordDate;
   return el('article', { className: 'places-evidence', dataset: {
     evidenceId: occurrence.id, recordId: occurrence.recordId,
@@ -78,7 +78,7 @@ function relatedSection(store, group, actions) {
   const disclosure = el('details', { className: 'places-related' },
     el('summary', {}, 'Im selben Dokument genannt'),
     el('p', { className: 'places-related__note' },
-      'Die Aussagekraft ist auf den gemeinsamen Dokumentkontext begrenzt; Aufenthalt, Auftritt oder Beziehung am gewählten Ort bleiben offen.'));
+      'Die Aussagekraft ist auf den gemeinsamen Dokumentkontext begrenzt. Aufenthalt, Auftritt oder Beziehung am gewählten Ort bleiben offen.'));
   for (const spec of specs) {
     const family = el('details', { className: 'places-related__family' },
       el('summary', {}, `${spec.title} ${spec.entries.length}`));
@@ -100,7 +100,7 @@ export function buildPlaceOverview(store, group, actions) {
   const datedEvidence = group.evidence.filter(item => item.date);
   const roles = sortedRoles(group);
   const coordinateNote = !group.located ? 'Ohne Koordinaten im Datenstand.'
-    : 'Kartenpunkt aus dem Ortsabgleich; Darstellung auf Ortsebene.';
+    : 'Kartenpunkt aus dem Ortsabgleich. Darstellung auf Ortsebene.';
   const roleButtons = roles.map(role => el('button', {
     type: 'button', className: 'places-role-button',
     onClick: event => actions.openSources(role.label, event.currentTarget),

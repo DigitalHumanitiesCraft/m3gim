@@ -71,3 +71,34 @@ export function initTabKeyboard(tablist, onSelect) {
   tablist.addEventListener('keydown', handler);
   return () => tablist.removeEventListener('keydown', handler);
 }
+
+/**
+ * Below 700px the whole top bar scrolls sideways and the later tabs sit past
+ * the right edge. A first reader saw no sign that more views exist, so an
+ * arrow at the right edge stays while the bar can scroll further and moves
+ * it one screen on. It disappears at the end and wherever the bar fits.
+ * @param {HTMLElement} bar the scrolling .topbar
+ * @returns {() => void} detach
+ */
+export function initBarOverflowHint(bar) {
+  if (!bar) return () => {};
+  const hint = document.createElement('button');
+  hint.type = 'button';
+  hint.className = 'topbar__more';
+  hint.setAttribute('aria-label', 'Weitere Ansichten zeigen');
+  hint.dataset.tip = 'Weitere Ansichten';
+  hint.textContent = '›';
+  hint.hidden = true;
+  bar.after(hint);
+  const update = () => {
+    hint.hidden = bar.scrollLeft + bar.clientWidth >= bar.scrollWidth - 2;
+  };
+  hint.addEventListener('click', () => {
+    bar.scrollBy({ left: bar.clientWidth * 0.8, behavior: 'smooth' });
+  });
+  bar.addEventListener('scroll', update, { passive: true });
+  const observer = new ResizeObserver(update);
+  observer.observe(bar);
+  update();
+  return () => { observer.disconnect(); bar.removeEventListener('scroll', update); hint.remove(); };
+}

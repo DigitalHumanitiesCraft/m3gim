@@ -295,8 +295,8 @@ function showSource(source, row, trigger) {
     row.precision.includes('range') ? el('p', { className: 'chronik-source__date-extent' },
       'In dieser Quelle erfasster Zeitraum. Die Bedeutung ergibt sich aus der zugehörigen Aussage im Beleg.')
       : row.precision === 'year' || row.precision === 'month' ? el('p', { className: 'chronik-source__date-extent' },
-        row.precision === 'year' ? 'Nur das Jahr ist bekannt; Monat und Tag sind nicht genauer datiert.'
-          : 'Nur der Monat ist bekannt; der Tag ist nicht genauer datiert.') : null,
+        row.precision === 'year' ? 'Nur das Jahr ist bekannt. Monat und Tag sind nicht genauer datiert.'
+          : 'Nur der Monat ist bekannt. Der Tag ist nicht genauer datiert.') : null,
     el('p', { className: 'chronik-evidence__date' },
       [type, recordDate(record) ? `Dokumentdatum: ${recordDate(record)}` : 'Ohne Dokumentdatum'].filter(Boolean).join(', ')),
     source.kind === 'document' ? el('p', { className: 'chronik-evidence__statement' }, source.labels.join(', ')) : null,
