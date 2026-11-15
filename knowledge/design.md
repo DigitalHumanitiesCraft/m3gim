@@ -5,7 +5,7 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.8
+version: 0.9
 created: 2026-02-19
 updated: 2026-09-09
 authors: [Christopher Pollin]

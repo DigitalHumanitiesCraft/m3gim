@@ -5,18 +5,24 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: active
 language: en
+version: 0.9
 created: 2026-09-06
-updated: 2026-09-09
+updated: 2026-11-15
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
   name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 related: [INDEX, specification, research-framework, data, data-model, architecture, design, testing, journal]
 ---
 
 # Implementation Plan
 
 ## Current state and next action
+
+On 2026-11-15 the user commissioned a refactoring and curation round across knowledge, code and interface, with the published `0.9-rc.1` left unchanged while the project team reviews it. The knowledge base was curated against code, data and the current Promptotyping convention (journal entry of that date). Interface and frontend refactoring are built as a local variant on the branch `ui-variant` and are not published. The variant also repairs a defect of the published version: below 700 pixels the tab list shrinks to a few pixels, so phones cannot switch views. Whether that repair goes into the published version first waits on the user ([journal.md](journal.md) § Open).
+
+The paragraphs below describe the published `0.9-rc.1` state.
 
 The `0.9-rc.1` partner-review prerelease (E-305) is published with the visible label `Prüffassung für Projektpartner`. Annotated Git tag `v0.9-rc.1` resolves to `2079f27`; the [GitHub prerelease](https://github.com/DigitalHumanitiesCraft/m3gim/releases/tag/v0.9-rc.1) contains the reviewed notes. GitHub Pages built the tagged commit. The public Projekt page and README identify the version and its open source and acceptance limits. The public page matches the committed HTML bytes and its version section is verified at four widths. The acceptance criteria for 0.9 and 1.0 remain unchanged.
 
@@ -44,7 +50,7 @@ The user authorised implementation of U1–U7 after the plan review. [design.md]
 | U6. History, addresses and extraction | Shared filter undo/redo, per-panel addresses, reference persistence, aggregate exports and explicit basket union | Query roundtrips, retained panel selection, reference reload and actual CSV/JSON downloads passed their focused checks. Exports retain dimensions, witnesses, both comparison filters and denominators. |
 | U7. Integration and knowledge | Cross-author source/story review, browser checks and canonical contract updates | Final combined invariant/browser and Node runs passed. Canonical contracts and screenshot feedback are recorded; guided research acceptance remains open. |
 
-### Story coverage and acceptance targets
+### Increment targets for search, places and dashboard
 
 This table specifies the result to demonstrate. The existing story-coverage table below remains the evidence for the implemented baseline. A planned visualization or passing aggregate test alone does not fulfil a story.
 
@@ -119,7 +125,7 @@ Historical stays, realized appearances and travel connections still need binding
 | Implemented dashboard screenshots, 2026-09-08 (E-296) | The project lead confirms that the shown screenshots look good | Positive visual feedback on the shown implementation. Interactive research tasks, evidence interpretation and complete version acceptance remain open. |
 | Dashboard demonstrator, 2026-09-08 | The project lead explicitly likes the treemap and requests additional visualizations with overview, zoom/filter and details on demand | Approval of the treemap direction only. The external demonstrator is not an installed dashboard or a complete story/consistency check |
 | Chronik and register follow-up, 2026-09-07 | Chronik title, totals and introductory explanation removed as requested. Seven existing Chronik browser cases passed; actual Chronik/Register/Bestand/Statistik rendering compared. The project lead questions the second register search and proposes reusing the network detail panel. | Chronik right panel implemented under M6g. The register detail panel is implemented under E-293; the common typed search is implemented under E-296; guided acceptance remains open |
-| Remaining views | Chronik, Netzwerk, Statistik, other registers and Korb/exports lack complete guided acceptance | Continue task examples below, including shared filters, document/event dates and actual downloads |
+| Remaining views | Chronik, Netzwerk, Dashboard, other registers and Korb/exports lack complete guided acceptance | Continue task examples below, including shared filters, document/event dates and actual downloads |
 
 ## Purpose and authority
 

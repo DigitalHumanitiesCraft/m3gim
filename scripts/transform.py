@@ -1179,10 +1179,9 @@ def resolve_verknuepfungen_source(base: Path) -> Path:
 
     Since E-152 the source format is the per-sheet CSV export, because the
     XLSX export converts date, Folio and bundling columns into cell types and
-    fabricates precision in the process (data.md § Source format). The CSV
-    directory wins; if absent, the previous XLSX path applies so an archived
-    state remains readable. A directly passed file path is passed through
-    unchanged.
+    fabricates precision in the process (data.md § Source format). A source
+    directory without the CSV export raises. A directly passed workbook path
+    is passed through unchanged, so an archived XLSX state remains readable.
     """
     base = Path(base)
     if base.is_file():
@@ -1190,7 +1189,7 @@ def resolve_verknuepfungen_source(base: Path) -> Path:
     if not base.exists():
         raise FileNotFoundError(
             f"Keine Verknuepfungsquelle unter {base}. Erwartet wird "
-            f"{VERKNUEPFUNGEN_CSV_DIR}/Box_*.csv oder eine Verknuepfungs-XLSX."
+            f"{VERKNUEPFUNGEN_CSV_DIR}/Box_*.csv."
         )
     csv_dir = base if base.name == VERKNUEPFUNGEN_CSV_DIR else base / VERKNUEPFUNGEN_CSV_DIR
     if csv_dir.is_dir() and any(csv_dir.glob("Box_*.csv")):
@@ -1295,11 +1294,10 @@ def _load_verknuepfungen_xlsx(path: Path) -> list[pd.DataFrame]:
 def load_verknuepfungen(path: Path) -> pd.DataFrame:
     """Laedt die Verknuepfungstabelle als EINE DataFrame ueber alle Blaetter.
 
-    Die Funktion absorbiert drei Quellformen. Ein Quellverzeichnis mit
+    Die Funktion absorbiert zwei Quellformen. Ein Quellverzeichnis mit
     ``verknuepfungen/Box_*.csv`` wird als CSV gelesen (E-152, der Regelfall
-    seit 2026-08-31), ein Quellverzeichnis ohne dieses Unterverzeichnis ueber
-    die Verknuepfungs-XLSX, und ein direkt uebergebener Dateipfad als
-    Arbeitsmappe. Der Box-Export verteilt die Verknuepfungen auf mehrere,
+    seit 2026-08-31), und ein direkt uebergebener Dateipfad als Arbeitsmappe.
+    Ein Quellverzeichnis ohne dieses Unterverzeichnis bricht ab. Der Box-Export verteilt die Verknuepfungen auf mehrere,
     inkonsistent benannte Blaetter (E-95); alle werden geladen und
     zusammengefuehrt.
 

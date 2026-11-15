@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: reviewed
 language: en
-version: 0.8
+version: 0.9
 created: 2026-06-17
-updated: 2026-09-09
+updated: 2026-11-15
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -180,7 +180,7 @@ All research views use the shared document cut. The common toolbar and sidebar o
 | Orte | Find places and recorded roles, inspect complete source evidence, compare geographical distribution through an optional map and open the selected place in the Chronik. Document dates and explicitly dated place statements remain separate. Places without coordinates remain in the list. Historical journeys and realized appearances require source assessment and occurrence binding. |
 | Register | Enter through persons, institutions, places or works, inspect sourced enrichment and document evidence, and continue into the relevant analytical view. Explicit source bindings and unassigned stage parts remain distinguishable. |
 | Netzwerk | Inspect actor/document co-mention and follow original roles and notes under the contract above. |
-| Dashboard | Coordinate two chosen visualizations, explore composition, co-mentions, temporal coverage, place-role evidence and set intersections, compare two document sets and extract the exact supporting evidence. The legacy `statistik` route remains valid. |
+| Dashboard | Coordinate two chosen visualizations, explore composition, co-mentions, temporal coverage, place-role evidence and set intersections, compare two document sets and extract the exact supporting evidence. The Dashboard uses the `statistik` route. |
 | Korb | Collect records across views and export CSV, BibTeX, JSON-LD or GEXF with source cells and links sufficient to trace the evidence. |
 
 Cataloguing status remains available in record details. Source correction uses the pipeline's cataloguing artefacts. The common coverage display names the selected records against the linked application basis and provides the data timestamp; it does not measure completeness of the entire fonds.

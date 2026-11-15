@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.7
+version: 0.9
 created: 2026-02-19
-updated: 2026-09-09
+updated: 2026-11-15
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -100,7 +100,7 @@ The per-file list is the directory itself together with the module docstrings. T
 | 60 to 71 | Source layer, reports and preservation. CSV paths, orphan and unmodelled links, recording value lists, diagnostics, duplicate stage parts, report accounting and data preservation under failed input, requests, writes or backup replacement. |
 | `tests/frontend/` | Node unit tests of the DOM-free frontend functions, plus browser-bound pytest modules for the smoke run, stable shared-view contracts, register and holdings behaviour, map keyboard operation and basket downloads. |
 
-The numbering has gaps and collisions. Numbers are stable identifiers rather than a continuous index, so a retired module does not free its number, and three numbers carry two modules each. A reference by number alone is therefore ambiguous and has to name the file.
+The numbering has gaps and collisions. Numbers are stable identifiers rather than a continuous index, so a retired module does not free its number, and several numbers carry two modules each. A reference by number alone is therefore ambiguous and has to name the file.
 
 Beside the numbered modules the directory holds `conftest.py` with the session-scoped fixtures and the path overrides described in [architecture.md](architecture.md) § ENV overrides, `_helpers.py` with the shared graph accessors, `fixtures/` with the baselines and the verified allowlist of external terms, `schemas/` with the JSON Schema, `tools/` with the snapshot diff and the holdings verification as command-line tools, and `frontend/` as described above.
 
@@ -157,12 +157,21 @@ Screenshots establish legibility and clipping; DOM/source queries establish text
 Every shared UI change must be checked in every current consumer with real dense content, before and after opening, replacing and closing selection, on narrow and wide hosts. Compare horizontal and vertical content bounds and drawing dimensions. Long lists must scroll internally, with close/back controls reachable by keyboard. The Netzwerk suite does not yet automate replacement of an open selection, so that operation needs a separate observed check when the shared behaviour changes.
 
 Chronik geometry checks cover every laid-out group child in the shipped corpus, including decade/year scales at 390, 800 and 1366 pixels with details open and closed. Compare all group positions, heights and scroll offset across selection. The largest historical gap must remain visibly marked and compact. A single dense-day case cannot establish fit for all wrapping cases. Exact pixel constants remain implementation choices.
+The E-300 interaction regressions additionally cover the single global clear action and undo/redo labels, regional map focus with stronger manual zoom retained, paired presets over an actually narrowed filter, restored panel addresses, keyboard menu dismissal and a real aggregate download. The Zürich text-search receipt `NIM_007_5_8` has no work information: selecting it must explain the empty companion matrix highlight while preserving its exact source and the shared filter. Synthetic coverage fixtures separate reference-only A records, missing work/composer data, absent binding and off-page cells. Browser checks retain matrix content after excessive saved page values and verify independent sticky header axes.
 
 [plan.md](plan.md) records the checked revision, execution scope and human acceptance.
 
-## Boundaries
+## Checking forms and status
 
-The E-300 interaction regressions additionally cover the single global clear action and undo/redo labels, regional map focus with stronger manual zoom retained, paired presets over an actually narrowed filter, restored panel addresses, keyboard menu dismissal and a real aggregate download. The Zürich text-search receipt `NIM_007_5_8` has no work information: selecting it must explain the empty companion matrix highlight while preserving its exact source and the shared filter. Synthetic coverage fixtures separate reference-only A records, missing work/composer data, absent binding and off-page cells. Browser checks retain matrix content after excessive saved page values and verify independent sticky header axes.
+Three forms of checking stay apart, because each judgement rests on something different.
+
+- Verification is the executable suite described above. It decides whether code and dataset meet the stated invariants and counts only where it runs against the shipped code and the real data and can fail.
+- Agentic review is a reading by an agent with fresh context, such as the independent partner-release audit of 2026-09-09 or the curation review of 2026-11-15 recorded in [journal.md](journal.md). Its findings are evidence, and the implementing agent integrates them only after checking them against the files.
+- Scholarly validation is the judgement of the project lead or the partner researchers on whether a view or a reading of the sources is warranted and adequate for a named research purpose. [plan.md](plan.md) § Remaining acceptance names the open validations.
+
+Every result carries one status. Agent and pipeline output is a proposal, a participant who finds a reason to doubt it marks it doubted with the evidence, and only a named person or an adopted deterministic rule confirms it. Confirmed so far are the project lead's acceptance of the treemap direction (2026-09-08), of the `0.9-rc.1` partner-review designation (E-305, 2026-09-09) and of the guided Bestand paths recorded in [plan.md](plan.md), and the manual Wikidata approvals that `scripts/verify-manual-approvals.py` checks against the live authority. The invariant suite is a deterministic rule for the technical contract only and confirms no historical reading. Everything else the application shows, including all derived and enriched values, is a proposal until the researchers validate it, and the open source findings of the data mirror stand as doubted.
+
+## Boundaries
 
 Model invariants cannot establish the correctness of cataloguing decisions or historical identities. The source layer remains subject to editorial correction and scholarly review. The data mirror makes missing input evidence explicit without modifying it. Strict xfails retain their named source-fix signals.
 

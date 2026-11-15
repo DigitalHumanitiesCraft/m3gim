@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.8
+version: 0.9
 created: 2026-02-19
-updated: 2026-09-09
+updated: 2026-11-15
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -67,7 +67,7 @@ The quality snapshot computes its figures from the dataset and reconciliation ou
 | `export-wikidata-csv.py` | Lookup CSVs from the reconciliation file for import into the spreadsheet |
 | `propose-links.py` | Link proposals from the object titles against the four indexes, in the column shape of the link table. Assigns no role and resolves no ambiguous title position (E-147). Writes `data/reports/link-proposals.md` |
 | `scout-coverage.py` | Read-only measurement of the data coverage of a place focus before a view is built on it |
-| `assemble-verknuepfungen.py` | Reassembles the per-box CSV exports into the workbook, for the fallback path of the loader |
+| `assemble-verknuepfungen.py` | Reassembles the per-box CSV exports into one workbook. The loader reads a workbook only when its file path is passed directly, so the script serves archived comparisons and is proposed for removal in [journal.md](journal.md) § Open |
 | `build-social-images.py` | Open Graph image and PNG favicons into `docs/img/` from the accent token. Needs Pillow, which no requirements file carries |
 | `backup.py` | Unchanged snapshot of a raw Drive export into the gitignored `data/backup/` |
 | `check-doc-split.py` | Content preservation when a knowledge document is split or merged |
@@ -80,9 +80,9 @@ The standard transformation requires the object table, links and all four nonemp
 
 | Variable | Default | Honoured by |
 |---|---|---|
-| `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` | `_common.py`, `explore.py`, `validate.py`, `transform.py`, and through `_common` also `audit-data.py` |
-| `M3GIM_OUTPUT_DIR` | `data/output` | `_common.py`, `transform.py`, `build-views.py`, and through `_common` also `audit-data.py` and `report-quality.py` |
-| `M3GIM_REPORTS_DIR` | `data/reports` | `_common.py`, `explore.py`, `validate.py`, and through `_common` also `report-quality.py` |
+| `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` | `_common.py`, `explore.py`, `validate.py`, `transform.py`, and through `_common` also `audit-data.py` and `report-cataloguing.py` |
+| `M3GIM_OUTPUT_DIR` | `data/output` | `_common.py`, `transform.py`, `build-views.py`, and through `_common` also `audit-data.py`, `report-quality.py` and `report-cataloguing.py` |
+| `M3GIM_REPORTS_DIR` | `data/reports` | `_common.py`, `explore.py`, `validate.py`, and through `_common` also `report-quality.py` and `report-cataloguing.py` |
 | `M3GIM_JSONLD_PATH` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `build-views.py` |
 | `M3GIM_VOCAB_PATH` | `vocab/m3gim.ttl` | `transform.py` |
 | `M3GIM_ALLOW_NO_WIKIDATA` | unset | `transform.py` |

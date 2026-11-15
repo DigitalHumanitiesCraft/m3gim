@@ -13,9 +13,9 @@ template:
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
 status: active
 created: 2026-02-19
-updated: 2026-09-08
+updated: 2026-11-15
 language: en
-version: 0.7
+version: 0.9
 authors: [Christopher Pollin]
 generated-with: Codex
 related: [specification, plan, data, data-model, recording-guide, research-framework, architecture, design, journal, journal-archive, testing]
@@ -27,20 +27,22 @@ This page is the entry point into the knowledge base of the project. It orders t
 
 ## Documents
 
-| Path | Function | Routing question | Update |
-|---|---|---|---|
-| [INDEX.md](INDEX.md) | Navigation | What lies here, how is it read, which terms are constitutive? | with every change to the contents of the folder |
-| [specification.md](specification.md) | Charter and specification | What must the application achieve, and which decisions remain open? | with a change to identity, requirements or scope |
-| [plan.md](plan.md) | Implementation plan | What is next, what did users verify, and which improvements remain proposals? | with an accepted scope clarification, integrated change or new verification result |
-| [data.md](data.md) | Source material and spec-first anchor | What is the source material, how does the cataloguing team record it, and what is defective in it? | with a new data export or a changed recording |
-| [data-model.md](data-model.md) | Domain knowledge | How is the material formally modelled, and where does the model stop? | with a change to [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), to the model or to the recording convention |
-| [recording-guide.md](recording-guide.md) | Recording convention | How does the cataloguing team enter records, links, uncertainty and provenance? | with an agreed change to partner-side recording |
-| [research-framework.md](research-framework.md) | Domain knowledge | Which theory, research questions, personas and use cases carry the project? | when research questions, personas or use cases are sharpened |
-| [architecture.md](architecture.md) | Architecture | How does the data pipeline run, and how is the static SPA built? | with a change to `scripts/`, `docs/js/` or the data flow |
-| [design.md](design.md) | Design | How does the application look, and how does it behave? | with a change to the design stance or the design system |
-| [testing.md](testing.md) | Quality assurance | What is guaranteed, and how is it checked? | with a change to the test suite or the TDD workflow |
-| [journal.md](journal.md) | Provenance | How did the project arrive here, and why was it decided this way? | after transitions that belong together, and with every decision in the decision register |
-| [journal-archive.md](journal-archive.md) | Provenance archive | Which earlier decision was superseded or lapsed? | retain existing decision references; use Git for superseded prose |
+| Path | Type | Function | Routing question | Update |
+|---|---|---|---|---|
+| [INDEX.md](INDEX.md) | Declarative | Navigation | What lies here, how is it read, which terms are constitutive? | with every change to the contents of the folder |
+| [specification.md](specification.md) | Declarative | Charter and specification | What must the application achieve, and which decisions remain open? | with a change to identity, requirements or scope |
+| [plan.md](plan.md) | Declarative | Implementation plan | What is next, what did users verify, and which improvements remain proposals? | with an accepted scope clarification, integrated change or new verification result |
+| [data.md](data.md) | Declarative | Source material and spec-first anchor | What is the source material, how does the cataloguing team record it, and what is defective in it? | with a new data export or a changed recording |
+| [data-model.md](data-model.md) | Declarative | Domain knowledge | How is the material formally modelled, and where does the model stop? | with a change to [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), to the model or to the recording convention |
+| [recording-guide.md](recording-guide.md) | Action | Recording convention | How does the cataloguing team enter records, links, uncertainty and provenance? | with an agreed change to partner-side recording |
+| [research-framework.md](research-framework.md) | Declarative | Domain knowledge | Which theory, research questions, personas and use cases carry the project? | when research questions, personas or use cases are sharpened |
+| [architecture.md](architecture.md) | Declarative | Architecture | How does the data pipeline run, and how is the static SPA built? | with a change to `scripts/`, `docs/js/` or the data flow |
+| [design.md](design.md) | Declarative | Design | How does the application look, and how does it behave? | with a change to the design stance or the design system |
+| [testing.md](testing.md) | Declarative | Quality assurance | What is guaranteed, and how is it checked? | with a change to the test suite or the TDD workflow |
+| [journal.md](journal.md) | Process | Provenance | How did the project arrive here, and why was it decided this way? | after transitions that belong together, and with every decision in the decision register |
+| [journal-archive.md](journal-archive.md) | Process | Provenance archive | Which earlier decision was superseded or lapsed? | retain existing decision references; use Git for superseded prose |
+
+The type column follows the three document types of Promptotyping. Declarative documents state what holds about material, model, requirements, design and checks, `journal.md` records what is open and how the project arrived here, and the agent instruction documents are [`../CLAUDE.md`](../CLAUDE.md) with [`../AGENTS.md`](../AGENTS.md) routing to it. The partner-facing recording guide instructs people, not agents, and is listed as Action because it prescribes how recording is done. Every document carries the same schema `version`, raised together when the knowledge base is refactored.
 
 The data findings live operationally under `data/reports/`. The errors that can be fixed at the source stand in the handover list [`source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the Wikidata alignment in the [`reconciliation-register.md`](../data/reports/reconciliation-register.md).
 
@@ -80,7 +82,7 @@ Every knowledge document uses these English terms. The German column is the word
 | facet | Facette | A feature with discrete values by which the result set is restricted: person, place, work, institution, document type, role, time. |
 | chip | Chip | A selected facet value, shown as a removable element. |
 | basket | Korb | The records a researcher collects by hand across views, for export. |
-| view | Ansicht, Tab | One page of the application: holdings, registers, chronicle, places, network, statistics, basket. |
+| view | Ansicht, Tab | One page of the application: holdings, registers, chronicle, places, network, dashboard, basket. |
 | holdings | Bestand | The view that lists the records in their archival order of convolutes and folios. |
 | register | Register, Index | The recorded names of one family, with a page per family. Name grouping alone establishes no identity. |
 | family | Familie | One of the four entity kinds person, institution, place, work, each with a fixed colour and symbol. |
@@ -110,4 +112,8 @@ Every knowledge document uses these English terms. The German column is the word
 | DFT | DFT | Documentary form type, the hierarchical taxonomy of document types. |
 | RiC-O, AgRelOn, SKOS | | Records in Contexts Ontology 1.1, the Agent Relationship Ontology of the German National Library, the Simple Knowledge Organization System. |
 | m3gim extension | m3gim-Extension | The project ontology for works, performances, stage parts and mobility, formalized in `vocab/m3gim.ttl`. |
+| verification | Verifikation | An executable check deciding whether a result meets a standard the project adopted. Strong only when it runs against the shipped code, covers the real data and can fail. |
+| agentic review | Agentenprüfung | An agent with fresh context examines code, data or documents. Its findings are evidence, never acceptance. |
+| scholarly validation | fachliche Validierung | The judgement of a person who knows the sources and the field that a result is warranted and adequate for a named purpose. |
+| proposal, doubted, confirmed | Vorschlag, bezweifelt, bestätigt | The status of a result. Agent output is a proposal, any participant can mark it doubted, and only a named person or an adopted deterministic rule confirms it. [testing.md](testing.md) § Checking forms and status records who set which status. |
 | Promptotyping | | The working method in which the knowledge documents are the source of truth and the code a derived artefact. |
