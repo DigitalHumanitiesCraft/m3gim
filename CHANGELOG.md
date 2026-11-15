@@ -12,6 +12,11 @@ Status: built, on the local branch `ui-variant`. Not merged, not published.
 - Bestand and Indizes show a provenance key for plain source values, supplemented values and Wikidata matches. The register Wikidata mark takes the match colour used everywhere else.
 - The empty basket says in one sentence how documents get into it.
 - Unused frontend exports and the tests that only exercised them were removed.
+- Proposed number 0.10.0. The research coordination confirmed the three-place number on 2026-11-15; the tag stays with the user.
+- Semicolons and dashes no longer join statements in interface strings, and executable checks now cover explanatory sentences above figures, empty views, the coverage counts' path to their data and the connectors (`tests/frontend/test_interface_rules.py`, `tests/test_72_interface_separators.py`). They fail on the published state.
+- Below 700 pixels an arrow at the right edge of the band shows that further views follow and scrolls to them.
+- `docs/js/views/karte-data.js` and `scripts/assemble-verknuepfungen.py` were removed after every importer moved to `docs/js/data/place-evidence.js`.
+- A separate branch `ui-variant-sidebar` starts the filter column folded at every width. It lowers the visible text elements of the first screen, yet no research view meets the density limits of the `work` profile yet.
 
 Checked: Node unit suite, Python invariants and browser suite as recorded in [knowledge/plan.md](knowledge/plan.md). Unchecked: scholarly validation of any view.
 
@@ -22,6 +27,8 @@ No version. The knowledge base was curated against code, data and the current Pr
 ## 0.9-rc.1, 2026-09-09
 
 Status: reviewed for the tagged commit. Three independent agents and the root agent audited the published revision, their findings were corrected (E-303, E-304) and checked again. The project lead accepted the designation as partner-review prerelease (E-305). Scholarly validation of the research tasks T1 to T10 is open.
+
+A one-commit repair of the phone tab list waits on the branch `hotfix-phone-tabs` for the user's decision to publish it.
 
 The site served from `main` since 2026-10-02 also carries the untagged commit `3f75a46`, which keeps the preview badge visible at every width. That commit is built only, and on phones it collapses the tab list, which the unreleased change above repairs.
 
