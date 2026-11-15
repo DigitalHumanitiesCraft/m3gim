@@ -347,10 +347,10 @@ def extract_bearbeitungsnotiz(value) -> str | None:
 def is_approved_match(match_entry: dict) -> bool:
     """May this reconciliation match pass through to enrichment/JSON-LD?
 
-    Conservative low-confidence policy (see E-74):
-    - ``exact`` and ``fuzzy_high`` (score >= 90) are released automatically.
-    - ``fuzzy_low`` (score 80-89) only when ``manual_review: "approved"`` was set
-      editorially. Everything else is skipped.
+    Only a match with ``manual_review: "approved"`` passes, whatever its match
+    kind. Automatic ``exact``, ``alias`` and ``fuzzy_high`` matches are held
+    back, so the shipped dataset carries no authority identity that a person
+    has not approved (E-74, tightened by E-301).
 
     Idempotent, no side effects.
     """
