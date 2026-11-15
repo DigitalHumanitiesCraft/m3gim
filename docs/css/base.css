@@ -371,7 +371,8 @@ a:focus-visible {
 
   /* Shown by tabs.js while the bar can scroll further: an arrow on a fade at
      the band's right edge, outside the scrolling box so it stays put. */
-  .topbar__more {
+  /* The element selector outranks the [data-tip] position rule of components.css. */
+  button.topbar__more {
     position: absolute;
     top: 0;
     right: 0;
@@ -386,7 +387,7 @@ a:focus-visible {
     cursor: pointer;
   }
 
-  .topbar__more[hidden] {
+  button.topbar__more[hidden] {
     display: none;
   }
 

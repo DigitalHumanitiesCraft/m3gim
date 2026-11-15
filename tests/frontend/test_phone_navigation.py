@@ -37,6 +37,8 @@ def test_an_arrow_shows_that_more_views_follow_and_leads_to_them(frontend_server
     more = page.locator(".topbar__more")
     assert more.is_visible()
     assert more.get_attribute("aria-label")
+    # Out of flow: in flow it pushed the work area down (regression 2026-11-15).
+    assert more.evaluate("el => getComputedStyle(el).position") == "absolute"
     last = page.locator('[role="tab"]').last
     assert last.bounding_box()["x"] + last.bounding_box()["width"] > 360
     for _ in range(4):

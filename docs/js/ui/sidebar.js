@@ -29,9 +29,23 @@ export { coveredBand } from './sidebar-range.js';
 
 const sidebarHosts = new WeakMap();
 
+const SIDEBAR_KEY = 'm3gim.sidebarOpen';
+
+function readSidebarOpen() {
+  try { return sessionStorage.getItem(SIDEBAR_KEY) === '1'; } catch { return false; }
+}
+
+function writeSidebarOpen(open) {
+  try { sessionStorage.setItem(SIDEBAR_KEY, open ? '1' : '0'); } catch { /* default holds */ }
+}
+
 export function viewShell(sidebarEl, mainEl) {
-  // Keep the same toggle reachable at every width; smaller hosts start folded.
-  const collapsedAtStart = !window.matchMedia('(min-width: 1200px)').matches;
+  // Sidebar-density variant (2026-11-15): the column starts folded at every
+  // width so the main figure takes the work area; the filter strip keeps the
+  // active conditions visible. Opening it once keeps it open across views for
+  // the session. Storage may be unavailable, the default then holds.
+  // Below 1200 pixels the column always starts folded, as before.
+  const collapsedAtStart = !window.matchMedia('(min-width: 1200px)').matches || !readSidebarOpen();
   const shell = el('div', { className: `view-shell${collapsedAtStart ? ' view-shell--sidebar-collapsed' : ''}` });
   const toggle = el('button', {
     className: 'view-shell__sidebar-toggle', type: 'button',
@@ -39,6 +53,7 @@ export function viewShell(sidebarEl, mainEl) {
     onClick: () => {
       const collapsed = shell.classList.toggle('view-shell--sidebar-collapsed');
       toggle.setAttribute('aria-expanded', String(!collapsed));
+      writeSidebarOpen(!collapsed);
     },
   });
   toggle.innerHTML = '<svg class="view-shell__sidebar-toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>';

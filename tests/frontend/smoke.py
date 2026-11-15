@@ -101,6 +101,8 @@ def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context()
+        # Facet checks need the filter column open (sidebar-density variant).
+        context.add_init_script("try { sessionStorage.setItem('m3gim.sidebarOpen', '1') } catch (e) {}")
         page = context.new_page()
 
         global_errors: list[str] = []

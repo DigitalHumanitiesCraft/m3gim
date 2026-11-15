@@ -52,12 +52,19 @@ def frontend_browser():
         browser.close()
 
 
+# The sidebar-density variant folds the filter column by default. The shared
+# context opens it, as a reader does once per session, so tests that operate
+# facets keep their path; test_sidebar_default.py checks the folded default.
+SIDEBAR_OPEN_SCRIPT = "try { sessionStorage.setItem('m3gim.sidebarOpen', '1') } catch (e) {}"
+
+
 @pytest.fixture
 def browser_context(frontend_browser):
     """Isolated context that fails on uncaught browser errors."""
     errors = []
     failed_requests = []
     context = frontend_browser.new_context()
+    context.add_init_script(SIDEBAR_OPEN_SCRIPT)
 
     def watch(page):
         page.on("pageerror", lambda error: errors.append(str(error)))
