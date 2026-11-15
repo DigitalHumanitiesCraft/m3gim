@@ -8,4 +8,8 @@ authors:
     orcid: "https://orcid.org/0000-0002-4879-129X"
     affiliation: "Digital Humanities Craft OG"
 repository-code: "https://github.com/DigitalHumanitiesCraft/m3gim"
-license: MIT
+version: "0.9-rc.1"
+date-released: "2026-09-09"
+license:
+  - MIT
+  - CC-BY-4.0
