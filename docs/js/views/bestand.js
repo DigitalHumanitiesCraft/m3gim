@@ -105,6 +105,7 @@ export function renderBestand(storeRef, containerEl) {
   sidebar = createSidebar(store, {
     yearSpan: yearBounds(store),
     getCount: () => visibleRecords,
+    provenanceLegend: true,
     search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
     onChange: () => updateBestandView(),
   });

@@ -102,7 +102,7 @@ export function renderTime(host, context) {
     const categories = new Map();
     for (const bin of all) for (const part of bin.stacks || []) {
       const key = stackKey(bin, part);
-      if (!categories.has(key)) categories.set(key, part.label.replace(/^.* · /, ''));
+      if (!categories.has(key)) categories.set(key, part.label.replace(/^.*: /, ''));
     }
     const legend = el('ul', { className: 'dashboard-time__legend', 'aria-label': 'Farben der Dokumenttypen' });
     for (const [key, label] of categories) legend.appendChild(el('li', {},

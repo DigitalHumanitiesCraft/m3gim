@@ -148,12 +148,12 @@ def test_stacked_interval_dates_remain_selectable_with_document_sources(frontend
     panel.get_by_label("Zeitaufteilung").select_option("doctype")
     panel.locator(".dashboard-values summary").click()
     panel.locator(".dashboard-values__select").filter(
-        has_text="1944-01-01/1944-12-31 · Programm · 3 Dokumente"
+        has_text="1944-01-01/1944-12-31: Programm, 3 Dokumente"
     ).click()
     detail = page.locator(".selection-detail__panel")
     expect(detail.locator(".dashboard-selection__records button")).to_have_count(3)
     expect(detail.locator(".dashboard-selection__evidence")).to_have_text(
-        "3 Belege · 3 Quellenstellen"
+        "3 Belege, 3 Quellenstellen"
     )
     detail.locator('.detail-disclosure > summary', has_text='Belege für diese Auswahl').click()
     expect(detail.locator(".detail-disclosure[open] .dashboard-selection__witnesses li")).to_have_count(3)

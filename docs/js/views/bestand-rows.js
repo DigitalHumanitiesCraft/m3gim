@@ -101,7 +101,7 @@ export function buildKonvolutChips(store, meta, showTypes = true) {
       const restCount = restTypes.reduce((sum, [, c]) => sum + c, 0);
       const tipLines = restTypes
         .map(([dft, c]) => `${c}× ${dftLabel(store, dft)}`)
-        .join(' · ');
+        .join(', ');
       chips.push(el('span', {
         className: 'chip chip--compact chip--rest',
         dataset: { tip: tipLines },
@@ -131,7 +131,7 @@ function standParts(meta) {
 /** The Erschliessungsstand is detail information of the Konvolut head. */
 export function konvolutStandTip(meta) {
   const parts = standParts(meta);
-  return parts.length > 0 ? `Erschließungsstand: ${parts.join(' · ')}` : '';
+  return parts.length > 0 ? `Erschließungsstand: ${parts.join(', ')}` : '';
 }
 
 /**
@@ -199,7 +199,7 @@ export function buildKonvolutFamilyLegend() {
   return el('span', {
     className: 'archiv-ersch archiv-ersch--legend',
     dataset: {
-      tip: CONTENT_FAMILIES.map(f => f.label).join(' · '),
+      tip: CONTENT_FAMILIES.map(f => f.label).join(', '),
       tipPos: 'bottom-right',
     },
     'aria-hidden': 'true',

@@ -20,8 +20,8 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  aggregateDocTypes, aggregateEntities, aggregateAgentRoles,
-  aggregateStageRoles, aggregateComposers,
+  aggregateDocTypes,
+  aggregateComposers,
 } from '../../docs/js/views/statistik-data.js';
 
 function makeStore(records, concepts) {
@@ -129,31 +129,9 @@ function entityStore() {
 describe('Entitaeten und Repertoire im Schnitt', () => {
   const cut = new Set(['r1', 'r2', 'r3']);
 
-  test('aggregateEntities zaehlt die Dokumente des Schnitts, absteigend', () => {
-    const rows = aggregateEntities(entityStore(), 'persons', cut);
-    assert.deepEqual(rows.map((r) => [r.value, r.count]), [['Malaniuk, Ira', 3]]);
-    assert.equal(rows[0].label, 'Malaniuk, Ira',
-      'Der Facettenwert ist zugleich die Beschriftung, sonst fuehrt die Zeile ins Leere.');
-  });
 
-  test('aggregateEntities laesst Eintraege ohne Dokument im Schnitt weg', () => {
-    const rows = aggregateEntities(entityStore(), 'organizations', new Set(['r2', 'r3']));
-    assert.deepEqual(rows, []);
-  });
 
-  test('aggregateAgentRoles nimmt nur Rollen mit Anzeigeform (E-143)', () => {
-    const rows = aggregateAgentRoles(entityStore(), cut);
-    assert.deepEqual(rows.map((r) => [r.value, r.label, r.count]),
-      [['m3gim-vocab:singer', 'sänger', 2]]);
-    assert.deepEqual(rows[0].recordIds.sort(), ['r1', 'r2'],
-      'die Rangzeile führt ihre konkreten Belege für den Drilldown');
-  });
 
-  test('aggregateStageRoles zaehlt Dokumente je Partie, nicht Auffuehrungen', () => {
-    const rows = aggregateStageRoles(entityStore(), cut);
-    assert.deepEqual(rows.map((r) => [r.label, r.count]), [['Brangäne', 2], ['Isolde', 1]]);
-    assert.deepEqual(rows[0].recordIds.sort(), ['r1', 'r2']);
-  });
 
   test('aggregateComposers zaehlt ein Dokument mit zwei Werken desselben Komponisten einmal', () => {
     const store = entityStore();

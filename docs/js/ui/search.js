@@ -93,7 +93,7 @@ export function createSearch(store, { selectFacet } = {}) {
       el('span', { className: 'research-search__count' }, String(item.count)));
       list.append(row);
     }
-    status.textContent = items.length ? `${items.length} Aktionen · Enter führt die ausgewählte Aktion aus` : '';
+    status.textContent = items.length ? `${items.length} Aktionen, Enter führt die ausgewählte Aktion aus` : '';
     more.hidden = items.length <= limit;
     more.textContent = `Weitere Vorschläge (${Math.max(0, items.length - limit)})`;
     popup.hidden = false;

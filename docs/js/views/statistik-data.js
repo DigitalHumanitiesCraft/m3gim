@@ -82,73 +82,6 @@ export function aggregateDocTypes(store, ids) {
 // ---------------------------------------------------------------------------
 
 /**
- * Eintraege einer Entitaets-Map mit ihrer Dokumentzahl im Schnitt. Der Name ist
- * zugleich der Facettenwert, mit dem die Zeile in den Bestand fuehrt.
- * @param {object} store
- * @param {string} mapName  persons | organizations | works
- * @param {?Set<string>} ids
- * @returns {Array<{value:string, label:string, count:number}>}
- */
-export function aggregateEntities(store, mapName, ids) {
-  const source = store && store[mapName];
-  if (!source) return [];
-  const out = [];
-  for (const [name, entry] of source) {
-    const count = countIn(entry && entry.records, ids);
-    if (count === 0) continue;
-    const recordIds = [...entry.records].filter((id) => !(ids instanceof Set) || ids.has(id));
-    out.push({ value: name, label: name, count, recordIds });
-  }
-  return out.sort(byCountDesc);
-}
-
-/**
- * Rollen der Mitwirkenden mit ihrer Dokumentzahl im Schnitt, aus
- * store.recordsByAgentRole. Rollen ohne Anzeigeform bleiben draussen
- * (E-143), sie waeren als nackte Concept-Id keine Aussage.
- */
-export function aggregateAgentRoles(store, ids) {
-  const index = store && store.recordsByAgentRole;
-  if (!index) return [];
-  const out = [];
-  for (const [value, recordIds] of index) {
-    const count = countIn(recordIds, ids);
-    if (count === 0) continue;
-    const entry = store.roleVocab ? store.roleVocab.get(value) : null;
-    const label = (entry && entry.label) || '';
-    if (!label) continue;
-    const idsInCut = [...recordIds].filter((id) => !(ids instanceof Set) || ids.has(id));
-    out.push({ value, label, count, recordIds: idsInCut });
-  }
-  return out.sort(byCountDesc);
-}
-
-/**
- * Buehnenrollen (Partien) mit der Zahl der Dokumente im Schnitt, die sie
- * belegen. Sie haengen an den Auffuehrungen, nicht am Record, und tragen
- * deshalb keine Facette.
- */
-export function aggregateStageRoles(store, ids) {
-  const index = store && store.recordToPerformances;
-  if (!index) return [];
-  const perRole = new Map();
-  for (const [recordId, performances] of index) {
-    if (ids instanceof Set && !ids.has(recordId)) continue;
-    for (const perf of performances || []) {
-      for (const role of (perf && perf.stageRoles) || []) {
-        if (!role) continue;
-        let set = perRole.get(role);
-        if (!set) { set = new Set(); perRole.set(role, set); }
-        set.add(recordId);
-      }
-    }
-  }
-  return [...perRole.entries()]
-    .map(([label, set]) => ({ label, count: set.size, recordIds: [...set] }))
-    .sort(byCountDesc);
-}
-
-/**
  * Komponisten mit der Zahl der Dokumente im Schnitt, die eines ihrer Werke
  * nennen. Distinkt gezaehlt, damit ein Dokument mit zwei Werken desselben
  * Komponisten einmal zaehlt.
@@ -281,7 +214,7 @@ export function aggregateTreemap(store, ids) {
       .filter(child => child.recordIds.length > 0);
     const children = [...childNodes];
     if (directRecords.length && childNodes.length) {
-      children.unshift(aggregate({ key: `${id}:direct`, label: `${dftLabel(store, id)} · direkt zugeordnet`,
+      children.unshift(aggregate({ key: `${id}:direct`, label: `${dftLabel(store, id)}, direkt zugeordnet`,
         recordIds: directRecords.map(r => r['@id']), witnesses: directRecords.map(r => recordWitness(r, 'document-type', id, dftLabel(store, id))),
         denominator: records.length, descriptor: { facet: 'docType', value: id }, leaf: true, residual: true,
         path: [...path, id] }));
@@ -444,7 +377,7 @@ function relationMatrixRows(store, records) {
         if (!relationshipPairs.has([left.name, right.name].join('\u0000'))) continue;
         rows.push({
           row: { key: `person:${left.name}`, label: left.name },
-          column: { key: `co-mention:person:${right.name}`, label: `${right.name} · Dokument-Co-Mention` },
+          column: { key: `co-mention:person:${right.name}`, label: `${right.name}, Dokument-Co-Mention` },
           recordId,
           witnesses: [
             witness('agent', `person:${left.name}`, left.name, recordId, left.entry, { family: 'person' }),
@@ -461,7 +394,7 @@ function relationMatrixRows(store, records) {
       const relationLabel = AGRELON_LABELS[relation.type] || String(relation.type || 'Beziehung').replace(/^agrelon:/, '');
       rows.push({
         row: { key: `person:${pair[0]}`, label: pair[0] },
-        column: { key: `relation:person:${pair[1]}`, label: `${pair[1]} · explizite Beziehung (${relationLabel})` },
+        column: { key: `relation:person:${pair[1]}`, label: `${pair[1]}, explizite Beziehung (${relationLabel})` },
         recordId,
         witnesses: [witness('agent-relation', `${pair[0]}:${pair[1]}:${relation.type || ''}`,
           `${pair[0]} – ${pair[1]} (${relationLabel})`, recordId, relation,
@@ -607,7 +540,7 @@ export function aggregateTime(store, ids, grouping = 'year', { stack = null } = 
   return [...groups.entries()].map(([key, value]) => aggregate({ key, label: value.label,
     recordIds: value.records, witnesses: value.witnesses, denominator: records.length,
     stacks: [...value.stacks.values()].map(part => aggregate({ ...part,
-      key: `${key}:${part.key}`, label: `${value.label} · ${part.label}`, denominator: records.length })),
+      key: `${key}:${part.key}`, label: `${value.label}: ${part.label}`, denominator: records.length })),
     descriptor: key === '__undated__' || key.startsWith('date:') ? { type: 'records', ids: value.records }
       : { facet: 'zeitfenster', value: grouping === 'year' ? [+key, +key]
         : grouping === 'five' ? [+key, +key + 4] : [+key, +key + 9] } }))
@@ -761,13 +694,13 @@ export function aggregateComparison(store, activeIds, reference, dimension = 'wo
       denominatorA: a.size, denominatorB: b.size, referenceFilter: reference?.filter || null };
     return { key: category.key, label: category.label, idsA, idsB, overlap, valueA, valueB,
       denominatorA: a.size, denominatorB: b.size, difference: valueA == null || valueB == null ? null : valueB - valueA,
-      selectionA: aggregate({ key: `${category.key}:a`, label: `${category.label} · Referenz A`, recordIds: idsA,
+      selectionA: aggregate({ key: `${category.key}:a`, label: `${category.label}, Referenz A`, recordIds: idsA,
         denominator: a.size, witnesses: comparisonWitnesses(index, category, idsA, dimension, store),
         ...comparison, comparisonSide: 'A' }),
-      selectionB: aggregate({ key: `${category.key}:b`, label: `${category.label} · Auswahl B`, recordIds: idsB,
+      selectionB: aggregate({ key: `${category.key}:b`, label: `${category.label}, Auswahl B`, recordIds: idsB,
         denominator: b.size, witnesses: comparisonWitnesses(index, category, idsB, dimension, store),
         ...comparison, comparisonSide: 'B' }),
-      selectionOverlap: aggregate({ key: `${category.key}:overlap`, label: `${category.label} · Überschneidung`, recordIds: overlap,
+      selectionOverlap: aggregate({ key: `${category.key}:overlap`, label: `${category.label}, Überschneidung`, recordIds: overlap,
         denominator: Math.min(a.size, b.size), witnesses: comparisonWitnesses(index, category, overlap, dimension, store),
         ...comparison, comparisonSide: 'overlap' }) };
   }).filter(row => row.idsA.length || row.idsB.length);

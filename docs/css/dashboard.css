@@ -38,6 +38,7 @@
 .dashboard-chart-status, .dashboard-chart-selection, .dashboard-note, .dashboard-empty {
   margin: 0 0 var(--space-2); color: var(--color-text-secondary); font-size: var(--text-xs); line-height: var(--leading-normal);
 }
+.dashboard-panel__head .dashboard-chart-status { margin: 0; font-variant-numeric: tabular-nums; }
 .dashboard-chart-selection { padding-inline-start: var(--space-2); border-inline-start: 2px solid var(--accent); }
 .dashboard-empty { padding: var(--space-6); font-style: italic; }
 .dashboard-drawing { min-width: 0; overflow: auto; }

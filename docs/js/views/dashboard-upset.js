@@ -27,7 +27,7 @@ export function renderUpSet(host, context) {
     ort: 'Ort', docType: 'Dokumenttyp', verknuepfung: 'Verknüpfung' };
   const legend = el('ol', { className: 'dashboard-note dashboard-upset__sets', 'aria-label': 'Dargestellte Mengen' });
   for (const set of model.sets) legend.appendChild(el('li', {},
-    `${familyLabels[set.facet] || 'Menge'}: ${set.label} · ${set.ids.size} Dokumente`));
+    `${familyLabels[set.facet] || 'Menge'}: ${set.label}, ${set.ids.size} Dokumente`));
   host.appendChild(legend);
   const width = 720, rowHeight = 31, barStart = 195;
   const height = 53 + intersections.length * rowHeight;
@@ -71,7 +71,7 @@ export function renderUpSet(host, context) {
   else {
     const focusControls = el('div', { className: 'dashboard-local-focus' });
     const select = el('select', { className: 'ui-select dashboard-panel__select', 'aria-label': 'Mengenkombination für lokalen Fokus' });
-    for (const item of model.intersections) select.appendChild(el('option', { value: item.key }, `${item.label} · ${item.count}`));
+    for (const item of model.intersections) select.appendChild(el('option', { value: item.key }, `${item.label} ${item.count}`));
     focusControls.append(select, el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ focus: select.value }) }, 'Kombination lokal fokussieren'));
     host.appendChild(focusControls);
   }

@@ -87,28 +87,3 @@ export function evidenceResult({ recordIds, witnesses = [], contextRecordIds, in
   });
 }
 
-/** Restrict evidence to documents in `recordIds`. */
-export function evidenceInRecords(result, recordIds) {
-  const keep = new Set(recordIds || []);
-  return evidenceResult({
-    recordIds: [...result.recordIds].filter(id => keep.has(id)),
-    contextRecordIds: [...result.contextRecordIds].filter(id => keep.has(id)),
-    witnesses: result.witnesses.filter(witness => keep.has(witness.recordId)),
-    invalid: result.invalidPredicates,
-  });
-}
-
-/** Union several selected evidence units with source and document deduplication. */
-export function unionEvidence(results) {
-  const recordIds = new Set();
-  const contextRecordIds = new Set();
-  const witnesses = [];
-  const invalid = [];
-  for (const result of results || []) {
-    for (const id of result?.recordIds || []) recordIds.add(id);
-    for (const id of result?.contextRecordIds || []) contextRecordIds.add(id);
-    witnesses.push(...(result?.witnesses || []));
-    invalid.push(...(result?.invalidPredicates || []));
-  }
-  return evidenceResult({ recordIds, contextRecordIds, witnesses, invalid });
-}

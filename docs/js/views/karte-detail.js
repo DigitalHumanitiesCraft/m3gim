@@ -81,10 +81,10 @@ function relatedSection(store, group, actions) {
       'Die Aussagekraft ist auf den gemeinsamen Dokumentkontext begrenzt; Aufenthalt, Auftritt oder Beziehung am gewählten Ort bleiben offen.'));
   for (const spec of specs) {
     const family = el('details', { className: 'places-related__family' },
-      el('summary', {}, `${spec.title} · ${spec.entries.length}`));
+      el('summary', {}, `${spec.title} ${spec.entries.length}`));
     for (const item of spec.entries) {
       family.appendChild(el('details', { className: 'places-related__entry' },
-        el('summary', {}, `${item.name} · ${plural(item.supporting.length, 'Dokument', 'Dokumente')}`),
+        el('summary', {}, `${item.name}, ${plural(item.supporting.length, 'Dokument', 'Dokumente')}`),
         el('button', { type: 'button', className: 'places-related__jump',
           onClick: () => actions.navigate('indizes', { register: spec.register, entry: item.name }) },
         'Im Register öffnen'),
@@ -135,7 +135,7 @@ export function buildPlaceSources(store, group, actions, selectedRole = null) {
   }
   const content = el('div', { className: 'places-detail places-detail--sources' },
     el('p', { className: 'places-source-list__summary' },
-      `${plural(byDocument.size, 'Dokument', 'Dokumente')} · ${plural(evidence.length, 'Ortsbeleg', 'Ortsbelege')}`));
+      `${plural(byDocument.size, 'Dokument', 'Dokumente')}, ${plural(evidence.length, 'Ortsbeleg', 'Ortsbelege')}`));
   for (const [recordId, rows] of byDocument) {
     const record = store.records.get(recordId);
     const roles = [...new Set(rows.map(placeRoleLabel))].join(', ');
@@ -144,7 +144,7 @@ export function buildPlaceSources(store, group, actions, selectedRole = null) {
         el('span', { className: 'places-signature' }, recordLabel(record, recordId)),
         el('span', { className: 'places-source-document__title' }, record?.['rico:title'] || 'Ohne Titel'),
         el('span', { className: 'places-source-document__meta' },
-          `${roles} · ${plural(rows.length, 'Beleg', 'Belege')}`)),
+          `${roles}, ${plural(rows.length, 'Beleg', 'Belege')}`)),
       el('div', { className: 'places-source-document__rows' },
         ...rows.map(row => evidenceRow(row, group, actions)),
         documentButton(store, recordId, actions.navigate))));

@@ -78,6 +78,7 @@ export function createSidebar(store, {
   search = true,
   sections = [],
   legend = [],
+  provenanceLegend = false,
   localChips = () => [],
   onChange = () => {},
 } = {}) {
@@ -100,7 +101,7 @@ export function createSidebar(store, {
   ];
 
   const built = buildColumn(specs.filter(Boolean));
-  const strip = filterStrip(inventories, localChips);
+  const strip = filterStrip(inventories, localChips, { provenanceLegend });
   const commonSearch = search === false ? null : createSearch(store, {
     selectFacet: (key, values) => setFilter(buildFacetSelectionPatch(getFilter(), key, values)),
   });

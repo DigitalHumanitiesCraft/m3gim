@@ -83,7 +83,7 @@ def test_dense_day_shows_lane_previews_and_complete_detail_lists(
     panel.get_by_role("button", name="Schließen").click()
 
     parts = group.locator("button.chronik-parts")
-    expect(parts).to_have_text("Partien · 53")
+    expect(parts).to_have_text("Partien 53")
     parts.click()
     part_entries = panel.locator(".chronik-list .chronik-entity")
     expect(part_entries).to_have_count(53)
@@ -142,7 +142,7 @@ def test_real_dense_source_uses_a_short_calendar_summary(
     page = open_chronik(frontend_server, browser_context, "?suche=NIM_005%2025")
     group = calendar_group(page, "years", "year-1963")
     expect(group.locator(".chronik-source__dates")).to_have_text(
-        "25 Datierungen · Jänner–Dezember 1963"
+        "25 Datierungen, Jänner–Dezember 1963"
     )
     source = group.locator(".chronik-source__link")
     assert "chronik-source--statement" in source.get_attribute("class").split()

@@ -79,7 +79,7 @@ class PageDefinition:
 PAGE_DEFINITIONS = (
     PageDefinition(
         "index.html",
-        "Teilnachlass Ira Malaniuk · M³GIM",
+        "M³GIM Teilnachlass Ira Malaniuk",
         "Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) am Universitätsarchiv der Kunstuniversität Graz.",
         "Dataset",
         "M³GIM — Teilnachlass Ira Malaniuk (UAKUG/NIM)",
@@ -87,28 +87,28 @@ PAGE_DEFINITIONS = (
     ),
     PageDefinition(
         "about.html",
-        "Über · M³GIM",
+        "Über M³GIM",
         "Mapping Mobile Musicians: Forschungskontext, Methodik, Projektteam und Förderung der Machbarkeitsstudie zum Teilnachlass Ira Malaniuk.",
         "AboutPage",
         "Über",
     ),
     PageDefinition(
         "projekt.html",
-        "Projekt · M³GIM",
+        "Projekt M³GIM",
         "Forschungsfragen, Quellenbestand, Tektonik und Erschließungsprozess des Teilnachlasses Ira Malaniuk an der Kunstuniversität Graz.",
         "AboutPage",
         "Projekt",
     ),
     PageDefinition(
         "impressum.html",
-        "Impressum · M³GIM",
+        "Impressum M³GIM",
         "Impressum, Projektverantwortung, Förderung und Datenschutz von M³GIM — Mapping Mobile Musicians.",
         "WebPage",
         "Impressum",
     ),
     PageDefinition(
         "datenmodell.html",
-        "Datenmodell · M³GIM",
+        "Datenmodell M³GIM",
         "Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.",
         "WebPage",
         "Datenmodell",

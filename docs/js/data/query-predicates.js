@@ -147,7 +147,7 @@ export function parsePredicate(value) {
 export function predicateLabel(predicate) {
   const p = normalizePredicate(predicate);
   if (p.type === PREDICATE_TYPES.ENTITY_ROLE) {
-    return `${p.entities.join(' oder ')} · ${p.roles.join(' oder ')}`;
+    return `${p.entities.join(' oder ')}, ${p.roles.join(' oder ')}`;
   }
   if (p.type === PREDICATE_TYPES.RECORDS) {
     return p.ids.length === 1 ? `Dokument ${p.ids[0]}` : `${p.ids.length} Dokumente`;
@@ -155,7 +155,7 @@ export function predicateLabel(predicate) {
   if (p.type === PREDICATE_TYPES.SET_MEMBERSHIP) {
     const included = p.include.map(item => `${item.facet}:${item.value}`).join(' ∩ ');
     const excluded = p.exclude.map(item => `${item.facet}:${item.value}`).join(', ');
-    return [included, excluded ? `ohne ${excluded}` : ''].filter(Boolean).join(' · ');
+    return [included, excluded ? `ohne ${excluded}` : ''].filter(Boolean).join(', ');
   }
   return `Ungültiger Filter: ${p.reason}`;
 }

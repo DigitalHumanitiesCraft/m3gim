@@ -91,7 +91,7 @@ function renderCalendarLanes(group) {
     if (family === 'werk' && data.lanes.part.length) lane.appendChild(el('button', {
       type: 'button', className: 'chronik-parts chronik-more',
       onClick: event => showList(data.lanes.part, 'Partien', entry => renderEntity(entry, data), data, event.currentTarget),
-    }, `Partien · ${data.lanes.part.length}`));
+    }, `Partien ${data.lanes.part.length}`));
     lanes.push(lane);
   }
   return lanes;
@@ -164,7 +164,7 @@ function renderDateRow(row) {
     if (family === 'werk' && row.lanes.part?.length) lane.appendChild(el('button', {
       type: 'button', className: 'chronik-parts chronik-more',
       onClick: event => showList(row.lanes.part, 'Partien', entry => renderEntity(entry, row), row, event.currentTarget),
-    }, `Partien · ${row.lanes.part.length}`));
+    }, `Partien ${row.lanes.part.length}`));
     section.appendChild(lane);
   }
   return section;
@@ -176,7 +176,7 @@ function renderLane(items, label, render, family, row) {
   if (!items.length) return lane;
   if (family !== 'source' || items.length > 1) lane.appendChild(el('div', {
     className: 'chronik-lane__label',
-  }, `${label} · ${items.length}`));
+  }, `${label} ${items.length}`));
   lane.appendChild(el('ul', { className: 'chronik-list', 'aria-label': label },
     ...items.slice(0, PREVIEW_LIMIT).map(item => el('li', {}, render(item)))));
   if (items.length > PREVIEW_LIMIT) lane.appendChild(el('button', {
@@ -194,15 +194,15 @@ function recordLabel(recordId) {
 
 function recordDate(record) {
   return [...new Set(ensureArray(record?.['rico:date']).concat(ensureArray(record?.['rico:creationDate'])))]
-    .filter(Boolean).map(date => dateMeta(date).dateLabel).join(' · ');
+    .filter(Boolean).map(date => dateMeta(date).dateLabel).join(', ');
 }
 
 function statementLabel(source, row) {
   if (source.kind === 'document') return row.precision === 'undated' ? 'Ohne Dokumentdatum' : 'Dokumentdatum';
   if (source.labels.every(label => /^(erwähnt|Datierung)$/i.test(label))) {
-    return row.precision === 'year' ? `Erwähnung des Jahres ${row.dateLabel}` : `Datumsnennung · ${row.dateLabel}`;
+    return row.precision === 'year' ? `Erwähnung des Jahres ${row.dateLabel}` : `Datumsnennung, ${row.dateLabel}`;
   }
-  return source.labels.join(' · ') || 'Datierte Aussage';
+  return source.labels.join(', ') || 'Datierte Aussage';
 }
 
 function renderSource(source, row) {
@@ -213,26 +213,26 @@ function renderSource(source, row) {
     className: `chronik-source chronik-source--${source.kind} chronik-source__link`, type: 'button',
     dataset: { recordId: source.recordId, sourceKey: `${row.key}|${source.recordId}` }, 'aria-pressed': 'false',
     onClick: event => showSource(source, row, event.currentTarget),
-    'aria-label': `${recordLabel(source.recordId)} · ${title} — Details und Belege`,
+    'aria-label': `${recordLabel(source.recordId)}, ${title}, Details und Belege`,
   }, el('span', { className: 'chronik-source__title' }, title),
     el('span', { className: 'chronik-source__context' }, statementLabel(source, row)),
     el('span', { className: 'chronik-source__dates' }, row.dateLabel),
     el('span', { className: 'chronik-source__meta' },
       el('span', { className: 'chronik-source__signature' }, recordLabel(source.recordId)),
-      source.kind === 'statement' ? ` · ${ownDate ? 'Quelle vom ' + ownDate : 'Quelle ohne Dokumentdatum'}` : ''));
+      source.kind === 'statement' ? `, ${ownDate ? 'Quelle vom ' + ownDate : 'Quelle ohne Dokumentdatum'}` : ''));
 }
 
 function renderEntity(entry, row) {
   const contexts = new Set(entry.evidence.map(item => item.context));
   const context = contexts.size > 1 ? 'Datierte Aussage / in der Quelle genannt'
     : contexts.has('statement') ? 'Datierte Aussage' : 'In der Quelle genannt';
-  const role = entry.roles.includes('Partie') ? 'Partie · ' : '';
+  const role = entry.roles.includes('Partie') ? 'Partie, ' : '';
   return el('button', { type: 'button', className: `chronik-entity chronik-family--${entry.family}`,
     dataset: { entityKey: entry.key, recordIds: JSON.stringify(entry.recordIds) }, 'aria-pressed': 'false',
     onClick: event => showEvidence(entry, row, event.currentTarget),
   }, el('span', { className: 'chronik-entity__name' }, familyIcon(entry.family, { size: 14 }), entry.name),
   el('span', { className: 'chronik-entity__context' },
-    `${role}${context}${entry.recordIds.length > 1 ? ' · ' + entry.recordIds.length + ' Belege' : ''}`));
+    `${role}${context}${entry.recordIds.length > 1 ? ', ' + entry.recordIds.length + ' Belege' : ''}`));
 }
 
 function markSelection() {
@@ -276,7 +276,7 @@ function openPanel(title, subtitle, content, trigger, { key, sourceKey, recordId
 }
 
 function showList(items, label, render, row, trigger) {
-  openPanel(label, `${row.dateLabel} · ${items.length} Einträge`,
+  openPanel(label, `${row.dateLabel}, ${items.length} Einträge`,
     el('ul', { className: 'chronik-list', 'aria-label': label },
       ...items.map(item => el('li', {}, render(item)))), trigger);
 }
@@ -284,7 +284,7 @@ function showList(items, label, render, row, trigger) {
 function recordJump(recordId) {
   return el('button', { type: 'button', className: 'chronik-evidence__source', dataset: { recordId },
     onClick: () => { closeEvidence(false); selectRecord(recordId); },
-  }, `${recordLabel(recordId)} · ${store.records.get(recordId)?.['rico:title'] || 'Dokument öffnen'}`);
+  }, `${recordLabel(recordId)}, ${store.records.get(recordId)?.['rico:title'] || 'Dokument öffnen'}`);
 }
 
 function showSource(source, row, trigger) {
@@ -298,8 +298,8 @@ function showSource(source, row, trigger) {
         row.precision === 'year' ? 'Nur das Jahr ist bekannt; Monat und Tag sind nicht genauer datiert.'
           : 'Nur der Monat ist bekannt; der Tag ist nicht genauer datiert.') : null,
     el('p', { className: 'chronik-evidence__date' },
-      [type, recordDate(record) ? `Dokumentdatum: ${recordDate(record)}` : 'Ohne Dokumentdatum'].filter(Boolean).join(' · ')),
-    source.kind === 'document' ? el('p', { className: 'chronik-evidence__statement' }, source.labels.join(' · ')) : null,
+      [type, recordDate(record) ? `Dokumentdatum: ${recordDate(record)}` : 'Ohne Dokumentdatum'].filter(Boolean).join(', ')),
+    source.kind === 'document' ? el('p', { className: 'chronik-evidence__statement' }, source.labels.join(', ')) : null,
     ...source.notes.map(note => el('p', { className: 'chronik-evidence__note' }, note)));
   for (const [family, entries] of Object.entries(row.lanes)) {
     const linked = entries.filter(entry => entry.recordIds.includes(source.recordId)).map(entry => {
@@ -311,7 +311,7 @@ function showSource(source, row, trigger) {
       el('ul', { className: 'chronik-list' }, ...linked.map(entry => el('li', {}, renderEntity(entry, row))))));
   }
   content.appendChild(el('p', {}, recordJump(source.recordId)));
-  openPanel(record?.['rico:title'] || '(ohne Titel)', `${recordLabel(source.recordId)} · ${row.dateLabel}`,
+  openPanel(record?.['rico:title'] || '(ohne Titel)', `${recordLabel(source.recordId)}, ${row.dateLabel}`,
     content, trigger, { sourceKey: `${row.key}|${source.recordId}`, recordId: source.recordId });
 }
 
@@ -321,13 +321,13 @@ function showEvidence(entry, row, trigger) {
     const evidence = entry.evidence.filter(item => item.recordId === recordId);
     list.appendChild(el('li', {}, recordJump(recordId),
       ...evidence.map(item => el('div', { className: 'chronik-evidence__statement' },
-        el('p', {}, `${item.date ? dateMeta(item.date).dateLabel + ' · ' : 'Ohne eigene Datierung · '}${item.context === 'document' ? 'In der Quelle genannt' : 'Datierte Aussage'} · ${item.label}`),
+        el('p', {}, `${item.date ? dateMeta(item.date).dateLabel + ', ' : 'Ohne eigene Datierung, '}${item.context === 'document' ? 'In der Quelle genannt' : 'Datierte Aussage'}, ${item.label}`),
         ...item.notes.map(note => el('p', { className: 'chronik-evidence__note' }, note))))));
   }
   const content = el('div', {}, list);
   if (entry.evidence.some(item => item.context === 'document')) content.appendChild(el('p', {
     className: 'chronik-evidence__caution',
   }, 'Die Nennung im Dokument belegt für dieses Datum keinen gemeinsamen Auftritt oder Aufenthalt.'));
-  openPanel(entry.name, `${row.dateLabel} · ${entry.recordIds.length} ${entry.recordIds.length === 1 ? 'Beleg' : 'Belege'}`,
+  openPanel(entry.name, `${row.dateLabel}, ${entry.recordIds.length} ${entry.recordIds.length === 1 ? 'Beleg' : 'Belege'}`,
     content, trigger, { key: entry.key });
 }

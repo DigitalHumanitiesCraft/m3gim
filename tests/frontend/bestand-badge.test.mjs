@@ -87,5 +87,5 @@ test('der Kopf-Tooltip traegt auch einen gemischten Erschliessungsstand', () => 
     ['abgeschlossen', 20], ['begonnen', 9], ['zurueckgestellt', 1],
   ]) };
   assert.equal(konvolutStandTip(meta),
-    'Erschließungsstand: 20 abgeschlossen · 9 begonnen · 1 zurückgestellt');
+    'Erschließungsstand: 20 abgeschlossen, 9 begonnen, 1 zurückgestellt');
 });

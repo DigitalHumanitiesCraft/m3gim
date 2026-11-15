@@ -35,7 +35,7 @@ def test_presets_update_both_panels_and_preserve_shared_state(frontend_server, b
     preset = page.get_by_role('button', name='Zeit + Orte', exact=True)
     preset.click()
     expect(preset).to_have_attribute('aria-pressed', 'true')
-    expect(page.locator('.dashboard-presets__status')).to_have_text('Aktiv: Zeit + Orte')
+    expect(page.locator('.dashboard-presets__status')).to_have_text('')
     expect(panel(page, 'a').get_by_label('Diagramm in Panel A')).to_have_value('time')
     expect(panel(page, 'b').get_by_label('Diagramm in Panel B')).to_have_value('map')
     params = dashboard_params(page)
@@ -50,7 +50,7 @@ def test_presets_update_both_panels_and_preserve_shared_state(frontend_server, b
     page.reload(wait_until='networkidle')
     expect(panel(page, 'a').get_by_label('Diagramm in Panel A')).to_have_value('time')
     expect(panel(page, 'b').get_by_label('Diagramm in Panel B')).to_have_value('map')
-    expect(page.locator('.dashboard-presets__status')).to_have_text('Aktiv: Zeit + Orte')
+    expect(page.locator('.dashboard-presets__status')).to_have_text('')
 
     panel(page, 'a').get_by_label('Diagramm in Panel A').select_option('treemap')
     expect(page.locator('.dashboard-presets__status')).to_have_text('Freie Kombination')

@@ -662,14 +662,14 @@ function cssColour(token) {
  *  here, where there is room for them. */
 function nodeTip(d) {
   if (d.kind === 'record') {
-    return `${d.label} · ${d.name}`
+    return `${d.label}, ${d.name}`
       + (d.title ? `\n${d.title}` : '')
       + `\n${d.weight} erwähnte Einträge`
       + (d.year == null ? '\nundatiert' : '');
   }
   return `${d.name}\n${NODE_TYPE_META[d.type].label}\n`
     + `${d.weight} Dokument${d.weight === 1 ? '' : 'e'}`
-    + (d.hasRelation ? `\nRing · erfasste Beziehung zur Nachlassbildnerin`
+    + (d.hasRelation ? `\nRing, erfasste Beziehung zur Nachlassbildnerin`
       + ` (${relationNames(d)}), Beleg in der Detailspalte` : '');
 }
 
@@ -690,10 +690,10 @@ function edgeTip(edge) {
   const a = edge.from.label || edge.from.name;
   const b = edge.to.label || edge.to.name;
   if (edge.recordId) {
-    return `${a} · ${b}\n${edge.roles.length ? edge.roles.join(', ') : 'ohne Rolle'}`;
+    return `${a} und ${b}\n${edge.roles.length ? edge.roles.join(', ') : 'ohne Rolle'}`;
   }
   const roles = [...new Set([...(edge.rolesA || []), ...(edge.rolesB || [])])];
-  return `${a} · ${b}\n${edge.weight} gemeinsame`
+  return `${a} und ${b}\n${edge.weight} gemeinsame`
     + (edge.weight === 1 ? 's Dokument' : ' Dokumente')
     + (roles.length ? `\n${roles.join(', ')}` : '');
 }

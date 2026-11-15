@@ -118,7 +118,7 @@ def test_read_only_sync_reports_drift_without_writing(tmp_path: Path) -> None:
     for page in _pages():
         shutil.copy2(page, copied / page.name)
     target = copied / "about.html"
-    stale = target.read_text(encoding="utf-8").replace("Über · M³GIM", "Veraltet", 1)
+    stale = target.read_text(encoding="utf-8").replace("Über M³GIM", "Veraltet", 1)
     target.write_text(stale, encoding="utf-8")
 
     assert site_html.sync_site_html(copied, write=False) == ["about.html"]

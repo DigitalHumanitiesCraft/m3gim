@@ -185,7 +185,9 @@ const LEGEND = [
 ];
 
 function viewHead() {
-  _coverage = el('span', { className: 'netzwerk__coverage' });
+  // The count leads to the documents behind it: Bestand shows the same cut.
+  _coverage = el('button', { type: 'button', className: 'netzwerk__coverage ui-action',
+    onClick: () => navigateToView('bestand') });
   const legend = el('ul', { className: 'netzwerk__legend', 'aria-label': 'Zeichenerklärung' });
   for (const item of LEGEND) {
     legend.appendChild(el('li', {
@@ -210,10 +212,11 @@ function paintHead() {
   const shown = _last.result ? _last.result.ids.size : 0;
   const linked = baseIds(_store).size;
   const total = _store.allRecords.length;
-  _coverage.textContent = `${shown} von ${total} Dokumenten des Bestands`;
+  _coverage.textContent = `${shown} von ${total} Dokumenten`;
   Object.assign(_coverage.dataset, {
-    tip: `${linked} Dokumente des Bestands tragen eine Verknüpfung und erreichen`
-      + ` damit das Netz. Datenstand ${(_store.exportDate || '').slice(0, 10)}.`,
+    tip: `${shown} von ${total} Dokumenten des Bestands stehen im Netz. ${linked} Dokumente`
+      + ` tragen eine Verknüpfung und können es erreichen, der Bestand listet sie einzeln.`
+      + ` Datenstand ${(_store.exportDate || '').slice(0, 10)}.`,
     tipWrap: '',
   });
 }
@@ -241,7 +244,7 @@ function knotenSection() {
         label: () => {
           const s = stats();
           return s && local.showRecords
-            ? `Dokumente als Knoten · ${s.recordNodes}`
+            ? `Dokumente als Knoten ${s.recordNodes}`
             : 'Dokumente als Knoten';
         },
         tip: () => 'Ein Dokument steht als Quadrat im Netz, seine Größe ist die Zahl'
@@ -252,7 +255,7 @@ function knotenSection() {
       { kind: 'toggle',
         label: () => {
           const s = stats();
-          return s ? `Einzelbelege blass · ${s.single}` : 'Einzelbelege blass';
+          return s ? `Einzelbelege blass ${s.single}` : 'Einzelbelege blass';
         },
         tip: () => 'Einträge mit genau einem Dokument treten zurück; entfernt wird keiner.',
         value: () => local.fadeSingle,
@@ -424,7 +427,7 @@ function drawDetail() {
       kicker: node.kind === 'record' ? 'Dokument' : NODE_TYPE_META[node.type].label,
       title: node.name,
       subtitle: node.kind === 'record'
-        ? [node.title || '(ohne Titel)', node.date].filter(Boolean).join(' · ') : '',
+        ? [node.title || '(ohne Titel)', node.date].filter(Boolean).join(', ') : '',
       content,
       trigger: document.querySelector(`.netzwerk-node[data-id="${CSS.escape(node.id)}"]`),
     });
@@ -437,7 +440,7 @@ function drawDetail() {
   const content = el('div', { className: 'netzwerk__detail netzwerk__detail-content' });
   drawEdgeDetail(content, graph, edge);
   _detail.open({
-    kicker: 'Kante', title: `${a.name} · ${b.name}`,
+    kicker: 'Kante', title: `${a.name} und ${b.name}`,
     subtitle: edge.recordId ? (edge.roles.join(', ') || 'ohne Rolle')
       : `${edge.weight} gemeinsame${edge.weight === 1 ? 's Dokument' : ' Dokumente'}`,
     content,
@@ -490,7 +493,7 @@ function drawActorDetail(panel, node) {
       chips.appendChild(buildRoleChip({ prefix: role, value: String(count),
         tip: `${count} Dokument${count === 1 ? '' : 'e'} des Schnitts in dieser Rolle` }));
     }
-    panel.appendChild(section(`Rollen · ${node.weight} Dokumente`, chips));
+    panel.appendChild(section(`Rollen, ${node.weight} Dokumente`, chips));
   }
 
   if (node.relations.length > 0) {
@@ -501,7 +504,7 @@ function drawActorDetail(panel, node) {
       // Signature plus document type and year, the same short form the node
       // labels carry, so the chip says what its evidence is and not only where.
       const evidence = record
-        ? `${formatSignatur(record['rico:identifier'])} · `
+        ? `${formatSignatur(record['rico:identifier'])}, `
           + recordLabel(_store, record, yearOfId(_store, rel.recordId))
         : (rel.recordId || '—');
       chips.appendChild(buildRoleChip({
@@ -542,7 +545,7 @@ function drawRecordDetail(panel, node) {
       prefix: roles, value: actor.name, onClick: () => actions.selectNode(actor),
     }));
   }
-  panel.appendChild(section(`Im selben Dokument genannte Einträge · ${actorIds.length}`, chips));
+  panel.appendChild(section(`Im selben Dokument genannte Einträge ${actorIds.length}`, chips));
 
   panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: node.recordId })));
 }

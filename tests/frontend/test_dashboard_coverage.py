@@ -15,7 +15,7 @@ def test_receipt_explains_absent_work_without_changing_filter(frontend_server, b
     page.goto(frontend_server + '#statistik?suche=Z%C3%BCrich', wait_until='networkidle')
     first = page.locator('.dashboard-panel[data-panel-id="a"]')
     second = page.locator('.dashboard-panel[data-panel-id="b"]')
-    expect(first.locator('.dashboard-chart-status')).to_contain_text('45 von 45 Dokumenten')
+    expect(first.locator('.dashboard-chart-status')).to_have_text('45 von 45')
     first.locator('.dashboard-values > summary').click()
     url = page.url
     first.locator('.dashboard-values__select').filter(has_text='Quittung').click()

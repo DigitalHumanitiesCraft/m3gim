@@ -30,7 +30,7 @@ function witnessText(store, item) {
     item.association === 'derived-single-work' ? 'aus genau einem Werk im Dokument abgeleitet' : null,
     item.association === 'unassigned' ? 'keinem Werk zugeordnet' : null]
     .filter(value => value && !String(main).includes(String(value)));
-  return details.length ? `${main} · ${details.join(' · ')}` : main;
+  return details.length ? `${main}, ${details.join(', ')}` : main;
 }
 
 function witnessSource(item) {
@@ -108,7 +108,7 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
       content.appendChild(chips);
     }
     content.appendChild(el('p', { className: 'dashboard-selection__evidence' },
-      `${merged.witnesses.length} ${merged.witnesses.length === 1 ? 'Beleg' : 'Belege'} · ${merged.sourceRefs.length} ${merged.sourceRefs.length === 1 ? 'Quellenstelle' : 'Quellenstellen'}`));
+      `${merged.witnesses.length} ${merged.witnesses.length === 1 ? 'Beleg' : 'Belege'}, ${merged.sourceRefs.length} ${merged.sourceRefs.length === 1 ? 'Quellenstelle' : 'Quellenstellen'}`));
     const bindings = new Set(marks.map(mark => mark.dimensions?.binding));
     const associations = new Set(merged.witnesses.map(item => item.association));
     if (bindings.has('co-mention')) content.appendChild(el('p', { className: 'dashboard-note' },
@@ -133,7 +133,7 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
       const record = store.records.get(id);
       const open = el('button', { type: 'button', className: 'ui-action', dataset: { recordId: id }, onClick: () => navigateToView('bestand', {
         recordId: id, preserveFilter: true,
-      }) }, record ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}` : id);
+      }) }, record ? `${formatSignatur(record['rico:identifier'])}, ${record['rico:title'] || '(ohne Titel)'}` : id);
       list.appendChild(el('li', {}, open));
     }
     const count = merged.recordIds.length;
@@ -143,7 +143,7 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
     detail.open({ title: marks.length === 1 ? marks[0].label : 'Kombinierte Belegauswahl',
       kicker: 'Dashboard-Belege',
       subtitle: units.length === 1 && units[0] === 'documents' ? documents
-        : `${documents} · Gezählt werden: ${units.map(unit => unitLabel(unit, 2)).join(' / ')}`,
+        : `${documents}, Gezählt werden: ${units.map(unit => unitLabel(unit, 2)).join(' / ')}`,
       content, trigger: lastTrigger });
     onHighlight(new Set(merged.recordIds));
   }

@@ -27,12 +27,11 @@
   flex-wrap: wrap;
 }
 
+/* A link-styled count that opens the same cut in Bestand; it keeps only its
+   own width, so the free head space is margin and not a hit area. */
 .netzwerk__coverage {
-  flex: 1 1 auto;
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
+  margin-inline-end: auto;
   font-variant-numeric: tabular-nums;
-  cursor: help;
 }
 
 /* Legend: one word per sign, the rest in the tooltips. It stands in the head

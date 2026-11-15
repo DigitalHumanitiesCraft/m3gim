@@ -11,9 +11,10 @@ import {
 } from './filter-state.js';
 import { predicateLabel } from '../data/query-predicates.js';
 import { FACET_META, labelIn } from './sidebar-facets.js';
+import { WIKIDATA_ICON_SVG } from '../data/constants.js';
 
 /** Removable conditions remain grouped by facet to expose their OR/AND semantics. */
-export function filterStrip(inventories, localChips) {
+export function filterStrip(inventories, localChips, { provenanceLegend = false } = {}) {
   const element = el('div', { className: 'filter-strip' });
 
   function update() {
@@ -73,6 +74,7 @@ export function filterStrip(inventories, localChips) {
   }
 
   function appendHistory() {
+    if (provenanceLegend) element.append(provenanceKey());
     const state = filterHistoryStatus();
     const undo = el('button', { type: 'button', className: 'filter-history__button',
       'aria-label': 'Letzte Filteränderung rückgängig',
@@ -90,13 +92,13 @@ export function filterStrip(inventories, localChips) {
   function displayPredicate(predicate) {
     if (predicate.type === 'entity-role') {
       const roles = predicate.roles.map(role => labelIn(inventories.get('verknuepfung') || [], `${predicate.family}:${role}`));
-      return `${FACET_META[predicate.family]?.title || ''}: ${predicate.entities.join(' oder ')} · ${roles.join(' oder ')}`;
+      return `${FACET_META[predicate.family]?.title || ''}: ${predicate.entities.join(' oder ')}, ${roles.join(' oder ')}`;
     }
     if (predicate.type === 'set-membership') {
       const label = item => `${FACET_META[item.facet]?.title || item.facet}: ${labelIn(inventories.get(item.facet) || [], item.value)}`;
       const included = predicate.include.map(label).join(' und ');
       const excluded = predicate.exclude.map(label).join(', ');
-      return [included, excluded ? `ohne ${excluded}` : ''].filter(Boolean).join(' · ');
+      return [included, excluded ? `ohne ${excluded}` : ''].filter(Boolean).join(', ');
     }
     if (predicate.type === 'records' && predicate.ids.length === 1) {
       return `Dokument ${predicate.ids[0].replace(/^m3gim-data:/, '')}`;
@@ -156,4 +158,21 @@ function removeChip(text, onRemove) {
   },
     el('span', { className: 'fs-chip__label' }, text),
     el('span', { className: 'fs-chip__x' }, '×'));
+}
+
+/** Explains the provenance marks the rows and details carry: a plain value
+ *  comes from the source row, the dotted underline marks a supplemented value
+ *  (components.css .mark-derived) and the green glyph an authority match. */
+function provenanceKey() {
+  const item = (tip, ...sample) => el('li', {
+    className: 'provenance-key__item', tabindex: '0', dataset: { tip, tipPos: 'bottom-right' },
+  }, ...sample);
+  // The leading word marks the row as a key, a first reader took it for a switch.
+  return el('ul', { className: 'provenance-key', 'aria-label': 'Herkunft der Angaben' },
+    el('li', { className: 'provenance-key__label', 'aria-hidden': 'true' }, 'Herkunft'),
+    item('Angaben ohne Zeichen stehen so in der Quellzeile der Erfassung.', 'Quelle'),
+    item('Gepunktet unterstrichene Angaben stammen aus einem Index, aus Wikidata oder sind abgeleitet. Ihr Tooltip nennt die Herkunft.',
+      el('span', { className: 'mark-derived' }, 'ergänzt')),
+    item('Das grüne Zeichen führt zum geprüften Wikidata-Eintrag derselben Entität.',
+      el('span', { className: 'provenance-key__glyph', html: WIKIDATA_ICON_SVG, 'aria-hidden': 'true' }), 'Wikidata'));
 }

@@ -97,7 +97,7 @@ function specificControls(panel, state, context) {
     primary.push(familyControl);
     let options = family === 'verknuepfung'
       ? linkRoleInventory(context.store, context.cutIds).map(item => ({
-        name: item.value, label: `${item.type} · ${item.label}`, count: item.count,
+        name: item.value, label: `${item.type}, ${item.label}`, count: item.count,
       }))
       : facetInventory(context.store, family).map(item => ({
         name: item.value, label: item.label,
@@ -107,7 +107,7 @@ function specificControls(panel, state, context) {
     options.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'de'));
     const valueSelect = el('select', { className: 'ui-select dashboard-panel__sets',
       'aria-label': 'Wert der neuen Mengenbedingung' });
-    for (const item of options) valueSelect.appendChild(el('option', { value: item.name }, `${item.label} · ${item.count}`));
+    for (const item of options) valueSelect.appendChild(el('option', { value: item.name }, `${item.label} ${item.count}`));
     const addSet = el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: () => {
         const sets = state.config.sets || [];
         if (sets.length >= 5 || sets.some(item => item.facet === family && item.value === valueSelect.value)) return;
@@ -196,6 +196,7 @@ export function createDashboardPanel({ id, host, initial, context, onState }) {
         aggregateExportRows(aggregates, { filter: getFilter(), fingerprint: context.fingerprint })) }, 'Aggregat CSV');
     exportButton.disabled = aggregates.length === 0;
     header.appendChild(menu('Export', [exportButton]));
+    header.querySelector('.dashboard-panel__unit').after(coverageStatus.status);
     body.prepend(coverageStatus.element);
     coverageStatus.highlight(context.getHighlighted());
   }

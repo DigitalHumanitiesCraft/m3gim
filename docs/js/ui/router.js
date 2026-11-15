@@ -32,12 +32,10 @@ const savedViewParams = new Map();
 
 let onTabChange = null;
 let onRecordSelect = null;
-let onIndexNavigate = null;
 
-export function initRouter({ onTab, onRecord, onIndex } = {}) {
+export function initRouter({ onTab, onRecord } = {}) {
   onTabChange = onTab;
   onRecordSelect = onRecord;
-  onIndexNavigate = onIndex;
 
   // Set up tab click handlers
   for (const tab of TABS) {
@@ -81,15 +79,6 @@ export function selectRecord(recordId) {
   state.selectedRecord = recordId;
   updateHash();
   if (onRecordSelect) onRecordSelect(recordId);
-}
-
-export function navigateToIndex(gridType, entityName) {
-  state.activeTab = 'indizes';
-  state.selectedRecord = null;
-  if (INDEX_REGISTERS.includes(gridType)) state.indexRegister = gridType;
-  updateHash();
-  applyState();
-  if (onIndexNavigate) onIndexNavigate(gridType, entityName);
 }
 
 export function navigateToView(tab, context = {}) {

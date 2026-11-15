@@ -57,7 +57,7 @@ function relations(entry, recordIds, navigate) {
   for (const [type, ids] of byType) {
     const label = AGRELON_LABELS[type] || type.replace(/^agrelon:Has/, '');
     box.appendChild(el('details', { className: 'idx-relation' },
-      el('summary', {}, `${label} · ${ids.size} Dokument${ids.size === 1 ? '' : 'e'}`),
+      el('summary', {}, `${label}, ${ids.size} Dokument${ids.size === 1 ? '' : 'e'}`),
       el('div', { className: 'idx-relation__records' }, ...[...ids].map(recordId => el('button', {
         type: 'button', className: 'idx-evidence',
         onClick: () => navigate('bestand', { recordId }),

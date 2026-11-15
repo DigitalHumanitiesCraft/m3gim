@@ -25,7 +25,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries,
+  getGridEntries, clearEntriesCache, entriesWithRecordsIn,
 } from '../../docs/js/views/indizes-data.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -77,34 +77,6 @@ describe('getGridEntries', () => {
     assert.equal(getGridEntries(STORE, 'werke'), first, 'derselbe Aufruf materialisiert nicht neu');
     clearEntriesCache();
     assert.notEqual(getGridEntries(STORE, 'werke'), first);
-  });
-});
-
-describe('Freitextsuche', () => {
-  test('Personen werden ausschließlich über ihre Quellenbezeichnung gefunden', () => {
-    clearEntriesCache();
-    const all = getGridEntries(STORE, 'personen');
-    assert.deepEqual(namesOf(filterEntries(all, 'personen', { q: 'malaniuk' })), ['Malaniuk, Ira']);
-    assert.deepEqual(namesOf(filterEntries(all, 'personen', { q: 'dirigent' })), []);
-  });
-
-  test('Werke werden auch ueber den Komponisten gefunden', () => {
-    clearEntriesCache();
-    const all = getGridEntries(STORE, 'werke');
-    assert.deepEqual(namesOf(filterEntries(all, 'werke', { q: 'bizet' })), ['Carmen']);
-  });
-
-  test('ein leerer Suchterm schneidet nicht', () => {
-    clearEntriesCache();
-    const all = getGridEntries(STORE, 'orte');
-    assert.equal(filterEntries(all, 'orte', { q: '' }).length, all.length);
-    assert.equal(filterEntries(all, 'orte', {}).length, all.length);
-  });
-
-  test('ein Treffer ohne Entsprechung liefert die leere Liste', () => {
-    clearEntriesCache();
-    const all = getGridEntries(STORE, 'orte');
-    assert.deepEqual(filterEntries(all, 'orte', { q: 'lissabon' }), []);
   });
 });
 

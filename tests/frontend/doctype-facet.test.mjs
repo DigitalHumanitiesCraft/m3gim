@@ -149,12 +149,12 @@ describe('Tooltip der Gruppenzeile', () => {
     const schriftgut = groups.find(g => g.value === 'schriftgut');
     const kidTotal = schriftgut.children.reduce((n, c) => n + c.count, 0);
     // Kein Datensatz ist direkt als schriftgut getypt: 3 minus 3 ist 0.
-    assert.equal(groupTip(schriftgut.count, kidTotal), '0 direkt · 3 in Untertypen');
-    assert.equal(groupTip(7, 3), '4 direkt · 3 in Untertypen');
+    assert.equal(groupTip(schriftgut.count, kidTotal), '0 direkt, 3 in Untertypen');
+    assert.equal(groupTip(7, 3), '4 direkt, 3 in Untertypen');
   });
 
   test('er wird nie negativ, auch wenn die Zaehler auseinanderlaufen', () => {
-    assert.equal(groupTip(2, 3), '0 direkt · 3 in Untertypen');
+    assert.equal(groupTip(2, 3), '0 direkt, 3 in Untertypen');
   });
 });
 

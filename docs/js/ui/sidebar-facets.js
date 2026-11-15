@@ -317,5 +317,5 @@ export function impliedByGroup(chosen, groupValue, childValue, synthetic) {
  * group is the total minus its children.
  */
 export function groupTip(total, kidTotal) {
-  return `${Math.max(total - kidTotal, 0)} direkt · ${kidTotal} in Untertypen`;
+  return `${Math.max(total - kidTotal, 0)} direkt, ${kidTotal} in Untertypen`;
 }

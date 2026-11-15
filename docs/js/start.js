@@ -39,7 +39,7 @@ try {
       const link = document.createElement('a');
       link.href = href;
       link.textContent = label;
-      if (links.childNodes.length) links.append(' · ');
+      if (links.childNodes.length) links.append(', ');
       links.append(link);
     }
     box.append(title, detail, retry, links);

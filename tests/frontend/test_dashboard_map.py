@@ -25,7 +25,7 @@ def test_map_lists_unlocated_evidence_and_highlights_without_zoom_loss(
       const {buildOccurrences, groupPlaces} = await import('./js/data/place-evidence.js');
       return groupPlaces(buildOccurrences(window.m3gim.store)).find(group => !group.located).city;
     }""")
-    first.get_by_role("button", name=re.compile(r"^" + re.escape(unlocated) + r" ·")).click()
+    first.get_by_role("button", name=re.compile(r"^" + re.escape(unlocated) + r",")).click()
     detail = page.locator(".selection-detail__panel")
     expect(detail.locator(".selection-detail__title")).to_have_text(unlocated)
     assert detail.locator(".dashboard-selection__witnesses li").count() > 0

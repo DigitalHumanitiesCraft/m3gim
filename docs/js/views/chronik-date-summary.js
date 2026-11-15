@@ -60,7 +60,7 @@ export function summarizeSourceDates(contexts) {
   }
   const values = [...distinct.values()];
   if (!values.length) return '';
-  if (values.length <= 2) return values.map(({ row }) => row.dateLabel ?? String(row.key ?? '')).join(' · ');
+  if (values.length <= 2) return values.map(({ row }) => row.dateLabel ?? String(row.key ?? '')).join(', ');
 
   const precise = [];
   const counts = { range: 0, circa: 0, before: 0, after: 0, openStart: 0,
@@ -74,5 +74,5 @@ export function summarizeSourceDates(contexts) {
   const span = calendarSpan(precise);
   if (span) parts.push(span);
   parts.push(...specialLabels(counts));
-  return parts.join(' · ');
+  return parts.join(', ');
 }

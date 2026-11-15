@@ -84,6 +84,40 @@
   margin-inline-start: auto;
 }
 
+/* Provenance key: three words in the strip, one sample mark each, the
+   explanation in the tooltip. It takes the free space so the history buttons
+   stay at the right edge. */
+.provenance-key {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.provenance-key + .filter-history {
+  margin-inline-start: var(--space-3);
+}
+
+.provenance-key__label {
+  color: var(--color-text-tertiary);
+}
+
+.provenance-key__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: help;
+}
+
+.provenance-key__glyph {
+  display: inline-flex;
+  color: var(--color-match);
+}
+
 .filter-history__button {
   inline-size: 28px;
   block-size: 28px;

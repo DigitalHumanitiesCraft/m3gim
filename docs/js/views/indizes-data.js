@@ -144,20 +144,6 @@ export function cutCountOf(entry) {
 }
 
 /**
- * Die Suche ueber die eigenen Felder des Registers. Der Begriff kommt
- * kleingeschrieben an. Die Normdaten-Schalter sind mit E-230 entfallen, die
- * Wikidata-Verknuepfung steht als Marke an der Zeile statt als Schnitt.
- * @param {Array<GridEntry>} entries
- * @param {string} gridKey
- * @param {{q?: string}} state
- */
-export function filterEntries(entries, gridKey, { q = '' } = {}) {
-  if (!q) return entries;
-  const search = GRID_SOURCES[gridKey].searchFields;
-  return entries.filter(e => matchesQuery(search(e), q));
-}
-
-/**
  * Sortierung des Registers (E-226): Belegzahl absteigend als Voreinstellung,
  * alphabetisch nach Name. Die Belegzahl ist die des Schnitts (E-227), damit die
  * Reihung dieselbe Zahl ordnet, die die Zeile zeigt. Returns a new array; the

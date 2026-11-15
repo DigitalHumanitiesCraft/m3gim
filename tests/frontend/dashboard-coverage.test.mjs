@@ -6,7 +6,8 @@ test('coverage counts distinct documents in B despite duplicate cells and refere
   const result = chartCoverageSummary({ cutIds: ['r1', 'r2'], aggregates: [
     { recordIds: ['r1', 'reference'] }, { recordIds: ['r1'] },
   ] }, ['reference']);
-  assert.match(result.overview, /^1 von 2 Dokumente/);
+  assert.equal(result.overview, '1 von 2');
+  assert.match(result.overviewTip, /^1 von 2 Dokumenten im aktuellen Filter/);
   assert.match(result.selection, /1 Dokument außerhalb des aktuellen Filters/);
   assert.match(result.selection, /^Auswahl: 1 von 1 Dokument in dieser Auswertung/);
   assert.doesNotMatch(result.selection, /ohne Eintrag/);

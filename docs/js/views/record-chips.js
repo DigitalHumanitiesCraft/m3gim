@@ -95,7 +95,7 @@ function stageRoleChipEl(r) {
   if (r.performers && r.performers.length) parts.push(r.performers.join(', '));
   return buildRoleChip({
     prefix: 'ROLLE',
-    value: parts.join(' · '),
+    value: parts.join(', '),
     cluster: 'rolle',
     qualityFlag: r.qualityFlag,
     note: r.description,
@@ -103,7 +103,7 @@ function stageRoleChipEl(r) {
 }
 
 /**
- * Dated performances -> one chip each (date · work · stage roles). Undated
+ * Dated performances -> one chip each (date, work, stage roles). Undated
  * standalone stage roles stay in Werk & Repertoire (see partitionRecord); a
  * role never appears in both sections. Cluster `ort` places these in the dated-
  * event colour family, consistent with the Ort & Ereignis block.
@@ -119,7 +119,7 @@ export function performanceChipEls(performances) {
     }
     return buildRoleChip({
       prefix: 'ANGABE',
-      value: parts.join(' · '),
+      value: parts.join(', '),
       cluster: 'datum',
       wikidata: p.workWikidata,
       qualityFlag: p.qualityFlag,
@@ -149,7 +149,7 @@ export function eventChipEls(store, events, locations, eventDatings) {
     chips.push(buildRoleChip({
       prefix: ev.roleLabel || 'EREIGNIS',
       gloss: glossOf(store, ev.roleId),
-      value: `${ev.place || '?'} · ${dateDisplay}`,
+      value: `${ev.place || '?'}, ${dateDisplay}`,
       cluster: 'ort',
       wikidata: ev.placeWikidata,
       qualityFlag: ev.qualityFlag,
@@ -214,7 +214,7 @@ function seasonChipEl(store, { season, dates }) {
   });
   const dateEls = [];
   dates.forEach((d, i) => {
-    if (i > 0) dateEls.push(' · ');
+    if (i > 0) dateEls.push(', ');
     // The date row is one chip, so a caveat on a single Auffuehrung has no own
     // marker and joins that date's tooltip.
     const tip = qualityTipLines(d.qualityFlag, d.description).join('\n');
@@ -240,7 +240,7 @@ export function relationChipEls(relations) {
     // role of the counterpart does (E-149). Without it Absender and Adressat
     // would stand as two identically labelled chips.
     const base = AGRELON_LABELS[r.type] || (r.type || '').replace(/^agrelon:Has/, '');
-    const label = r.objectRoleLabel ? `${base} · ${r.objectRoleLabel}` : base;
+    const label = r.objectRoleLabel ? `${base}, ${r.objectRoleLabel}` : base;
     const validity = r.validityBegin
       ? ` ${r.validityBegin}${r.validityEnd ? '–' + r.validityEnd : ''}`
       : '';
@@ -273,7 +273,7 @@ export function detailChipEls(entries) {
   return entries.map(entry => buildRoleChip({
     prefix: entry.field || 'Angabe ohne Typ',
     value: entry.value === '' || entry.value == null ? 'Kein Wert erfasst' : String(entry.value),
-    note: [entry.role, entry.description].filter(Boolean).join(' · ') || null,
+    note: [entry.role, entry.description].filter(Boolean).join(', ') || null,
     details: entry.xlsxSource ? [`Quelle: ${entry.xlsxSource.sheet} Zeile ${entry.xlsxSource.row}`] : [],
   }));
 }
@@ -306,7 +306,7 @@ export const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="cu
  *
  * @param {Object} opts
  * @param {string} opts.prefix - role label, uppercased internally
- * @param {string} opts.value - primary value, e.g. "Bayreuth · 1951-07-30"
+ * @param {string} opts.value - primary value, e.g. "Bayreuth, 1951-07-30"
  * @param {string} [opts.cluster]
  * @param {string} [opts.wikidata] - wd:Qxxx for the badge
  * @param {string} [opts.tip]

@@ -54,7 +54,7 @@ export function appendAccessibleList(host, aggregates, callbacks) {
   for (const aggregate of aggregates) {
     const select = el('button', { type: 'button', className: 'ui-action dashboard-values__select',
       onClick: () => callbacks.onSelect(aggregate, select) },
-    `${aggregate.label} · ${aggregate.count} ${unitLabel(aggregate.unit, aggregate.count)}`);
+    `${aggregate.label}, ${aggregate.count} ${unitLabel(aggregate.unit, aggregate.count)}`);
     const add = el('button', { type: 'button', className: 'ui-action dashboard-values__add',
       'aria-label': `${aggregate.label} zur Belegauswahl hinzufügen`,
       onClick: () => callbacks.onAdd(aggregate, add) }, '+');
@@ -95,6 +95,3 @@ function download(filename, type, content) {
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-export function chartStatus(text) {
-  return el('p', { className: 'dashboard-chart-status', 'aria-live': 'polite' }, text);
-}

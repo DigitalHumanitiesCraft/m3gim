@@ -362,7 +362,7 @@ export function nodeTipLines(node) {
     const witness = source.sourceKind === 'index' && source.xlsxSource
       ? `${source.xlsxSource.sheet} Zeile ${source.xlsxSource.row}`
       : source.source;
-    lines.push(`${property}: ${source.sourceValue ?? '?'} · Quelle: ${witness || source.sourceKind || '?'}`);
+    lines.push(`${property}: ${source.sourceValue ?? '?'}, Quelle: ${witness || source.sourceKind || '?'}`);
   }
   return lines;
 }

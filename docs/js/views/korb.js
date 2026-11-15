@@ -116,12 +116,13 @@ function renderHeader(ids) {
 }
 
 function renderEmpty() {
-  // Symbol and state only: the way into the basket stands on the Korb button of
-  // the rows, not as explanatory text here (design.md rule 8). The same sign as
-  // tab and button, one sign carries one meaning (E-217).
+  // One sentence on what is and what comes next (empty-state rule of the
+  // 2026-11-15 interface plan, superseding the symbol-only state). The same
+  // sign as tab and button, one sign carries one meaning (E-217).
   return el('div', { className: 'korb-empty' },
     el('span', { html: korbIcon(48, false) }),
-    el('p', { className: 'korb-empty__text' }, 'Korb leer'),
+    el('p', { className: 'korb-empty__text' },
+      'Der Korb ist leer. Das Korbsymbol am Ende einer Bestandszeile legt ein Dokument hinein, gesammelte Dokumente lassen sich hier als CSV, BibTeX, JSON-LD oder GEXF herunterladen.'),
   );
 }
 
@@ -305,7 +306,7 @@ function recordEvidence(record, storeRef) {
     }
   }
   // The direction sits in the role of the relation target; without it
-  // "Korrespondenz · Verfasser" becomes an undirected mention. Same form as
+  // "Korrespondenz, Verfasser" becomes an undirected mention. Same form as
   // the chip in the detail (user-story audit 2026-09-04).
   for (const rel of storeRef.agentRelations?.get(rid) || []) {
     const base = AGRELON_LABELS[rel.type] || rel.type || '';

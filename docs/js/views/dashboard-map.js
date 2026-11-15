@@ -9,7 +9,7 @@ function mapAggregate(group, denominator) {
   const recordIds = [...group.records].sort();
   const witnesses = group.evidence.map(statement => ({
     kind: 'place-statement', key: placeStatementKey(statement), recordId: statement.recordId,
-    label: `${statement.place} · ${placeRoleLabel(statement)} · ${statement.date || 'ohne eigenes Datum'}`,
+    label: `${statement.place}, ${placeRoleLabel(statement)}, ${statement.date || 'ohne eigenes Datum'}`,
     role: statement.roleId || statement.role || null, date: statement.date,
     documentDate: statement.documentDate, primaryAnchor: statement.recordDate,
     source: statement.xlsxSource ? { ...statement.xlsxSource, recordId: statement.recordId } : null,

@@ -45,7 +45,7 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
     coarseButton,
     undated ? el('button', { type: 'button', className: 'chronik-more chronik-undated',
       onClick: event => openRow(undated, event.currentTarget),
-    }, `Ohne Datum · ${undated.sources.length}`) : null, invalidButton);
+    }, `Ohne Datum ${undated.sources.length}`) : null, invalidButton);
 
   function navigate(time) {
     beforeNavigate();
@@ -114,7 +114,7 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
           if (isExpanded) expandedGaps.delete(gap.key); else expandedGaps.add(gap.key);
           draw(gap.start);
           surface.querySelector(`[data-gap-key="${gap.key}"] button`)?.focus({ preventScroll: true });
-        } }, `${label} · ${isExpanded ? 'Zeitabschnitt zusammenziehen' : 'Zeitabschnitt verkürzt'}`));
+        } }, `${label}, ${isExpanded ? 'Zeitabschnitt zusammenziehen' : 'Zeitabschnitt verkürzt'}`));
       node.style.top = `${gap.y}px`;
       node.style.height = `${gap.height}px`;
       surface.appendChild(node);
@@ -123,9 +123,9 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
       layout.coarseRows.length ? 'Die vorhandenen Zeitangaben sind gröber datiert. Wähle einen gröberen Maßstab oder öffne die Zeitangaben.'
         : undated ? 'Die Quellen dieser Auswahl haben kein einordenbares Datum.' : 'Keine Datierungen in dieser Auswahl.'));
     coarseButton.hidden = !layout.coarseRows.length;
-    coarseButton.textContent = `Gröbere Zeitangaben · ${layout.coarseRows.length}`;
+    coarseButton.textContent = `Gröbere Zeitangaben ${layout.coarseRows.length}`;
     invalidButton.hidden = !layout.invalid.length;
-    invalidButton.textContent = `Datierung prüfen · ${layout.invalid.length}`;
+    invalidButton.textContent = `Datierung prüfen ${layout.invalid.length}`;
     clear(yearSelect);
     const years = [...new Set(layout.groups.map(group => calendarYear(group.start)).concat(layout.coarseRows.map(item => item.year)))].sort((a, b) => a - b);
     for (const year of years) yearSelect.appendChild(el('option', { value: String(year) }, String(year)));

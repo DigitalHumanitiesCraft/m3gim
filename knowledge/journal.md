@@ -64,6 +64,14 @@ This section carries what the next session needs. Accepted future work lives in 
 
 Entries stand newest first. The register of decisions with their reasons follows under § Decision register.
 
+### 2026-11-15 Interface variant after the refactoring round
+
+- Trigger: the user's request of 2026-11-15 to optimise and refactor the interface, with the published version unchanged during partner review.
+- Found: the root agent inspected all seven views at 2000, 1280 and 360 pixels. Below 700 pixels the tab list collapsed to a few pixels, introduced with `3f75a46`. Interface text used the middle dot as separator in all views. The density check of the `pruefansicht` repository exceeds its `work` limits in every research view of both the published state and this variant, mainly through the shared sidebar.
+- Changed: phone tab list, separators, compact coverage counts in Dashboard and Netzwerk, provenance key in Bestand and Indizes, register Wikidata colour, empty-basket sentence, removal of unused frontend exports with their exclusive tests. [design.md](design.md) records the contracts and the § Operator feedback list.
+- Agentic review: a fresh reader described all views from screenshots and took the provenance key for a switch and `188 von 1004` for an unclear quantity; both were corrected. An independent reviewer found no defect in the knowledge base form but did not accept the variant as reviewed, because several interface rules rest on observation only and the phone tabs beyond the first screen width give no hint that the bar scrolls. Status: built.
+- Evidence: `tests/frontend/test_phone_navigation.py` fails on the published CSS at 320, 360 and 390 pixels and passes here; the invariant and browser suite passes.
+
 ### 2026-11-15 Curation against code, data and the current Promptotyping convention
 
 - Trigger: the user asked on 2026-11-15 to refactor and curate the project in knowledge, code and interface according to what was learned since its creation. Kind of curation: against the project. No grounding against outside sources.

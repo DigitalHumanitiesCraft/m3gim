@@ -12,7 +12,7 @@ import { initKorb, reconcileKorb, onKorbChange, getKorbCount } from './ui/basket
 import { renderBestand, selectArchivRecord } from './views/bestand.js';
 import { renderChronik } from './views/chronik.js';
 import { renderStatistik } from './views/statistik.js';
-import { renderIndizes, expandEntry } from './views/indizes.js';
+import { renderIndizes } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaet } from './views/karte.js';
 import { renderNetzwerk } from './views/netzwerk.js';
@@ -78,10 +78,6 @@ export async function startApp() {
         // Navigate to Bestand tab and show record inline. Through the router,
         // so the hash keeps the shared filter (user-story audit 2026-09-03).
         navigateToView('bestand', { recordId });
-      },
-      onIndex: (gridType, entityName) => {
-        renderTab('indizes');
-        expandEntry(gridType, entityName);
       },
     });
 

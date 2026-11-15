@@ -132,7 +132,7 @@ export function buildOccurrences(store) {
       match.placeWikidata ||= statement.placeWikidata;
       match.qualityFlag ||= statement.qualityFlag;
       match.description = [...new Set([match.description, statement.description].filter(Boolean))]
-        .join(' · ') || null;
+        .join(', ') || null;
     }
     return false;
   });

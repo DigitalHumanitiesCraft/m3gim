@@ -117,7 +117,7 @@ export function renderSankey(host, context) {
       const anchor = stageIndex === 2 ? 'end' : 'start';
       const tx = stageIndex === 2 ? node.x - 5 : node.x + node.w + 5;
       group.append(svgEl('text', { x: tx, y: node.y + Math.min(node.h - 1, 11),
-        'text-anchor': anchor, class: 'dashboard-sankey__label' }, `${item.label} · ${item.statementCount}`));
+        'text-anchor': anchor, class: 'dashboard-sankey__label' }, `${item.label} ${item.statementCount}`));
       setHighlighted(group, item, context.highlightedIds); bindSvgAction(group, item, context); svg.appendChild(group);
     }
   });

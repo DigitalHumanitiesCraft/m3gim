@@ -280,7 +280,7 @@ describe('Ansichtslokale Chips im Streifen (E-223)', () => {
   test('createSidebar nimmt sie entgegen und der Streifen zeichnet sie hinter den geteilten Gruppen', () => {
     const src = read('ui/sidebar.js');
     assert.match(src, /localChips = \(\) => \[\],/, 'Option mit leerem Default');
-    assert.match(src, /filterStrip\(inventories, localChips\)/);
+    assert.match(src, /filterStrip\(inventories, localChips, \{ provenanceLegend \}\)/);
     const stripSrc = read('ui/sidebar-strip.js');
     const strip = stripSrc.slice(stripSrc.indexOf('function filterStrip'),
       stripSrc.indexOf('function isImpliedLinkKind'));

@@ -29,7 +29,7 @@ export function regionalFocusScale(width, height) {
 export function nodeTooltipHtml(node) {
   const roles = node.roles || node.breakdown || [];
   return `<strong>${escapeHtml(node.city)}</strong>`
-    + roles.map(role => `<span class="mob-tip__row">${escapeHtml(role.label)} · ${role.count} Dokumente</span>`).join('')
+    + roles.map(role => `<span class="mob-tip__row">${escapeHtml(role.label)}, ${role.count} Dokumente</span>`).join('')
     + `<span class="mob-tip__row">${node.records?.size ?? node.shown} Dokumente</span>`
     + (node.undated ? `<span class="mob-tip__row">${node.undated} aus undatierten Dokumenten</span>` : '');
 }

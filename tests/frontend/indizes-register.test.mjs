@@ -27,7 +27,7 @@ import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, sortEntries,
+  getGridEntries, clearEntriesCache, entriesWithRecordsIn, sortEntries,
   buildUmfeld, REGISTER_FAMILY, REGISTER_LABELS, REGISTER_KEYS, cutCountOf,
   REGISTER_ENTITY_TYPE, bestandFilterFor, entryYearSpan, entryRoles,
 } from '../../docs/js/views/indizes-data.js';
@@ -105,20 +105,6 @@ describe('Belegzahl des Schnitts (E-227)', () => {
     const entries = getGridEntries(store, 'orte');
     assert.equal(entriesWithRecordsIn(entries, null), entries);
     assert.equal(cutCountOf(entries[0]), entries[0].count);
-  });
-});
-
-describe('Suche im Register', () => {
-  test('die Suche trifft die Felder, die die Zeile zeigt', () => {
-    const entries = getGridEntries(store, 'personen');
-    const out = filterEntries(entries, 'personen', { q: 'wagner' });
-    assert.ok(out.length > 0, 'Der Datenstand fuehrt Wagner; sonst prueft der Test nichts.');
-    assert.ok(out.every(e => /wagner/i.test(e.name + ' ' + (e.kategorie || ''))));
-  });
-
-  test('ohne Suchbegriff bleibt die Liste unangetastet', () => {
-    const entries = getGridEntries(store, 'orte');
-    assert.equal(filterEntries(entries, 'orte', {}), entries);
   });
 });
 

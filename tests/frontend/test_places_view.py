@@ -221,7 +221,7 @@ def test_place_detail_names_coverage_roles_and_document_co_mentions(frontend_ser
     open_navigator(page)
     page.get_by_role('button', name='Belege zu Zürich', exact=True).click()
     detail = page.locator('.places-detail')
-    expect(page.locator('.selection-detail__subtitle')).to_have_text('42 Dokumente · 63 Ortsbelege')
+    expect(page.locator('.selection-detail__subtitle')).to_have_text('42 Dokumente, 63 Ortsbelege')
     expect(detail.locator('.places-overview__coverage')).to_have_text('6 Ortsbelege mit eigenem Datum')
     expect(detail.locator('.places-role-button')).to_have_count(10)
     expect(detail.locator('.places-role-button').nth(0)).to_be_visible()

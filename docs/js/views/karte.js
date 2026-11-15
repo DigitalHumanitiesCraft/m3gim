@@ -137,11 +137,11 @@ export function renderMobilitaet(store, container) {
         },
       };
     const openOverview = () => detail.open({ title: group.city, kicker: 'Ortsbelege',
-      subtitle: `${group.records.size} Dokumente · ${group.evidence.length} Ortsbelege`,
+      subtitle: `${group.records.size} Dokumente, ${group.evidence.length} Ortsbelege`,
       trigger: detailTrigger, content: buildPlaceOverview(store, group, actions) });
     actions.openSources = (role, sourceTrigger) => detail.open({
       title: role || 'Quellen', kicker: group.city,
-      subtitle: role ? `${role} · Quellen` : 'Alle Ortsbelege nach Dokument',
+      subtitle: role ? `${role}, Quellen` : 'Alle Ortsbelege nach Dokument',
       trigger: sourceTrigger,
       back: { label: `Zurück zu ${group.city}`, onClick: openOverview },
       content: buildPlaceSources(store, group, actions, role),

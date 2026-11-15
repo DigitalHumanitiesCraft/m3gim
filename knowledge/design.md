@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.9
 created: 2026-02-19
-updated: 2026-09-09
+updated: 2026-11-15
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -53,6 +53,10 @@ Chips. Semantic data points retain their uppercase role and value. Static parts,
 Marks and family symbols. Four line icons in `docs/js/ui/family-icons.js` name person, institution, place and work, drawn in the family colour through `currentColor` and always `aria-hidden`, the meaning carried by tooltip and accessible name of the cell. Evidence against absence is a matter of stroke weight and colour. A quality flag of the model shows one neutral sign whose tooltip quotes the `rico:generalDescription` unchanged (E-222, E-243). Everything derived, inherited or supplemented carries exactly one mark, the dotted underline in secondary colour with a tooltip beginning "ergänzt: " (E-216), while absence stays italic in the absence colour.
 
 Tooltips. The application renders `data-tip` in one fixed overlay attached to the page body, outside the columns of record details. This prevents a long tooltip from splitting between columns. `data-tip-pos` chooses the preferred placement, which is kept inside the viewport. Hover and keyboard focus select the closest tooltip-bearing element, including a Wikidata link nested in a chip. The overlay is linked through `aria-describedby` and closes on Escape, click, scroll, resize or departure from its trigger. Static information pages retain the CSS fallback, with `data-tip-wrap` for multiline content. Native `title` exists only on SVG drawings (E-36). One hover shows exactly one tooltip (E-90), and an icon button carries an `aria-label` beside it (E-210).
+
+Provenance key. Bestand and Indizes carry three words in the filter strip, Quelle, ergänzt and Wikidata, each with its sample mark and the explanation in its tooltip. A plain value comes from the source row, the dotted underline marks a supplemented value, and the green glyph leads to the matched Wikidata entry. Every Wikidata mark uses the match colour, including the register rows.
+
+Counts and separators. A count stands as label and number, such as `Quellen 40`, and its explanation lives in the tooltip. Dashboard panels show their coverage as `127 von 188` beside the unit, and the network shows its coverage as a link-styled count that opens the same cut in Bestand. Interface text uses no middle dot as separator; enumerations are joined by commas and page titles read `Über M³GIM` (`tests/test_72_interface_separators.py`).
 
 Source references. The interface identifies evidence by archival record and signature. Technical sheet, row and data-point labels are absent from chips, grouped dates and register tooltips (E-285). Their provenance remains in the dataset, exports and cataloguing reports.
 
@@ -110,11 +114,25 @@ Selecting a mark opens one dashboard-wide shared detail and highlights matching 
 
 Panel coverage counts distinct supporting documents within the current filter. Selecting a mark additionally reports how many selected documents the companion evaluation contains. Matrix explanations distinguish absent dimension information, absent pair binding and a value outside its displayed rows or columns. A/B reference-only documents may belong to the comparison while remaining outside current B. Matrix headers wrap and stick along their own scroll axis; a saved page beyond a narrowed result is clamped to the available range. Place selection uses the actual map dimensions for a closer regional frame and retains any stronger manual zoom (E-300).
 
-Korb. The records collected by hand across the views, as a card list in the chip pattern of the inline detail, with export to CSV, BibTeX, JSON-LD and GEXF (E-232). Every export carries the source cell of every data point.
+Korb. When empty, it states in one sentence that the basket is empty and that the basket mark of a Bestand row adds a document. The records collected by hand across the views, as a card list in the chip pattern of the inline detail, with export to CSV, BibTeX, JSON-LD and GEXF (E-232). Every export carries the source cell of every data point.
 
 ## Accessibility
 
 The focus ring is a two pixel accent outline with offset from `:focus-visible`, set once in `base.css` and never removed, and a skip link focuses the main content while preserving the application route and filters. Without JavaScript the page explains the requirement and links directly to project information and archival data. A failed application import offers the same links and a reload action. The application tab bar becomes operable after its handlers and initial view are ready. It is a real tab set with `role="tab"`, `aria-selected` and roving tabindex, and the Bestand heads are keyboard-operable with `aria-expanded`. A drawing is one tab stop, not one per node. Karte and Netzwerk expose a visible keyboard cursor within that drawing; arrow keys move it and Enter selects. In the Netzwerk Escape closes the selection, and the SVG carries `role="group"`, while the edges stay pointer-bound because the detail column lists the neighbours they carry as keyboard-reachable rows (E-279). The result line of the sidebar is a polite live region with `role="status"`, the loading region carries `aria-live` and `aria-busy`, and the error box is a `role="alert"` naming the requested file (E-233). Family icons are `aria-hidden` and the surrounding cell carries the name, and a section head with a generated tooltip carries an `aria-label` of its own so the tooltip text stays out of its accessible name. Under a reduced-motion preference the loading ring stands still and scrolling is not animated. Below 1200 viewport pixels the sidebar initially folds behind a labelled toggle, and the Wikidata mark takes a finger-sized target on touch widths.
+
+## Operator feedback
+
+One list per interface, read before every rebuild. The items of 2026-11-15 are a paraphrase relayed by the coordinating session of complaints the user made about other projects that day, with the instruction that they apply here as well.
+
+| Date | Wording | Yardstick rule | Status |
+|---|---|---|---|
+| 2026-11-15 | A main figure uses the available area and does not fill only a narrow column (paraphrase). | 41 | Checked at 2000, 1280 and 360 pixels: Netzwerk, Orte, Dashboard and Chronik fill the work area. The Bestand table stretches short Typ and Datum columns at 2000 pixels; open. |
+| 2026-11-15 | No explanatory sentence above a figure; counts as a compact number with tooltip (paraphrase). | 7 | Fixed on `ui-variant` for Dashboard coverage, the Dashboard preset status and the network coverage. |
+| 2026-11-15 | Signs are explained in the legend (paraphrase). | 7, 29 | Fixed on `ui-variant` with the provenance key in Bestand and Indizes; Netzwerk and Chronik keep their legends. |
+| 2026-11-15 | No view stays empty without selection; it shows a labelled example (paraphrase). | 16 | Every research view opens on the full result set. The empty basket now says how to fill it; an example basket would misstate the reader's own collection, so none is shown. |
+| 2026-11-15 | Every number and every connection leads visibly to the data behind it (paraphrase). | none | Chronik, Dashboard, Indizes and Orte counts open their evidence; the network count now opens Bestand. Network edges open their evidence through node selection only; open. |
+| 2026-11-15 | The provenance of a statement is visible: from the source, enriched, machine-generated and unchecked (paraphrase). | none | Source and enriched are marked and keyed. No machine-generated unchecked values are shipped, because low-confidence authority matches need manual approval (E-74). |
+| 2026-11-15 | No middle dot as separator; no colon, dash or semicolon as sentence connector in interface text (paraphrase). | none | Middle dot removed on `ui-variant` and guarded by a test. Colons and dashes as connectors were not swept; open. |
 
 ## Related
 

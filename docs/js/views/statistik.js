@@ -121,7 +121,9 @@ export function renderStatistik(store, container) {
       const selected = button.dataset.preset === active?.id;
       button.setAttribute('aria-pressed', String(selected));
     }
-    presetStatus.textContent = active ? `Aktiv: ${active.label}` : 'Freie Kombination';
+    // The pressed preset button already shows an active pair; only a free
+    // combination has no button that could show it.
+    presetStatus.textContent = active ? '' : 'Freie Kombination';
   }
 
   function applyPreset(preset) {

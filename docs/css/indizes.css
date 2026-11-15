@@ -128,7 +128,8 @@ a.idx-doclink:hover { color: var(--accent); border-color: var(--accent); }
 .idx-item__wd { display: flex; align-items: center; justify-content: center; width: 24px; }
 .idx-wd-link {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px; color: var(--color-text-tertiary); line-height: 0;
+  /* The match colour, as at every other Wikidata mark and in the provenance key. */
+  width: 24px; height: 24px; color: var(--color-match); line-height: 0;
 }
 .idx-wd-link:hover { color: var(--accent); }
 .idx-wd-link svg { width: 10px; height: 10px; }

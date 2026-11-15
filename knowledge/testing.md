@@ -157,9 +157,12 @@ Screenshots establish legibility and clipping; DOM/source queries establish text
 Every shared UI change must be checked in every current consumer with real dense content, before and after opening, replacing and closing selection, on narrow and wide hosts. Compare horizontal and vertical content bounds and drawing dimensions. Long lists must scroll internally, with close/back controls reachable by keyboard. The Netzwerk suite does not yet automate replacement of an open selection, so that operation needs a separate observed check when the shared behaviour changes.
 
 Chronik geometry checks cover every laid-out group child in the shipped corpus, including decade/year scales at 390, 800 and 1366 pixels with details open and closed. Compare all group positions, heights and scroll offset across selection. The largest historical gap must remain visibly marked and compact. A single dense-day case cannot establish fit for all wrapping cases. Exact pixel constants remain implementation choices.
+
 The E-300 interaction regressions additionally cover the single global clear action and undo/redo labels, regional map focus with stronger manual zoom retained, paired presets over an actually narrowed filter, restored panel addresses, keyboard menu dismissal and a real aggregate download. The Zürich text-search receipt `NIM_007_5_8` has no work information: selecting it must explain the empty companion matrix highlight while preserving its exact source and the shared filter. Synthetic coverage fixtures separate reference-only A records, missing work/composer data, absent binding and off-page cells. Browser checks retain matrix content after excessive saved page values and verify independent sticky header axes.
 
 [plan.md](plan.md) records the checked revision, execution scope and human acceptance.
+
+The interface plan of 2026-11-15 adds three browser checks. `test_phone_navigation.py` keeps every tab reachable below 700 pixels, `test_interface_text.py` keeps the middle dot out of every rendered view and asserts the provenance key of Bestand and Indizes, and `tests/test_72_interface_separators.py` scans the delivered sources. Whether a figure carries an explanatory sentence, whether a view stays empty, whether every number leads to its data and whether a colon or dash joins sentences rest on screenshot observation and the fresh-reader test, which no executable check covers yet.
 
 ## Checking forms and status
 

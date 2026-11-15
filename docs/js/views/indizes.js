@@ -47,7 +47,7 @@ const REGISTERS = Object.fromEntries(REGISTER_KEYS.map(key => [key, {
 }]));
 const LIST_ID = 'idx-register-list';
 
-export function expandEntry(registerKey, entityName) {
+function expandEntry(registerKey, entityName) {
   if (!REGISTERS[registerKey]) return;
   local.register = registerKey;
   local.expanded = entityName;
@@ -85,6 +85,7 @@ export function renderIndizes(storeRef, containerEl) {
   } });
   sidebar = createSidebar(store, {
     yearSpan: yearBounds(store), getCount: () => cutSize,
+    provenanceLegend: true,
     onChange: () => { local.expanded = null; redraw(); },
     search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
   });
@@ -327,7 +328,7 @@ function personEnrichment(entry, { full = false } = {}) {
   if (parts.length === 0) return null;
   const qid = qidOf(entry);
   const rest = occ.slice(1);
-  return enrichEl(parts.join(' · '), {
+  return enrichEl(parts.join(', '), {
     tip: `ergänzt: aus Wikidata${qid ? ` ${qid}` : ''}.`
       + (rest.length > 0 ? ` Weitere Berufe: ${rest.join(', ')}.` : ''),
   });

@@ -309,7 +309,7 @@ def test_titles_are_unique_and_follow_the_pattern():
     titles = {}
     for page in PAGES:
         title = re.search(r"<title>(.*?)</title>", page.read_text(encoding="utf-8")).group(1)
-        assert title.endswith(" · M³GIM"), f"{page.name}: Titel {title!r}"
+        assert "M³GIM" in title and "·" not in title, f"{page.name}: Titel {title!r}"
         titles[title] = titles.get(title, 0) + 1
     doubled = [t for t, n in titles.items() if n > 1]
     assert not doubled, f"doppelte Titel {doubled}"
