@@ -4,7 +4,7 @@ Each version states its number, date and review status. The status follows three
 
 ## Unreleased
 
-Status: built, on the local branch `ui-variant`. Not merged, not published.
+Status: built, on the branch `ui-variant` (pushed to origin for safekeeping). Not merged, not published.
 
 - The tab list keeps its width on phones, so views can be switched below 700 pixels again (`tests/frontend/test_phone_navigation.py`, which fails on the published state).
 - Interface text uses no middle dot as separator. Counts stand as label and number, enumerations are joined by commas, page titles name the page and the project (`tests/test_72_interface_separators.py`).
