@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { storeFromShipped } from './_shipped.mjs';
-import { buildOccurrences, groupPlaces } from '../../docs/js/views/karte-data.js';
+import { buildOccurrences, groupPlaces } from '../../docs/js/data/place-evidence.js';
 import { extractXlsxSource } from '../../docs/js/utils/provenance.js';
 import { ensureArray, roleIdOf, roleToken } from '../../docs/js/utils/format.js';
 

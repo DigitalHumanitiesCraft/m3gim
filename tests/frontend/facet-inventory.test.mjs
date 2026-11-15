@@ -174,7 +174,7 @@ describe('Welche Facetten die Spalte fuehrt', () => {
     // Statistik. Bleibt sie irgendwo stehen, zeigen zwei Ansichten dieselbe
     // Menge nach zwei verschiedenen Achsen.
     for (const module of ['views/statistik-data.js', 'views/chronik-timeline-data.js',
-      'views/chronik.js', 'views/karte-data.js', 'views/karte-map.js', 'views/karte.js']) {
+      'views/chronik.js', 'data/place-evidence.js', 'views/karte-map.js', 'views/karte.js']) {
       assert.doesNotMatch(read(module), /SICHTEN|SICHT_COLOR|sichtForRecord|breakdownByView/,
         `${module} nennt die Mobilitaetssicht noch.`);
     }

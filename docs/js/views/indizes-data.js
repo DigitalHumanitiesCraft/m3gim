@@ -12,7 +12,7 @@
  */
 
 import { isMalaniuk } from './_netzwerk-geometry.js';
-import { buildEntities, buildOccurrences, hasGeo, countryByCity } from './karte-data.js';
+import { buildEntities, buildOccurrences, hasGeo, countryByCity } from '../data/place-evidence.js';
 import { yearOfId } from '../data/records-for.js';
 import { matchesQuery } from '../utils/normalize.js';
 import { facetValues } from '../ui/filter-state.js';

@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 
 import {
   buildOccurrences, occurrencesInCut, placeRolesOf, sortOcc,
-} from '../../docs/js/views/karte-data.js';
+} from '../../docs/js/data/place-evidence.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 function S(...ids) { return new Set(ids); }

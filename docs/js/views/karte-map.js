@@ -1,7 +1,7 @@
 /** Geographic companion; selection and evidence belong to the place view. */
 /* global d3 */
 import { el, clear, escapeHtml } from '../utils/dom.js';
-import { groupPlaces } from './karte-data.js';
+import { groupPlaces } from '../data/place-evidence.js';
 
 let countries = null;
 export async function loadCountries() {

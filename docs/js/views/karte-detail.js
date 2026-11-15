@@ -1,7 +1,7 @@
 /** Source evidence and progressive navigation in the place view. */
 import { el } from '../utils/dom.js';
 import { formatDate } from '../utils/date-parser.js';
-import { sortOcc, placeRoleLabel } from './karte-data.js';
+import { sortOcc, placeRoleLabel } from '../data/place-evidence.js';
 
 const dated = value => value ? (formatDate(value) || value) : 'nicht erfasst';
 const recordLabel = (record, id) => record?.['rico:identifier'] || id;

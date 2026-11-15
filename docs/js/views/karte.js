@@ -7,7 +7,7 @@ import { navigateToView } from '../ui/router.js';
 import { onViewNavigate } from '../ui/events.js';
 import { recordsFor, yearBounds } from '../data/records-for.js';
 import { logStamp } from '../utils/env.js';
-import { buildEntities, buildOccurrences, hasGeo, groupPlaces, occurrencesInCut } from './karte-data.js';
+import { buildEntities, buildOccurrences, hasGeo, groupPlaces, occurrencesInCut } from '../data/place-evidence.js';
 import { buildPlaceOverview, buildPlaceSources } from './karte-detail.js';
 import { buildMap, loadCountries } from './karte-map.js';
 

@@ -34,12 +34,12 @@ def test_selection_preserves_cut_and_exposes_complete_evidence(frontend_server, 
     expect(detail.locator(".places-evidence")).to_have_count(0)
     detail.get_by_role("button", name="Quellen ansehen", exact=True).click()
     expected = page.evaluate("""async () => {
-        const {buildOccurrences} = await import('./js/views/karte-data.js');
+        const {buildOccurrences} = await import('./js/data/place-evidence.js');
         const {cityOf} = await import('./js/utils/format.js');
         return buildOccurrences(window.m3gim.store).filter(o => cityOf(o.place).toLowerCase() === 'bayreuth').length;
     }""")
     expected_documents = page.evaluate("""async () => {
-        const {buildOccurrences} = await import('./js/views/karte-data.js');
+        const {buildOccurrences} = await import('./js/data/place-evidence.js');
         const {cityOf} = await import('./js/utils/format.js');
         return new Set(buildOccurrences(window.m3gim.store)
           .filter(o => cityOf(o.place).toLowerCase() === 'bayreuth').map(o => o.recordId)).size;

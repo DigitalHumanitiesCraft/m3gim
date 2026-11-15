@@ -15,7 +15,7 @@
  *   B  views/bestand.js  Undatiert-Markierung der Bestandszeile. Ohne
  *                             Traeger traegt jeder Record die Markierung und
  *                             die Datum-Spalte zeigt durchgehend "o. D.".
- *   C  views/karte-data.js   Datum eines Ortsbelegs. Ohne Traeger fallen
+ *   C  data/place-evidence.js Datum eines Ortsbelegs. Ohne Traeger fallen
  *                             die Record-Belege aus jeder Zeitfenster-Aussage
  *                             heraus, bleiben aber sichtbar, weil `inWindow`
  *                             undatierte Belege durchlaesst.
@@ -42,7 +42,7 @@ import { readFileSync } from 'node:fs';
 import { loadArchive, primaryYear } from '../../docs/js/data/loader.js';
 import { storeFromShipped } from './_shipped.mjs';
 import { countLinks } from '../../docs/js/utils/format.js';
-import { buildOccurrences } from '../../docs/js/views/karte-data.js';
+import { buildOccurrences } from '../../docs/js/data/place-evidence.js';
 import { isUndatedItem } from '../../docs/js/views/bestand-data.js';
 import { yearOf, recordsFor } from '../../docs/js/data/records-for.js';
 import { buildProjection } from '../../docs/js/views/_netzwerk-geometry.js';

@@ -14,7 +14,7 @@ import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { buildOccurrences, hasGeo, groupPlaces }
-  from '../../docs/js/views/karte-data.js';
+  from '../../docs/js/data/place-evidence.js';
 import { cityOf } from '../../docs/js/utils/format.js';
 import { storeFromShipped } from './_shipped.mjs';
 

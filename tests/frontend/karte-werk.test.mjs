@@ -19,7 +19,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { buildEntities, buildOccurrences, hasGeo, ENTITY_FAMILY }
-  from '../../docs/js/views/karte-data.js';
+  from '../../docs/js/data/place-evidence.js';
 import { karteSelectableNames } from '../../docs/js/views/indizes-data.js';
 import { storeFromShipped } from './_shipped.mjs';
 
